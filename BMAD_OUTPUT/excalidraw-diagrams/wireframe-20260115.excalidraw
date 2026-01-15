@@ -1,0 +1,90 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "f1", "type": "rectangle", "x": 0, "y": 0, "width": 1280, "height": 800, "strokeColor": "#9e9e9e", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": true
+    },
+    {
+      "id": "h1", "type": "rectangle", "x": 0, "y": 0, "width": 1280, "height": 60, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "l1", "type": "text", "x": 20, "y": 15, "width": 150, "height": 30, "fontSize": 20, "fontFamily": 1, "text": "🏔️ TrailLearn", "textAlign": "left", "verticalAlign": "top", "baseline": 25, "strokeColor": "#2563eb", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "sw1", "type": "rectangle", "x": 1080, "y": 10, "width": 180, "height": 40, "strokeColor": "#2563eb", "backgroundColor": "#eff6ff", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": ["g_sw"], "roundness": { "type": 3, "value": 8 }, "isDeleted": false, "boundElements": [{ "type": "text", "id": "sw_t" }], "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "sw_t", "type": "text", "x": 1090, "y": 20, "width": 160, "height": 20, "fontSize": 14, "fontFamily": 1, "text": "🎓 Trailler Mode ▼", "textAlign": "center", "verticalAlign": "middle", "baseline": 15, "strokeColor": "#2563eb", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": ["g_sw"], "containerId": "sw1", "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "sl1", "type": "rectangle", "x": 0, "y": 60, "width": 240, "height": 740, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "pt1", "type": "text", "x": 20, "y": 80, "width": 100, "height": 20, "fontSize": 12, "fontFamily": 1, "text": "PILIERS DVP", "textAlign": "left", "verticalAlign": "top", "baseline": 15, "strokeColor": "#94a3b8", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "sr1", "type": "rectangle", "x": 1040, "y": 60, "width": 240, "height": 740, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "dt1", "type": "text", "x": 280, "y": 100, "width": 400, "height": 40, "fontSize": 24, "fontFamily": 1, "text": "Synthèse de Viabilité", "textAlign": "left", "verticalAlign": "top", "baseline": 30, "strokeColor": "#1e293b", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "dc1", "type": "rectangle", "x": 280, "y": 160, "width": 720, "height": 200, "strokeColor": "#f59e0b", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": { "type": 3, "value": 12 }, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "ds1", "type": "text", "x": 320, "y": 180, "width": 300, "height": 30, "fontSize": 20, "fontFamily": 1, "text": "Viable sous conditions", "textAlign": "left", "verticalAlign": "top", "baseline": 25, "strokeColor": "#b45309", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "de1", "type": "text", "x": 320, "y": 220, "width": 600, "height": 60, "fontSize": 16, "fontFamily": 1, "text": "Ton projet est solide sur le plan académique, mais présente une fragilité sur l'épargne Visa.", "textAlign": "left", "verticalAlign": "top", "baseline": 15, "strokeColor": "#475569", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "wt1", "type": "text", "x": 1060, "y": 80, "width": 200, "height": 20, "fontSize": 16, "fontFamily": 1, "text": "Simulateur What-If", "textAlign": "left", "verticalAlign": "top", "baseline": 15, "strokeColor": "#1e293b", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "f2", "type": "rectangle", "x": 1400, "y": 0, "width": 1280, "height": 800, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": true
+    },
+    {
+      "id": "it2", "type": "text", "x": 1640, "y": 300, "width": 800, "height": 100, "fontSize": 40, "fontFamily": 1, "text": "Testons la viabilité de ton projet Paris 2026", "textAlign": "center", "verticalAlign": "middle", "baseline": 80, "strokeColor": "#1e293b", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "ib2", "type": "rectangle", "x": 1940, "y": 450, "width": 200, "height": 50, "strokeColor": "#2563eb", "backgroundColor": "#2563eb", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": ["g_ib"], "roundness": { "type": 3, "value": 8 }, "isDeleted": false, "boundElements": [{ "type": "text", "id": "ib_t" }], "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "ib_t", "type": "text", "x": 1950, "y": 465, "width": 180, "height": 20, "fontSize": 16, "fontFamily": 1, "text": "Démarrer l'analyse", "textAlign": "center", "verticalAlign": "middle", "baseline": 15, "strokeColor": "#ffffff", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": ["g_ib"], "containerId": "ib2", "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "f3", "type": "rectangle", "x": 0, "y": 1000, "width": 1280, "height": 800, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": true
+    },
+    {
+      "id": "pb3", "type": "rectangle", "x": 240, "y": 1040, "width": 800, "height": 10, "strokeColor": "#e2e8f0", "backgroundColor": "#e2e8f0", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": { "type": 3, "value": 5 }, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "pf3", "type": "rectangle", "x": 240, "y": 1040, "width": 200, "height": 10, "strokeColor": "#2563eb", "backgroundColor": "#2563eb", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": { "type": 3, "value": 5 }, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "qc3", "type": "rectangle", "x": 340, "y": 1150, "width": 600, "height": 400, "strokeColor": "#e2e8f0", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": { "type": 3, "value": 12 }, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "qt3", "type": "text", "x": 380, "y": 1200, "width": 520, "height": 40, "fontSize": 24, "fontFamily": 1, "text": "Quel type de logement vises-tu ?", "textAlign": "left", "verticalAlign": "top", "baseline": 30, "strokeColor": "#1e293b", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "pl3", "type": "text", "x": 380, "y": 1480, "width": 200, "height": 20, "fontSize": 14, "fontFamily": 1, "text": "💡 Pourquoi on demande ça ?", "textAlign": "left", "verticalAlign": "top", "baseline": 15, "strokeColor": "#2563eb", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "f4", "type": "rectangle", "x": 1400, "y": 1000, "width": 1280, "height": 800, "strokeColor": "#9e9e9e", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": true
+    },
+    {
+      "id": "lt4", "type": "text", "x": 1640, "y": 1350, "width": 800, "height": 40, "fontSize": 24, "fontFamily": 1, "text": "Calcul de viabilité en cours...", "textAlign": "center", "verticalAlign": "middle", "baseline": 30, "strokeColor": "#475569", "backgroundColor": "transparent", "fillStyle": "hachure", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": null, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    },
+    {
+      "id": "sk4", "type": "rectangle", "x": 1740, "y": 1450, "width": 600, "height": 100, "strokeColor": "#f1f5f9", "backgroundColor": "#f8fafc", "fillStyle": "solid", "strokeWidth": 1, "strokeStyle": "solid", "roughness": 0, "opacity": 100, "groupIds": [], "roundness": { "type": 3, "value": 8 }, "isDeleted": false, "boundElements": null, "updated": 1, "link": null, "locked": false
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "viewBackgroundColor": "#ffffff",
+    "theme": "light"
+  }
+}
