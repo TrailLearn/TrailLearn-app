@@ -1,0 +1,6 @@
+- Compte supabase : `coachprotalent@gmail.com`
+- Compte Vercel : `coachprotalent@gmail.com`
+- GitHub Organisation : `TrailLearn`
+- Supabase Project name : `TrailLearn`
+- secret information about supabase in Keepas : `freelance/TrealLearn/TrailLearn supabase password`
+- Vercel account : `coachprotalent@gmail.com`
