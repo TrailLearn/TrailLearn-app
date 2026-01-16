@@ -1,122 +1,16 @@
-<testsuites id="" name="" tests="18" failures="6" skipped="6" errors="0" time="87.262956">
-<testsuite name="example.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.596" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.596">
+<testsuites id="" name="" tests="18" failures="0" skipped="6" errors="0" time="41.085049999999995">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.962" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.962">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="chromium" tests="2" failures="2" skipped="0" time="35.887" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="18.935">
-<failure message="security.spec.ts:3:3 Unauthenticated user is redirected from Dashboard to Signin" type="FAILURE">
-<![CDATA[  [chromium] › security.spec.ts:3:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Dashboard to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard"
-
-
-       9 |     // 2. Verify redirection occurs (URL should contain signin or not be dashboard)
-      10 |     // Note: NextAuth default behavior is /api/auth/signin?callbackUrl=...
-    > 11 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      12 |     
-      13 |     // 3. Verify user cannot see dashboard content
-      14 |     await expect(page.getByText('Tableau de Bord Cockpit')).not.toBeVisible();
-        at C:\TrailLearn\tests\e2e\security.spec.ts:11:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-chromium\trace.zip]]
-]]>
-</system-out>
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="2" failures="0" skipped="0" time="9.078" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.732">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="16.952">
-<failure message="security.spec.ts:16:3 Unauthenticated user is redirected from Cockpit/DVP to Signin" type="FAILURE">
-<![CDATA[  [chromium] › security.spec.ts:16:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Cockpit/DVP to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard/dvp"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard/dvp"
-
-
-      17 |   test('Unauthenticated user is redirected from Cockpit/DVP to Signin', async ({ page }) => {
-      18 |     await page.goto('/dashboard/dvp');
-    > 19 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      20 |   });
-      21 |
-      22 | });
-        at C:\TrailLearn\tests\e2e\security.spec.ts:19:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-chromium\trace.zip]]
-]]>
-</system-out>
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.346">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="chromium" tests="3" failures="0" skipped="2" time="7.857" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="7.857">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="3" failures="0" skipped="2" time="2.731" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="2.731">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>
@@ -135,124 +29,18 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="example.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="firefox" tests="1" failures="0" skipped="0" time="5.743" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="5.743">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="1" failures="0" skipped="0" time="4.179" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="4.179">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="firefox" tests="2" failures="2" skipped="0" time="35.421" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="16.62">
-<failure message="security.spec.ts:3:3 Unauthenticated user is redirected from Dashboard to Signin" type="FAILURE">
-<![CDATA[  [firefox] › security.spec.ts:3:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Dashboard to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard"
-
-
-       9 |     // 2. Verify redirection occurs (URL should contain signin or not be dashboard)
-      10 |     // Note: NextAuth default behavior is /api/auth/signin?callbackUrl=...
-    > 11 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      12 |     
-      13 |     // 3. Verify user cannot see dashboard content
-      14 |     await expect(page.getByText('Tableau de Bord Cockpit')).not.toBeVisible();
-        at C:\TrailLearn\tests\e2e\security.spec.ts:11:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-firefox\trace.zip]]
-]]>
-</system-out>
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="2" failures="0" skipped="0" time="9.024" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.602">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="18.801">
-<failure message="security.spec.ts:16:3 Unauthenticated user is redirected from Cockpit/DVP to Signin" type="FAILURE">
-<![CDATA[  [firefox] › security.spec.ts:16:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Cockpit/DVP to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard/dvp"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard/dvp"
-
-
-      17 |   test('Unauthenticated user is redirected from Cockpit/DVP to Signin', async ({ page }) => {
-      18 |     await page.goto('/dashboard/dvp');
-    > 19 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      20 |   });
-      21 |
-      22 | });
-        at C:\TrailLearn\tests\e2e\security.spec.ts:19:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-firefox\trace.zip]]
-]]>
-</system-out>
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.422">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="firefox" tests="3" failures="0" skipped="2" time="5.076" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="5.076">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="3" failures="0" skipped="2" time="4.175" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="4.175">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>
@@ -271,124 +59,18 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="example.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="webkit" tests="1" failures="0" skipped="0" time="2.203" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="2.203">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="1" failures="0" skipped="0" time="1.474" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.474">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="webkit" tests="2" failures="2" skipped="0" time="33.24" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="16.609">
-<failure message="security.spec.ts:3:3 Unauthenticated user is redirected from Dashboard to Signin" type="FAILURE">
-<![CDATA[  [webkit] › security.spec.ts:3:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Dashboard to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard"
-
-
-       9 |     // 2. Verify redirection occurs (URL should contain signin or not be dashboard)
-      10 |     // Note: NextAuth default behavior is /api/auth/signin?callbackUrl=...
-    > 11 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      12 |     
-      13 |     // 3. Verify user cannot see dashboard content
-      14 |     await expect(page.getByText('Tableau de Bord Cockpit')).not.toBeVisible();
-        at C:\TrailLearn\tests\e2e\security.spec.ts:11:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-f3b9f-ed-from-Dashboard-to-Signin-webkit\trace.zip]]
-]]>
-</system-out>
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="2" failures="0" skipped="0" time="6.364" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="2.961">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="16.631">
-<failure message="security.spec.ts:16:3 Unauthenticated user is redirected from Cockpit/DVP to Signin" type="FAILURE">
-<![CDATA[  [webkit] › security.spec.ts:16:3 › 🛡️ Safe Space & Security › Unauthenticated user is redirected from Cockpit/DVP to Signin 
-
-    Error: expect(page).toHaveURL(expected) failed
-
-    Expected pattern: /api\/auth\/signin/
-    Received string:  "http://localhost:3000/dashboard/dvp"
-    Timeout: 15000ms
-
-    Call log:
-      - Expect "toHaveURL" with timeout 15000ms
-        18 × unexpected value "http://localhost:3000/dashboard/dvp"
-
-
-      17 |   test('Unauthenticated user is redirected from Cockpit/DVP to Signin', async ({ page }) => {
-      18 |     await page.goto('/dashboard/dvp');
-    > 19 |     await expect(page).toHaveURL(/api\/auth\/signin/);
-         |                        ^
-      20 |   });
-      21 |
-      22 | });
-        at C:\TrailLearn\tests\e2e\security.spec.ts:19:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\error-context.md
-
-    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
-    ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\trace.zip
-    Usage:
-
-        npx playwright show-trace ..\..\test-results\security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-]]>
-</failure>
-<system-out>
-<![CDATA[
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\test-failed-1.png]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\video.webm]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\error-context.md]]
-
-[[ATTACHMENT|security-🛡️-Safe-Space-Se-5ebc3--from-Cockpit-DVP-to-Signin-webkit\trace.zip]]
-]]>
-</system-out>
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.403">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T10:03:35.465Z" hostname="webkit" tests="3" failures="0" skipped="2" time="3.309" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="3.309">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="3" failures="0" skipped="2" time="2.875" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="2.875">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>

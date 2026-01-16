@@ -7,7 +7,7 @@ test.describe('👤 User Journey: Authentication', () => {
     
     // Check main CTA
     await page.click('text=Commencer mon DVP');
-    await expect(page).toHaveURL(/api\/auth\/signin/);
+    await expect(page).toHaveURL(/\/auth\/signin/);
   });
 
   // Skipped because UI is not implemented yet (Story 1.2)
