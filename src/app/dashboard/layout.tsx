@@ -1,7 +1,7 @@
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
+import { SignOutButton } from "~/features/auth/components/sign-out-button";
 
 export default async function DashboardLayout({
   children,
@@ -35,9 +35,7 @@ export default async function DashboardLayout({
             <span className="text-sm text-muted-foreground hidden sm:inline">
               {session.user?.email}
             </span>
-            <Link href="/api/auth/signout">
-              <Button variant="ghost" size="sm">Déconnexion</Button>
-            </Link>
+            <SignOutButton />
           </div>
         </div>
       </header>
