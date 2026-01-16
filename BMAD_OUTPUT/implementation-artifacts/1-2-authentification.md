@@ -38,6 +38,13 @@ So that j'accède de manière sécurisée à mon espace personnel TrailLearn et 
   - [x] Exécuter `npm run test:e2e`.
   - [x] Confirmer que l'accès `/dashboard` est bloqué pour les anonymes.
 
+## Review Follow-ups (AI)
+- [x] [AI-Review][High] Restore Postgres Config: Reverted `prisma/schema.prisma` to postgres provider. SQLite dev strategy managed via ENV overrides or local setup, not committed schema.
+- [x] [AI-Review][Medium] Middleware Specificity: Updated `src/middleware.ts` matcher to `/dashboard/:path*` only to avoid blocking public pages.
+- [x] [AI-Review][High] Login Redirection: Updated `sign-in-form.tsx` to use `callbackUrl` search param.
+- [x] [AI-Review][Medium] Password Validation: Added clear message in Zod schema ("6 caractères min") displayed in UI.
+- [x] [AI-Review][Low] Password Reset: Added `form.resetField("password")` on login error.
+
 ## Dev Notes
 
 ### Architecture & Technical Stack
@@ -63,18 +70,18 @@ Amelia (Senior Software Engineer)
 ### Debug Log References
 
 ### Completion Notes List
-- **Sécurité** : Middleware implémenté (`src/middleware.ts`) pour protéger `/dashboard/*`.
+- **Sécurité** : Middleware implémenté (`src/middleware.ts`) pour protéger `/dashboard/*`. Matcher affiné suite à la revue.
 - **Tests E2E** : Tous les tests de sécurité passent (✅ 12/12 passed, 6 skipped - mock tests). Les tests de sécurité redirigent bien vers `/auth/signin`.
 - **Auth** : Configuration NextAuth migrée vers Credentials Provider (Email/Password) avec hash bcryptjs.
 - **UI** : Formulaire de connexion créé (`src/features/auth/components/sign-in-form.tsx`) avec validation Zod.
-- **Base de données** : Schéma Prisma mis à jour pour supporter SQLite localement (fix P1012/P1001) et régénéré.
+- **Base de données** : Schéma Prisma restauré sur PostgreSQL pour la prod. SQLite utilisé temporairement pour le dev local via `.env` (si besoin) mais `schema.prisma` reste propre.
 
 ### File List
 - `src/server/auth/config.ts` (MODIFIED: Add Credentials Provider)
-- `src/middleware.ts` (NEW: Protect routes)
+- `src/middleware.ts` (NEW: Protect routes, matcher updated)
 - `src/app/auth/signin/page.tsx` (NEW: Custom Signin Page)
-- `src/features/auth/components/sign-in-form.tsx` (NEW: UI Component)
-- `prisma/schema.prisma` (MODIFIED: Switch to SQLite for dev simplicity)
+- `src/features/auth/components/sign-in-form.tsx` (NEW: UI Component, reset password fix)
+- `prisma/schema.prisma` (RESTORED: PostgreSQL provider)
 - `.env` (MODIFIED: Update DB URL and skip validation for tests)
 - `tests/e2e/security.spec.ts` (MODIFIED: Update redirect URL expectations)
 - `tests/e2e/user-journeys.spec.ts` (MODIFIED: Update redirect URL expectations)
@@ -82,6 +89,7 @@ Amelia (Senior Software Engineer)
 ### Change Log
 - 2026-01-16: Implémentation complète de l'authentification (Story 1.2).
 - 2026-01-16: Correction des tests E2E pour refléter la redirection vers /auth/signin.
+- 2026-01-16: Code Review fixes (Prisma postgres restore, Middleware matcher, UX improvements).
 
 ### Status
 done

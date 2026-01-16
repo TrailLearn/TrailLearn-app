@@ -1,16 +1,16 @@
-<testsuites id="" name="" tests="18" failures="0" skipped="6" errors="0" time="41.085049999999995">
-<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.962" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.962">
+<testsuites id="" name="" tests="18" failures="0" skipped="6" errors="0" time="41.382185">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="chromium" tests="1" failures="0" skipped="0" time="2.181" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="2.181">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="2" failures="0" skipped="0" time="9.078" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.732">
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="chromium" tests="2" failures="0" skipped="0" time="10.343" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="6.465">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.346">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.878">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="chromium" tests="3" failures="0" skipped="2" time="2.731" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="2.731">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="chromium" tests="3" failures="0" skipped="2" time="2.479" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="2.479">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>
@@ -29,18 +29,18 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="1" failures="0" skipped="0" time="4.179" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="4.179">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="firefox" tests="1" failures="0" skipped="0" time="5.225" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="5.225">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="2" failures="0" skipped="0" time="9.024" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.602">
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="firefox" tests="2" failures="0" skipped="0" time="9.312" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.718">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.422">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.594">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="firefox" tests="3" failures="0" skipped="2" time="4.175" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="4.175">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="firefox" tests="3" failures="0" skipped="2" time="3.442" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="3.442">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>
@@ -59,18 +59,18 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="example.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="1" failures="0" skipped="0" time="1.474" errors="0">
-<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.474">
+<testsuite name="example.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="webkit" tests="1" failures="0" skipped="0" time="1.812" errors="0">
+<testcase name="Example Test Suite › should load homepage" classname="example.spec.ts" time="1.812">
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="2" failures="0" skipped="0" time="6.364" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="2.961">
+<testsuite name="security.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="webkit" tests="2" failures="0" skipped="0" time="5.536" errors="0">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="2.886">
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="3.403">
+<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="2.65">
 </testcase>
 </testsuite>
-<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:00:39.259Z" hostname="webkit" tests="3" failures="0" skipped="2" time="2.875" errors="0">
-<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="2.875">
+<testsuite name="user-journeys.spec.ts" timestamp="2026-01-16T11:17:58.456Z" hostname="webkit" tests="3" failures="0" skipped="2" time="3.035" errors="0">
+<testcase name="👤 User Journey: Authentication › User can navigate to Sign In page from Landing" classname="user-journeys.spec.ts" time="3.035">
 </testcase>
 <testcase name="👤 User Journey: Authentication › Full Login Flow (Mocked)" classname="user-journeys.spec.ts" time="0">
 <properties>

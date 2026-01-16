@@ -6,15 +6,18 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const isAuth = !!req.auth;
-  const isDashboardRoute = req.nextUrl.pathname.startsWith("/dashboard");
+  // Specific protection for Dashboard
+  const isProtected = req.nextUrl.pathname.startsWith("/dashboard");
 
-  if (isDashboardRoute && !isAuth) {
-    return NextResponse.redirect(new URL("/api/auth/signin", req.url));
+  if (isProtected && !isAuth) {
+    const callbackUrl = encodeURIComponent(req.nextUrl.pathname);
+    return NextResponse.redirect(new URL(`/api/auth/signin?callbackUrl=${callbackUrl}`, req.url));
   }
 
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Only run on dashboard routes
+  matcher: ["/dashboard/:path*"],
 };
