@@ -5,6 +5,8 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  // i18n configuration is not supported in App Router and should be handled via middleware or other means if needed.
+};
 
 export default config;
