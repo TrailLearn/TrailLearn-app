@@ -14,8 +14,8 @@ Pour passer en **Live Staging** (Supabase + Vercel) et valider la Story 1.3.
     *   *Note Pooling (Transaction Mode)* : Vérifier si le port est `6543` (Pooling actif) ou `5432` (Direct). Pour Vercel (Serverless), le port **6543** est recommandé. Si l'UI ne le montre pas explicitement, utilisez la chaîne fournie par l'assistant "Connect" qui est optimisée pour votre projet.
     *   *Format type* : `postgres://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
 3.  [ ] **Exécuter les Migrations Prisma** (depuis le terminal local vers Supabase) :
-    *   Configurer temporairement `DATABASE_URL` dans votre `.env` local avec l'URL de prod Supabase.
-    *   `npx prisma migrate dev --name init_rls_supa` (Cela va créer les tables `User`, `Account`, etc. sur Supabase).
+    *   Configurer temporairement `DATABASE_URL` dans votre `.env` local avec l'URL de prod Supabase. _(configuration dans le fichier `.env`)_
+    *   `npx prisma migrate dev --name init_rls_supa` (Cela va créer les tables `User`, `Account`, etc. sur Supabase). _(exécution dans la racine du projet)_
 4.  [ ] **Activer le RLS (Safe Space)** :
     *   *Note* : Cette étape se fait via **SQL Editor**, méthode universelle (Plan Free ou Pro).
     *   Aller dans l'**SQL Editor** (icône terminal à gauche).
