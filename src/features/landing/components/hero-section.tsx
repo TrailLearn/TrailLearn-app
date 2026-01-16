@@ -20,7 +20,7 @@ export async function HeroSection() {
           TrailLearn vous aide à transformer l'incertitude en un plan d'action sécurisé et viable.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
-          <Link href={session ? "/dashboard" : "/api/auth/signin"}>
+          <Link href={session ? "/dashboard" : "/auth/signup"}>
             <Button size="lg" className="px-8 text-lg font-semibold h-12">
               Commencer mon DVP
             </Button>

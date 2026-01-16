@@ -4,27 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-import { Button } from "~/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { api } from "~/trpc/react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -40,19 +22,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import Link from "next/link";
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
   email: z.string().email({ message: "Email invalide" }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
 });
 
-export function SignInForm() {
+export function SignUpForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
   const [error, setError] = useState<string | null>(null);
+  const signupMutation = api.auth.signup.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -60,37 +43,65 @@ export function SignInForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setError(null);
-    const result = await signIn("credentials", {
-      email: values.email,
-      password: values.password,
-      redirect: false,
-    });
+    try {
+      // 1. Create account
+      await signupMutation.mutateAsync({
+        email: values.email,
+        password: values.password,
+        name: values.name,
+      });
 
-    if (result?.error) {
-      setError("Identifiants invalides");
-      form.resetField("password"); // Reset password on error
-    } else {
-      router.push(callbackUrl);
-      router.refresh();
+      // 2. Auto login
+      const result = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Compte créé mais échec de connexion automatique.");
+      } else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("Une erreur est survenue lors de l'inscription.");
+      }
     }
   }
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Connexion</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Créer un compte</CardTitle>
         <CardDescription className="text-center">
-          Accédez à votre espace TrailLearn
+          Rejoignez TrailLearn pour démarrer votre DVP
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {error && (
               <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md text-center">
                 {error}
               </div>
             )}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Votre nom" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -111,23 +122,23 @@ export function SignInForm() {
                 <FormItem>
                   <FormLabel>Mot de passe</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
+                    <Input type="password" placeholder="Min. 6 caractères" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Se connecter
+            <Button type="submit" className="w-full" disabled={signupMutation.isPending}>
+              {signupMutation.isPending ? "Création..." : "S'inscrire"}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          Pas encore de compte ?{" "}
-          <Link href="/auth/signup" className="text-primary hover:underline">
-            S'inscrire
+          Déjà un compte ?{" "}
+          <Link href="/auth/signin" className="text-primary hover:underline">
+            Se connecter
           </Link>
         </p>
       </CardFooter>
