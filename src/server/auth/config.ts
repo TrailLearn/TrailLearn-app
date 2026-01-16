@@ -5,6 +5,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { db } from "~/server/db";
+import { type User } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -44,18 +45,22 @@ export const authConfig = {
             where: { email },
           });
 
-          if (!user || !user.password) return null;
+          // Cast to Prisma User type to access password which might be missing in some inferred types
+          const prismaUser = user as User | null;
 
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+          if (!prismaUser || !prismaUser.password) return null;
 
-          if (passwordsMatch) return user;
+          const passwordsMatch = await bcrypt.compare(password, prismaUser.password);
+
+          if (passwordsMatch) return prismaUser;
         }
 
         return null;
       },
     }),
   ],
-  adapter: PrismaAdapter(db),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(db as any),
   session: { strategy: "jwt" }, // Required for Credentials provider
   callbacks: {
     jwt: ({ token, user }) => {
