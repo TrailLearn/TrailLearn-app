@@ -43,7 +43,10 @@ vi.mock("next/navigation", () => ({
 describe("LanguageStepForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetLatest.mockReturnValue(null);
+    mockGetLatest.mockReturnValue({
+      id: "test-id",
+      data: {}
+    });
   });
 
   it("renders level select", () => {
@@ -53,6 +56,7 @@ describe("LanguageStepForm", () => {
 
   it.skip("shows warning for levels < B2", async () => {
     mockGetLatest.mockReturnValue({
+      id: "test-id",
       data: { language: { level: "A2" } }
     });
 

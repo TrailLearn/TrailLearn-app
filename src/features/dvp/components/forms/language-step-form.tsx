@@ -38,9 +38,8 @@ export function LanguageStepForm() {
   const router = useRouter();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
-  const { data: existingDvp } = api.dvp.getLatest.useQuery();
+  const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
   const updateMutation = api.dvp.update.useMutation();
-  const createMutation = api.dvp.create.useMutation();
 
   const form = useForm<LanguageFormValues>({
     resolver: zodResolver(languageStepSchema),
@@ -68,9 +67,11 @@ export function LanguageStepForm() {
   }, [existingDvp, reset]);
 
   const saveDraft = async (values: LanguageFormValues) => {
+    if (!existingDvp) return;
+
     setSaveStatus("saving");
     try {
-      const result = dvpDataSchema.safeParse(existingDvp?.data);
+      const result = dvpDataSchema.safeParse(existingDvp.data);
       const currentData = result.success ? result.data : {};
       
       const newData: DvpData = {
@@ -80,14 +81,10 @@ export function LanguageStepForm() {
         },
       };
 
-      if (existingDvp) {
-        await updateMutation.mutateAsync({
-          id: existingDvp.id,
-          data: newData,
-        });
-      } else {
-        await createMutation.mutateAsync(newData);
-      }
+      await updateMutation.mutateAsync({
+        id: existingDvp.id,
+        data: newData,
+      });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
@@ -105,6 +102,8 @@ export function LanguageStepForm() {
     }
   }
 
+  const isFormDisabled = isLoading || !existingDvp;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -121,6 +120,7 @@ export function LanguageStepForm() {
                 }} 
                 defaultValue={field.value} 
                 value={field.value || ""}
+                disabled={isFormDisabled}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -160,8 +160,8 @@ export function LanguageStepForm() {
             <Link href="/dvp/wizard/housing">
               <Button type="button" variant="outline">Précédent</Button>
             </Link>
-            <Button type="submit" disabled={updateMutation.isPending || createMutation.isPending}>
-              {updateMutation.isPending || createMutation.isPending ? "Chargement..." : "Suivant"}
+            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
+              {updateMutation.isPending ? "Chargement..." : "Suivant"}
             </Button>
           </div>
         </div>

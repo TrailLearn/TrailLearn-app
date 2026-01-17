@@ -44,7 +44,10 @@ vi.mock("next/navigation", () => ({
 describe("HousingStepForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetLatest.mockReturnValue(null);
+    mockGetLatest.mockReturnValue({
+      id: "test-id",
+      data: { city: "Paris", housing: { cost: 0 } }
+    });
   });
 
   it("renders fields", () => {
@@ -56,6 +59,7 @@ describe("HousingStepForm", () => {
   it("shows price range feedback when type is selected", async () => {
     // Mock city in DVP data to trigger city-specific prices
     mockGetLatest.mockReturnValue({
+      id: "test-id",
       data: { city: "Paris" }
     });
     
@@ -71,13 +75,17 @@ describe("HousingStepForm", () => {
     render(<HousingStepForm />);
     const costInput = screen.getByLabelText(/Loyer estimé/i);
     
+    await userEvent.clear(costInput);
     await userEvent.type(costInput, "600");
     fireEvent.blur(costInput);
 
     await waitFor(() => {
-      expect(mockCreateMutation).toHaveBeenCalledWith(expect.objectContaining({
-        housing: expect.objectContaining({
-          cost: 600
+      expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
+        id: "test-id",
+        data: expect.objectContaining({
+          housing: expect.objectContaining({
+            cost: 600
+          })
         })
       }));
     });

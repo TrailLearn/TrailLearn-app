@@ -32,9 +32,8 @@ export function BudgetStepForm() {
   const router = useRouter();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
-  const { data: existingDvp } = api.dvp.getLatest.useQuery();
+  const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
   const updateMutation = api.dvp.update.useMutation();
-  const createMutation = api.dvp.create.useMutation();
 
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(budgetStepSchema),
@@ -75,9 +74,11 @@ export function BudgetStepForm() {
   }, [existingDvp, reset]);
 
   const saveDraft = async (values: BudgetFormValues) => {
+    if (!existingDvp) return;
+
     setSaveStatus("saving");
     try {
-      const result = dvpDataSchema.safeParse(existingDvp?.data);
+      const result = dvpDataSchema.safeParse(existingDvp.data);
       const currentData = result.success ? result.data : {};
       
       const newData: DvpData = {
@@ -89,14 +90,10 @@ export function BudgetStepForm() {
         },
       };
 
-      if (existingDvp) {
-        await updateMutation.mutateAsync({
-          id: existingDvp.id,
-          data: newData,
-        });
-      } else {
-        await createMutation.mutateAsync(newData);
-      }
+      await updateMutation.mutateAsync({
+        id: existingDvp.id,
+        data: newData,
+      });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
@@ -118,6 +115,8 @@ export function BudgetStepForm() {
     }
   }
 
+  const isFormDisabled = isLoading || !existingDvp;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -128,7 +127,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Épargne totale (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} />
+                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -142,7 +141,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Aide mensuelle garants (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} />
+                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -156,7 +155,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Autres revenus (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} />
+                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -183,8 +182,8 @@ export function BudgetStepForm() {
             <Link href="/dvp/wizard/project">
               <Button type="button" variant="outline">Précédent</Button>
             </Link>
-            <Button type="submit" disabled={updateMutation.isPending || createMutation.isPending}>
-              {updateMutation.isPending || createMutation.isPending ? "Chargement..." : "Suivant"}
+            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
+              {updateMutation.isPending ? "Chargement..." : "Suivant"}
             </Button>
           </div>
         </div>

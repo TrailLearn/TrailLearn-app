@@ -45,7 +45,10 @@ vi.mock("next/navigation", () => ({
 describe("BudgetStepForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetLatest.mockReturnValue(null);
+    mockGetLatest.mockReturnValue({
+      id: "test-id",
+      data: { budget: { savings: 0, guarantorHelp: 0, otherIncome: 0 } }
+    });
   });
 
   it("renders budget fields", () => {
@@ -71,29 +74,7 @@ describe("BudgetStepForm", () => {
     expect(await screen.findByText(/800/i)).toBeDefined();
   });
 
-  it("autosaves on blur (calls create if no existing dvp)", async () => {
-    render(<BudgetStepForm />);
-    const otherIncomeInput = screen.getByLabelText(/Autres revenus/i);
-    
-    await userEvent.clear(otherIncomeInput);
-    await userEvent.type(otherIncomeInput, "100");
-    fireEvent.blur(otherIncomeInput);
-
-    await waitFor(() => {
-      expect(mockCreateMutation).toHaveBeenCalledWith(expect.objectContaining({
-        budget: expect.objectContaining({
-          otherIncome: 100
-        })
-      }));
-    });
-  });
-
-  it("autosaves on blur (calls update if existing dvp exists)", async () => {
-    mockGetLatest.mockReturnValue({
-      id: "existing-id",
-      data: { city: "Paris" }
-    });
-
+  it("autosaves on blur (calls update)", async () => {
     render(<BudgetStepForm />);
     const otherIncomeInput = screen.getByLabelText(/Autres revenus/i);
     
@@ -103,7 +84,7 @@ describe("BudgetStepForm", () => {
 
     await waitFor(() => {
       expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
-        id: "existing-id",
+        id: "test-id",
         data: expect.objectContaining({
           budget: expect.objectContaining({
             otherIncome: 150

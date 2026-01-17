@@ -38,9 +38,8 @@ export function HousingStepForm() {
   const router = useRouter();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
-  const { data: existingDvp } = api.dvp.getLatest.useQuery();
+  const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
   const updateMutation = api.dvp.update.useMutation();
-  const createMutation = api.dvp.create.useMutation();
 
   const form = useForm<HousingFormValues>({
     resolver: zodResolver(housingStepSchema),
@@ -72,9 +71,11 @@ export function HousingStepForm() {
   }, [existingDvp, reset]);
 
   const saveDraft = async (values: HousingFormValues) => {
+    if (!existingDvp) return; // Prevent creating duplicates or saving to void
+
     setSaveStatus("saving");
     try {
-      const result = dvpDataSchema.safeParse(existingDvp?.data);
+      const result = dvpDataSchema.safeParse(existingDvp.data);
       const currentData = result.success ? result.data : {};
       
       const newData: DvpData = {
@@ -85,14 +86,10 @@ export function HousingStepForm() {
         },
       };
 
-      if (existingDvp) {
-        await updateMutation.mutateAsync({
-          id: existingDvp.id,
-          data: newData,
-        });
-      } else {
-        await createMutation.mutateAsync(newData);
-      }
+      await updateMutation.mutateAsync({
+        id: existingDvp.id,
+        data: newData,
+      });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
@@ -114,6 +111,8 @@ export function HousingStepForm() {
     }
   }
 
+  const isFormDisabled = isLoading || !existingDvp;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -130,6 +129,7 @@ export function HousingStepForm() {
                 }} 
                 defaultValue={field.value} 
                 value={field.value}
+                disabled={isFormDisabled}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -162,7 +162,7 @@ export function HousingStepForm() {
             <FormItem>
               <FormLabel>Loyer estimé (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} />
+                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -179,8 +179,8 @@ export function HousingStepForm() {
             <Link href="/dvp/wizard/budget">
               <Button type="button" variant="outline">Précédent</Button>
             </Link>
-            <Button type="submit" disabled={updateMutation.isPending || createMutation.isPending}>
-              {updateMutation.isPending || createMutation.isPending ? "Chargement..." : "Suivant"}
+            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
+              {updateMutation.isPending ? "Chargement..." : "Suivant"}
             </Button>
           </div>
         </div>
