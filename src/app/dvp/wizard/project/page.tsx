@@ -1,6 +1,5 @@
 import { WizardStepper } from "~/features/dvp/components/wizard-stepper";
-import { Button } from "~/components/ui/button";
-import Link from "next/link";
+import { ProjectStepForm } from "~/features/dvp/components/forms/project-step-form";
 
 export default function ProjectStepPage() {
   return (
@@ -14,16 +13,7 @@ export default function ProjectStepPage() {
           Ces informations cadrent votre dossier.
         </p>
         
-        {/* Placeholder for Story 2.3 Form */}
-        <div className="border-2 border-dashed border-muted rounded-md p-8 text-center text-muted-foreground mb-8">
-          Formulaire Projet (Arrive avec Story 2.3)
-        </div>
-
-        <div className="flex justify-end">
-          <Link href="/dvp/wizard/budget">
-            <Button>Suivant</Button>
-          </Link>
-        </div>
+        <ProjectStepForm />
       </div>
     </div>
   );
