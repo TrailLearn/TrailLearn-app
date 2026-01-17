@@ -1,6 +1,6 @@
 # Story 2.1: Modèle de Données DVP (Hybride JSONB)
 
-Status: review
+Status: done
 
 ## Story
 
@@ -35,6 +35,11 @@ So that je puisse stocker des données variées sans migrations SQL constantes.
   - [x] Créer `src/features/dvp/dvp-model.test.ts` (ou équivalent integration test).
   - [x] Tester que Prisma accepte et retourne le JSON correctement (via typecheck + integration implicit).
   - [x] Tester la validation Zod avec des données valides et invalides.
+
+## Senior Developer Review (AI)
+- [x] [AI-Review][Passed] Security: `userId` check in place for update operations.
+- [x] [AI-Review][Passed] Architecture: Hybrid JSONB correctly implemented.
+- [x] [AI-Review][Passed] Git: All artifacts committed.
 
 ## Dev Notes
 
@@ -71,6 +76,7 @@ So that je puisse stocker des données variées sans migrations SQL constantes.
 
 ### Change Log
 - 2026-01-17: Implémentation du modèle de données DVP (Hybride JSONB) et de l'API de base.
+- 2026-01-17: **ADVERSARIAL REVIEW**: Passed. Committed.
 
 ### Status
-review
+done

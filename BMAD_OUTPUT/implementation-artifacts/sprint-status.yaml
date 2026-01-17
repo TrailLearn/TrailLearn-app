@@ -19,7 +19,7 @@ development_status:
   "1-3-safe-space-rls": "done"
 
   # Epic 2: DVP Core Engine & Wizard
-  "2-1-modele-donnees-dvp": "review"
-  "2-2-tunnel-saisie": "ready-for-dev"
+  "2-1-modele-donnees-dvp": "done"
+  "2-2-tunnel-saisie": "review"
   "2-3-saisie-projet-ville": "ready-for-dev"
   "2-4-saisie-budget": "ready-for-dev"
