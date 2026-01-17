@@ -1,3 +1,5 @@
+export const STUDY_DURATION_MONTHS = 10;
+
 export const COST_ESTIMATES: Record<string, { cost: number; currency: string }> = {
   paris: { cost: 1200, currency: "€" },
   lyon: { cost: 850, currency: "€" },
