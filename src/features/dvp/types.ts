@@ -19,6 +19,11 @@ export const dvpDataSchema = z.object({
     type: z.string().optional(),
     cost: z.number().optional(),
   }).optional(),
+
+  // Language Pillar
+  language: z.object({
+    level: z.string().optional(),
+  }).optional(),
 });
 
 export type DvpData = z.infer<typeof dvpDataSchema>;

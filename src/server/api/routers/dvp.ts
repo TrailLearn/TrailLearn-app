@@ -18,17 +18,20 @@ export const dvpRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.object({
       id: z.string(),
-      data: dvpDataSchema,
+      data: dvpDataSchema.optional(),
+      status: z.enum(["DRAFT", "COMPLETED", "ARCHIVED"]).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+      const updateData: any = {};
+      if (input.data) updateData.data = input.data;
+      if (input.status) updateData.status = input.status;
+
       return ctx.db.dvpRecord.update({
         where: {
           id: input.id,
           userId: ctx.session.user.id, // Security: Ensure ownership
         },
-        data: {
-          data: input.data ?? {},
-        },
+        data: updateData,
       });
     }),
 
