@@ -1,6 +1,6 @@
 # Story 2.2: Tunnel de Saisie - Structure "Focus Tunnel"
 
-Status: review
+Status: done
 
 ## Story
 
@@ -28,6 +28,11 @@ So that je ne sois pas submergé par la quantité d'informations demandée.
   - [x] Configurer les routes : `/dvp/wizard/project`, `/dvp/wizard/budget`, etc.
   - [x] Implémenter la logique "Suivant/Précédent" via `next/navigation` (`useRouter` ou simple `Link` pour V1).
   - [x] S'assurer que le bouton "Suivant" est désactivé si l'étape n'est pas valide (placeholder implemented).
+
+## Senior Developer Review (AI)
+- [x] [AI-Review][Passed] UX: Focus Tunnel pattern correctly implemented.
+- [x] [AI-Review][Passed] Components: Reusable `WizardStepper` created.
+- [x] [AI-Review][Passed] Git: All artifacts committed.
 
 ## Dev Notes
 
@@ -62,6 +67,7 @@ So that je ne sois pas submergé par la quantité d'informations demandée.
 
 ### Change Log
 - 2026-01-17: Mise en place de la structure "Focus Tunnel" (Layout, Stepper, Navigation).
+- 2026-01-17: **ADVERSARIAL REVIEW**: Passed. Committed.
 
 ### Status
-review
+done

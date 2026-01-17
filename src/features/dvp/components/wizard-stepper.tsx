@@ -7,7 +7,7 @@ interface WizardStepperProps {
 
 export function WizardStepper({ currentStep }: WizardStepperProps) {
   const steps = [
-    { number: 1, label: "Projet" },
+    { number: 1, label: "Profil & Projet" },
     { number: 2, label: "Budget" },
     { number: 3, label: "Logement" },
     { number: 4, label: "Synthèse" },

@@ -8,9 +8,10 @@ export default function ProjectStepPage() {
       <WizardStepper currentStep={1} />
       
       <div className="bg-white p-6 rounded-lg border shadow-sm">
-        <h1 className="text-2xl font-bold mb-4">Votre Projet</h1>
+        <h1 className="text-2xl font-bold mb-4">Votre Profil & Projet</h1>
         <p className="text-muted-foreground mb-8">
-          Définissez votre destination et votre cursus pour initialiser votre dossier.
+          Dites-nous qui vous êtes (Situation, Nationalité) et où vous souhaitez aller.
+          Ces informations cadrent votre dossier.
         </p>
         
         {/* Placeholder for Story 2.3 Form */}
