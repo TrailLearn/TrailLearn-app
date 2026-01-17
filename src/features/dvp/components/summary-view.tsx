@@ -18,8 +18,8 @@ export function SummaryView() {
 
   // Validation logic
   const isProjectComplete = !!(data?.city && data?.country && data?.studyType);
-  const isBudgetComplete = !!(data?.budget && data.budget.savings >= 0);
-  const isHousingComplete = !!(data?.housing && data.housing.type && data.housing.cost >= 0);
+  const isBudgetComplete = !!(data?.budget && (data.budget.savings ?? -1) >= 0);
+  const isHousingComplete = !!(data?.housing && data.housing.type && (data.housing.cost ?? -1) >= 0);
   const isLanguageComplete = !!(data?.language && data.language.level);
 
   const isComplete = isProjectComplete && isBudgetComplete && isHousingComplete && isLanguageComplete;
