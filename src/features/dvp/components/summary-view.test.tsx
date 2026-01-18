@@ -4,6 +4,7 @@ import { SummaryView } from "./summary-view";
 
 // Mock tRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
+const mockSubmitMutation = vi.fn().mockResolvedValue({ id: "test-id" });
 const mockGetLatest = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
@@ -12,6 +13,12 @@ vi.mock("~/trpc/react", () => ({
       update: {
         useMutation: () => ({
           mutateAsync: mockUpdateMutation,
+          isPending: false,
+        }),
+      },
+      submit: {
+        useMutation: () => ({
+          mutateAsync: mockSubmitMutation,
           isPending: false,
         }),
       },
