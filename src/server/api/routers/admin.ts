@@ -22,7 +22,25 @@ export const adminRouter = createTRPCRouter({
   updateRule: adminProcedure
     .input(z.object({
       id: z.string(),
-      value: z.any(),
+      value: z.union([
+        // Housing Prices Schema
+        z.object({
+          residence: z.object({ min: z.number(), max: z.number() }),
+          coloc: z.object({ min: z.number(), max: z.number() }),
+          studio: z.object({ min: z.number(), max: z.number() }),
+          homestay: z.object({ min: z.number(), max: z.number() }),
+        }),
+        // Thresholds Schema
+        z.object({
+          seuil_survie: z.number(),
+          seuil_confort: z.number(),
+          min_language_level: z.string(),
+        }),
+        // City Index Schema
+        z.record(z.string(), z.number()),
+        // Fallback for new rule types (must be an object)
+        z.record(z.string(), z.any()),
+      ]),
       description: z.string().optional(),
       version: z.string().optional(),
     }))
