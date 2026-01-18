@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { type DvpData, dvpDataSchema } from "~/features/dvp/types";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { getDvpCompleteness } from "../utils/dvp-completeness";
 
 export function SummaryView() {
   const router = useRouter();
@@ -17,12 +18,13 @@ export function SummaryView() {
   const data = parseResult.success ? parseResult.data : undefined;
 
   // Validation logic
-  const isProjectComplete = !!(data?.city && data?.country && data?.studyType);
-  const isBudgetComplete = !!(data?.budget && (data.budget.savings ?? -1) >= 0);
-  const isHousingComplete = !!(data?.housing && data.housing.type && (data.housing.cost ?? -1) >= 0);
-  const isLanguageComplete = !!(data?.language && data.language.level);
-
-  const isComplete = isProjectComplete && isBudgetComplete && isHousingComplete && isLanguageComplete;
+  const {
+    isCityComplete: isProjectComplete,
+    isBudgetComplete,
+    isHousingComplete,
+    isLanguageComplete,
+    isGlobalComplete: isComplete,
+  } = getDvpCompleteness(data);
 
   const handleValidate = async () => {
     if (!existingDvp || !isComplete) return;
@@ -56,7 +58,7 @@ export function SummaryView() {
         </SummaryCard>
 
         <SummaryCard title="Logement" complete={isHousingComplete}>
-          Type: {data?.housing?.type ?? "-"}
+          Type: {data?.housing?.type || "-"}
           <br />
           Coût: {data?.housing?.cost ?? "-"} €
         </SummaryCard>

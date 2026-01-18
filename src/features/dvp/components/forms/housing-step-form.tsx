@@ -39,7 +39,12 @@ export function HousingStepForm() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
-  const updateMutation = api.dvp.update.useMutation();
+  const utils = api.useUtils();
+  const updateMutation = api.dvp.update.useMutation({
+    onSuccess: () => {
+      void utils.dvp.getLatest.invalidate();
+    },
+  });
 
   const form = useForm<HousingFormValues>({
     resolver: zodResolver(housingStepSchema),
@@ -62,24 +67,23 @@ export function HousingStepForm() {
     if (existingDvp?.data) {
       const result = dvpDataSchema.safeParse(existingDvp.data);
       if (result.success && result.data.housing) {
-        reset({
+        // Only reset if we have values, to avoid overwriting work in progress if data is weird
+        // But here we trust the DB as source of truth on load
+        form.reset({
           type: result.data.housing.type || "",
           cost: result.data.housing.cost || 0,
         });
       }
     }
-  }, [existingDvp, reset]);
+  }, [existingDvp, form]);
 
   const saveDraft = async (values: HousingFormValues) => {
-    if (!existingDvp) return; // Prevent creating duplicates or saving to void
+    if (!existingDvp) return; 
 
     setSaveStatus("saving");
     try {
-      const result = dvpDataSchema.safeParse(existingDvp.data);
-      const currentData = result.success ? result.data : {};
-      
-      const newData: DvpData = {
-        ...currentData,
+      // Send only the housing part, server handles the merge
+      const partialData: DvpData = {
         housing: {
           type: values.type,
           cost: Number(values.cost),
@@ -88,7 +92,7 @@ export function HousingStepForm() {
 
       await updateMutation.mutateAsync({
         id: existingDvp.id,
-        data: newData,
+        data: partialData,
       });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);

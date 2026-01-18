@@ -10,10 +10,21 @@ const mockGetLatest = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
+    useUtils: () => ({
+      dvp: {
+        getLatest: {
+          invalidate: vi.fn(),
+        },
+      },
+    }),
     dvp: {
       update: {
-        useMutation: () => ({
-          mutateAsync: mockUpdateMutation,
+        useMutation: (options?: any) => ({
+          mutateAsync: async (args: any) => {
+            const result = await mockUpdateMutation(args);
+            options?.onSuccess?.(result); // Trigger onSuccess if provided
+            return result;
+          },
           isPending: false,
         }),
       },

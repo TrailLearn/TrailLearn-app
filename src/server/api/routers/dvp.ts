@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { dvpDataSchema } from "~/features/dvp/types";
+import { TRPCError } from "@trpc/server";
 
 export const dvpRouter = createTRPCRouter({
   create: protectedProcedure
@@ -22,14 +23,34 @@ export const dvpRouter = createTRPCRouter({
       status: z.enum(["DRAFT", "COMPLETED", "ARCHIVED"]).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+      // Fetch existing record to perform merge
+      const existingRecord = await ctx.db.dvpRecord.findUnique({
+        where: { 
+          id: input.id,
+          userId: ctx.session.user.id 
+        },
+      });
+
+      if (!existingRecord) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Record not found or access denied" });
+      }
+
       const updateData: any = {};
-      if (input.data) updateData.data = input.data;
+      
+      if (input.data) {
+        // Merge existing data with new data (shallow merge at root level is sufficient for independent sections)
+        const currentData = (existingRecord.data as Record<string, any>) || {};
+        updateData.data = {
+          ...currentData,
+          ...input.data,
+        };
+      }
+
       if (input.status) updateData.status = input.status;
 
       return ctx.db.dvpRecord.update({
         where: {
           id: input.id,
-          userId: ctx.session.user.id, // Security: Ensure ownership
         },
         data: updateData,
       });
