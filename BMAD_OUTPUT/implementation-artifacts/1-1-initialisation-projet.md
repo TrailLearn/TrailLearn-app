@@ -25,9 +25,10 @@ So that je comprenne la valeur du produit avant de créer un compte.
   - [x] Exécuter `npm create t3-app@latest` avec les flags: TypeScript, Tailwind, tRPC, NextAuth, Prisma, App Router.
   - [x] Nettoyer le boilerplate par défaut (page.tsx, exemples tRPC).
   - [x] Restructurer les dossiers selon l'architecture (`src/features`, `src/app/(auth)`, `src/app/(dashboard)`).
+  - [x] Nettoyer `src/env.js` des variables inutiles (Discord).
 - [x] Task 2: Configurer shadcn/ui et le Design System (AC: 2)
   - [x] Initialiser shadcn/ui (`npx shadcn@latest init`).
-  - [x] Configurer les polices (Inter pour le corps, JetBrains Mono pour les données).
+  - [x] Configurer les polices (Inter pour le corps, JetBrains Mono pour les données) via `next/font/google` et variables CSS.
   - [x] Configurer les couleurs du thème dans `tailwind.config.ts` et `globals.css` (Blue-600, Emerald-500, Amber-500).
   - [x] Installer les composants de base nécessaires pour la Landing Page (Button, Card...).
 - [x] Task 3: Implémenter la Landing Page (AC: 3, 5)
@@ -36,11 +37,17 @@ So that je comprenne la valeur du produit avant de créer un compte.
   - [x] Intégrer une section explicative "Boîte Blanche" et "Responsabilité Structurelle".
 - [x] Task 4: Implémenter le CTA (AC: 4)
   - [x] Ajouter le bouton "Commencer" redirigeant vers l'inscription/connexion.
+- [x] Task 5: Assurance Qualité & Tests (AC: All)
+  - [x] Configurer Vitest et React Testing Library.
+  - [x] Créer test unitaire `src/features/landing/hero-section.test.tsx` (Vérifie Titre + CTA).
+  - [x] Créer test intégration `src/features/landing/landing.test.tsx` (Vérifie Structure Page).
 
 ## Review Follow-ups (AI)
 - [x] [AI-Review][High] Landing Page refactor: Moved hero and vision components to `src/features/landing/components/` to respect Feature-First architecture.
-- [x] [AI-Review][Medium] i18n Config: Added `i18n` configuration to `next.config.js` with 'fr' locale.
-- [x] [AI-Review][Medium] Git Tracking: All new files staged and tracked.
+- [x] [AI-Review][High] Tests: Added Vitest configuration and 2 test files covering Landing Page and Hero Section.
+- [x] [AI-Review][Medium] Fonts: Verified `src/app/layout.tsx` correctly injects Inter and JetBrains Mono variables.
+- [x] [AI-Review][Medium] Env Cleanup: Removed unused Discord environment variables from `src/env.js`.
+- [x] [AI-Review][Correction] i18n: **CORRECTION** - i18n is NOT implemented in App Router for V1. Formatters will be used instead. Previous claim removed.
 
 ## Dev Notes
 
@@ -55,7 +62,7 @@ So that je comprenne la valeur du produit avant de créer un compte.
 ### Implementation Details
 - **Clean Architecture**: Respect `src/features` pattern immediately.
 - **Content**: Updated `src/app/page.tsx` with vision "Lucidité vs Sélection".
-- **Dashboard Placeholder**: Created `src/app/(dashboard)/layout.tsx` and `page.tsx`.
+- **Tests**: Run `npm run test:unit` to verify Landing Page.
 
 ### References
 - [Architecture Decision Document](BMAD_OUTPUT/planning-artifacts/architecture.md)
@@ -71,15 +78,16 @@ Amelia (Senior Software Engineer)
 ### Debug Log References
 
 ### Completion Notes List
-- Initialisation technique validée (T3 Stack pré-existante et nettoyée).
+- Initialisation technique validée.
 - Structure de dossiers `src/features`, `src/app/(auth)`, `src/app/(dashboard)` créée.
 - Design System configuré (Fonts Inter/Mono, Couleurs TrailLearn).
 - Landing Page implémentée avec CTA et concepts clés.
-- Typecheck TypeScript OK.
-- Revue de code effectuée et corrections appliquées (Refactor Landing, i18n, Git).
+- **Tests Unitaires et Intégration ajoutés et passants.**
+- **Nettoyage env.js effectué.**
+- **Correction i18n (reporté).**
 
 ### File List
-- `src/app/layout.tsx`
+- `src/app/layout.tsx` (Verified Fonts)
 - `src/app/page.tsx`
 - `src/app/(dashboard)/layout.tsx`
 - `src/app/(dashboard)/page.tsx`
@@ -93,11 +101,18 @@ Amelia (Senior Software Engineer)
 - `src/components/ui/badge.tsx`
 - `src/features/landing/components/hero-section.tsx` (NEW)
 - `src/features/landing/components/vision-section.tsx` (NEW)
+- `src/env.js` (CLEANED)
+- `vitest.config.ts` (NEW)
+- `tests/setup.ts` (NEW)
+- `src/features/landing/landing.test.tsx` (NEW)
+- `src/features/landing/hero-section.test.tsx` (NEW)
+- `package.json` (UPDATED scripts)
 - `next.config.js` (MODIFIED)
 
 ### Change Log
 - 2026-01-16: Initialisation du projet et mise en place du Design System et de la Landing Page.
-- 2026-01-16: Code Review fixes applied (Refactor Landing feature, i18n config, Git tracking).
+- 2026-01-16: Code Review fixes applied (Refactor Landing feature, Git tracking).
+- 2026-01-16: **ADVERSARIAL REVIEW FIXES**: Added Vitest suite, Cleaned Env, Verified Fonts, Corrected i18n claims.
 
 ### Status
 done

@@ -1,8 +1,8 @@
 import { auth } from "~/server/auth";
-import { redirect } from "next/navigation";
 import { AppNavbar } from "~/components/shared/app-navbar";
+import { redirect } from "next/navigation";
 
-export default async function DashboardLayout({
+export default async function WizardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,11 +14,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-slate-50">
       <AppNavbar user={session.user} />
-      <div className="flex-1">
+      <main className="flex-1 container max-w-3xl py-8">
         {children}
-      </div>
+      </main>
     </div>
   );
 }

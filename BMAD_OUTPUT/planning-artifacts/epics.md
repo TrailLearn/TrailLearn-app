@@ -185,6 +185,49 @@ So that le système puisse évaluer ma solvabilité.
 **When** je saisis mon épargne actuelle et le montant mensuel de mes garants.
 **Then** je peux voir le total mensuel disponible dans l'interface.
 
+### Story 2.5: Saisie Pilier 3 - Logement
+
+As a étudiant,
+I want définir mon mode de logement envisagé (Résidence, Coloc, Seul) et son coût,
+So that mon budget puisse être confronté à la réalité du marché.
+
+**Acceptance Criteria:**
+
+**Given** l'étape 3 du tunnel.
+**When** je choisis un type de logement.
+**Then** le système me demande un coût estimé (Loyer).
+**And** le système affiche une fourchette de prix indicative pour la ville choisie (Mockée pour l'instant).
+**And** la saisie est sauvegardée dans le DVP.
+**Note:** Aucun calcul de viabilité ici, juste la collecte.
+
+### Story 2.6: Saisie Pilier 4 - Langue
+
+As a étudiant,
+I want déclarer mon niveau de langue pour le pays cible,
+So that je puisse vérifier si je réponds aux exigences académiques.
+
+**Acceptance Criteria:**
+
+**Given** l'étape 4 du tunnel.
+**When** je sélectionne mon niveau CECRL (A1-C2) ou un score de test (TOEFL/IELTS).
+**Then** l'information est stockée.
+**And** si le niveau est inférieur au minimum requis (mocké), une alerte visuelle simple apparaît (Feedback immédiat, pas de blocage).
+
+### Story 2.7: Synthèse & Validation DVP
+
+As a étudiant,
+I want relire l'ensemble de mes données saisies,
+So that je puisse les valider avant de lancer l'analyse complète.
+
+**Acceptance Criteria:**
+
+**Given** la fin du tunnel de saisie.
+**When** j'arrive sur la synthèse.
+**Then** je vois un récapitulatif en lecture seule de tous les piliers.
+**And** un indicateur de complétude (FR6) me signale si des champs obligatoires sont vides.
+**And** un bouton "Valider mon dossier" permet de passer au Cockpit (Epic 4).
+**Note:** Cette page ne contient PAS le diagnostic (🔴🟠🟢). Elle sert de point de bascule vers le moteur.
+
 ## Epic 3: The Truth Engine
 
 Implémenter le moteur de calcul déterministe et transparent. Transforme les saisies en diagnostics précis avec une traçabilité complète des règles utilisées.
