@@ -1,3 +1,5 @@
+"use client";
+
 import { api } from "~/trpc/react";
 import { PillarStatusCard } from "~/features/dvp/components/pillar-status-card";
 import { ViabilityGauge } from "~/features/dvp/components/viability-gauge";
