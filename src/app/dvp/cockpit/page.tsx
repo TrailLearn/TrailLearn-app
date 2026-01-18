@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { MapPin, School, Calendar, Info } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default function CockpitPage() {
   const { data: dvpRecord, isLoading: isLoadingDvp } = api.dvp.getLatest.useQuery();
   const { data: rules, isLoading: isLoadingRules } = api.admin.getAllRules.useQuery();
