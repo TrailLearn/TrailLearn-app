@@ -4,6 +4,7 @@ import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { type DvpData, dvpDataSchema } from "~/features/dvp/types";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -12,7 +13,13 @@ import { getDvpCompleteness } from "../utils/dvp-completeness";
 export function SummaryView() {
   const router = useRouter();
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
-  const updateMutation = api.dvp.update.useMutation();
+  const submitMutation = api.dvp.submit.useMutation();
+
+  useEffect(() => {
+    if (existingDvp?.status === "COMPLETED") {
+      router.push("/dvp/cockpit");
+    }
+  }, [existingDvp, router]);
 
   const parseResult = dvpDataSchema.safeParse(existingDvp?.data);
   const data = parseResult.success ? parseResult.data : undefined;
@@ -30,9 +37,8 @@ export function SummaryView() {
     if (!existingDvp || !isComplete) return;
     
     try {
-      await updateMutation.mutateAsync({
+      await submitMutation.mutateAsync({
         id: existingDvp.id,
-        status: "COMPLETED",
       });
       router.push("/dvp/cockpit");
     } catch (error) {
@@ -79,8 +85,8 @@ export function SummaryView() {
               Dossier incomplet
             </span>
           )}
-          <Button onClick={handleValidate} disabled={!isComplete || updateMutation.isPending}>
-            {updateMutation.isPending ? "Validation..." : "Valider mon dossier"}
+          <Button onClick={handleValidate} disabled={!isComplete || submitMutation.isPending}>
+            {submitMutation.isPending ? "Validation..." : "Valider mon dossier"}
           </Button>
         </div>
       </div>

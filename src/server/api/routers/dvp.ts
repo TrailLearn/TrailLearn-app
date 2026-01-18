@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { dvpDataSchema } from "~/features/dvp/types";
 import { TRPCError } from "@trpc/server";
+import { calculateViability } from "~/features/dvp/engine/calculate-viability";
 
 export const dvpRouter = createTRPCRouter({
   create: protectedProcedure
@@ -53,6 +54,30 @@ export const dvpRouter = createTRPCRouter({
           id: input.id,
         },
         data: updateData,
+      });
+    }),
+
+  submit: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const record = await ctx.db.dvpRecord.findUnique({
+        where: { id: input.id, userId: ctx.session.user.id },
+      });
+
+      if (!record) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
+      }
+
+      const rules = await ctx.db.businessRule.findMany();
+      const diagnostic = calculateViability(record.data as any, rules);
+
+      return ctx.db.dvpRecord.update({
+        where: { id: input.id },
+        data: {
+          status: "COMPLETED",
+          calculationResult: diagnostic as any,
+          rulesVersion: diagnostic.rulesVersion,
+        },
       });
     }),
 

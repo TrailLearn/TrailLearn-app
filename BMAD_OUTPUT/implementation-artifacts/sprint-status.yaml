@@ -26,3 +26,15 @@ development_status:
   "2-5-saisie-logement": "done"
   "2-6-saisie-langue": "done"
   "2-7-synthese-dvp": "done"
+
+  # Epic 3: The Truth Engine
+  "3-1-referentiel-regles-db": "review"
+  "3-2-moteur-calcul-logic": "review"
+  "3-3-versioning-snapshot": "review"
+  "3-4-trace-calcul-whitebox": "review"
+
+  # Epic 4: Cockpit & Simulation
+  "4-1-cockpit-overview": "review"
+  "4-2-restitution-diagnostic-gauge": "review"
+  "4-3-justifications-insight-cards": "review"
+  "4-4-simulator-what-if": "review"
