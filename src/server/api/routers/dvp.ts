@@ -87,4 +87,19 @@ export const dvpRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
     });
   }),
+
+  getHistory: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.dvpRecord.findMany({
+      where: { userId: ctx.session.user.id },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+        rulesVersion: true,
+        calculationResult: true,
+      },
+    });
+  }),
 });

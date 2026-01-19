@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { MapPin, School, Calendar, Info } from "lucide-react";
 
+import { AnalysisHistoryList } from "~/features/dvp/components/analysis-history-list";
+
 export const dynamic = "force-dynamic";
 
 export default function CockpitPage() {
@@ -136,6 +138,9 @@ export default function CockpitPage() {
                   )}
                 </CardContent>
               </Card>
+
+              {/* History Section */}
+              <AnalysisHistoryList />
             </div>
 
             <div className="lg:col-span-1 space-y-6">
