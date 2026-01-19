@@ -81,6 +81,15 @@ export const dvpRouter = createTRPCRouter({
       });
     }),
 
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.dvpRecord.findUnique({
+        where: { id: input.id, userId: ctx.session.user.id },
+        include: { user: { select: { name: true, email: true } } },
+      });
+    }),
+
   getLatest: protectedProcedure.query(async ({ ctx }) => {
     // Priority 1: Current Draft
     const draft = await ctx.db.dvpRecord.findFirst({

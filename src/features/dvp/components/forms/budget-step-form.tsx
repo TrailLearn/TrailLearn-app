@@ -82,7 +82,6 @@ export function BudgetStepForm() {
   const saveDraft = async (values: BudgetFormValues) => {
     if (!existingDvp) return;
 
-    setSaveStatus("saving");
     try {
       const result = dvpDataSchema.safeParse(existingDvp.data);
       const currentData = result.success ? result.data : {};
@@ -100,16 +99,10 @@ export function BudgetStepForm() {
         id: existingDvp.id,
         data: newData,
       });
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
-      console.error("Failed to autosave budget", error);
-      setSaveStatus("error");
+      console.error("Failed to save budget", error);
+      throw error; // Re-throw to handle in onSubmit
     }
-  };
-
-  const handleBlur = () => {
-    void saveDraft(getValues());
   };
 
   async function onSubmit(values: BudgetFormValues) {
@@ -133,7 +126,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Épargne totale (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
+                <Input type="number" {...field} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -147,7 +140,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Aide mensuelle garants (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
+                <Input type="number" {...field} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -161,7 +154,7 @@ export function BudgetStepForm() {
             <FormItem>
               <FormLabel>Autres revenus (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
+                <Input type="number" {...field} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -178,20 +171,13 @@ export function BudgetStepForm() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-muted-foreground">
-            {saveStatus === "saving" && <span className="text-blue-500">Sauvegarde...</span>}
-            {saveStatus === "saved" && <span className="text-green-600">Brouillon sauvegardé</span>}
-            {saveStatus === "error" && <span className="text-red-500">Erreur de sauvegarde</span>}
-          </div>
-          <div className="flex gap-4">
-            <Link href="/dvp/wizard/project">
-              <Button type="button" variant="outline">Précédent</Button>
-            </Link>
-            <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
-              {isSubmitting || updateMutation.isPending ? "Chargement..." : "Suivant"}
-            </Button>
-          </div>
+        <div className="flex items-center justify-end pt-4 gap-4">
+          <Link href="/dvp/wizard/project">
+            <Button type="button" variant="outline">Précédent</Button>
+          </Link>
+          <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
+            {isSubmitting || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
+          </Button>
         </div>
       </form>
     </Form>

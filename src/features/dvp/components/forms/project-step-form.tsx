@@ -70,7 +70,6 @@ export function ProjectStepForm() {
   }, [existingDvp, form]);
 
   const saveDraft = async (values: Partial<ProjectFormValues>) => {
-    setSaveStatus("saving");
     try {
       // Merge current form values with existing data
       const currentData = (existingDvp?.data as unknown as DvpData) || {};
@@ -84,20 +83,10 @@ export function ProjectStepForm() {
       } else {
         await createMutation.mutateAsync(newData);
       }
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
-      console.error("Failed to autosave DVP", error);
-      setSaveStatus("error");
+      console.error("Failed to save DVP", error);
+      throw error;
     }
-  };
-
-  const handleBlur = () => {
-    // Autosave on blur
-    // Note: Removed isDirty check temporarily as it causes issues in tests and strict mode
-    // Ideally we should check dirtyFields but for now simple blur save is safer for data loss prevention
-    const values = form.getValues();
-    void saveDraft(values);
   };
 
   async function onSubmit(values: ProjectFormValues) {
@@ -121,11 +110,7 @@ export function ProjectStepForm() {
             <FormItem>
               <FormLabel>Pays de destination</FormLabel>
               <Select 
-                onValueChange={(val) => {
-                  field.onChange(val);
-                  // Autosave on select change requires manual trigger as blur is tricky on Select
-                  void saveDraft({ ...form.getValues(), country: val });
-                }} 
+                onValueChange={field.onChange} 
                 defaultValue={field.value} 
                 value={field.value}
                 disabled={isLoadingDvp || isSubmitting}
@@ -156,10 +141,6 @@ export function ProjectStepForm() {
                 <Input 
                   placeholder="Ex: Paris, Lyon, Bordeaux..." 
                   {...field} 
-                  onBlur={(e) => {
-                    field.onBlur();
-                    handleBlur();
-                  }}
                   disabled={isLoadingDvp || isSubmitting}
                 />
               </FormControl>
@@ -186,10 +167,7 @@ export function ProjectStepForm() {
             <FormItem>
               <FormLabel>Type d'études</FormLabel>
               <Select 
-                onValueChange={(val) => {
-                  field.onChange(val);
-                  void saveDraft({ ...form.getValues(), studyType: val });
-                }} 
+                onValueChange={field.onChange} 
                 defaultValue={field.value} 
                 value={field.value}
                 disabled={isLoadingDvp || isSubmitting}
@@ -210,14 +188,9 @@ export function ProjectStepForm() {
           )}
         />
 
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-muted-foreground">
-            {saveStatus === "saving" && <span className="text-blue-500">Sauvegarde...</span>}
-            {saveStatus === "saved" && <span className="text-green-600">Brouillon sauvegardé</span>}
-            {saveStatus === "error" && <span className="text-red-500">Erreur de sauvegarde</span>}
-          </div>
+        <div className="flex items-center justify-end pt-4">
           <Button type="submit" disabled={isLoadingDvp || isSubmitting || createMutation.isPending || updateMutation.isPending}>
-            {isSubmitting || createMutation.isPending || updateMutation.isPending ? "Sauvegarde..." : "Suivant"}
+            {isSubmitting || createMutation.isPending || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
           </Button>
         </div>
       </form>

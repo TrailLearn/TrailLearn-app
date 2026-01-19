@@ -74,22 +74,22 @@ describe("BudgetStepForm", () => {
     expect(await screen.findByText(/800/i)).toBeDefined();
   });
 
-  it("autosaves on blur (calls update)", async () => {
+  it("submits form on button click", async () => {
     render(<BudgetStepForm />);
-    const otherIncomeInput = screen.getByLabelText(/Autres revenus/i);
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
     
-    await userEvent.clear(otherIncomeInput);
-    await userEvent.type(otherIncomeInput, "150");
-    fireEvent.blur(otherIncomeInput);
+    await userEvent.click(submitBtn);
 
     await waitFor(() => {
       expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
         id: "test-id",
         data: expect.objectContaining({
           budget: expect.objectContaining({
-            otherIncome: 150
-          })
-        })
+            savings: 0,
+            guarantorHelp: 0,
+            otherIncome: 0,
+          }),
+        }),
       }));
     });
   });

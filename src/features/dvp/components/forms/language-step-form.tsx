@@ -69,7 +69,6 @@ export function LanguageStepForm() {
   const saveDraft = async (values: LanguageFormValues) => {
     if (!existingDvp) return;
 
-    setSaveStatus("saving");
     try {
       const result = dvpDataSchema.safeParse(existingDvp.data);
       const currentData = result.success ? result.data : {};
@@ -85,23 +84,22 @@ export function LanguageStepForm() {
         id: existingDvp.id,
         data: newData,
       });
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
-      console.error("Failed to autosave language", error);
-      setSaveStatus("error");
+      console.error("Failed to save language", error);
+      throw error;
     }
   };
 
   async function onSubmit(values: LanguageFormValues) {
     try {
       await saveDraft(values);
-      router.push("/dvp/wizard/summary"); // Next step
+      router.push("/dvp/wizard/summary"); 
     } catch (error) {
       console.error("Failed to save and proceed", error);
     }
   }
 
+  const { formState: { isSubmitting } } = form;
   const isFormDisabled = isLoading || !existingDvp;
 
   return (
@@ -114,10 +112,7 @@ export function LanguageStepForm() {
             <FormItem>
               <FormLabel>Niveau de langue (CECRL)</FormLabel>
               <Select 
-                onValueChange={(val) => {
-                  field.onChange(val);
-                  void saveDraft({ level: val as any });
-                }} 
+                onValueChange={field.onChange} 
                 defaultValue={field.value} 
                 value={field.value || ""}
                 disabled={isFormDisabled}
@@ -150,20 +145,13 @@ export function LanguageStepForm() {
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-muted-foreground">
-            {saveStatus === "saving" && <span className="text-blue-500">Sauvegarde...</span>}
-            {saveStatus === "saved" && <span className="text-green-600">Brouillon sauvegardé</span>}
-            {saveStatus === "error" && <span className="text-red-500">Erreur de sauvegarde</span>}
-          </div>
-          <div className="flex gap-4">
-            <Link href="/dvp/wizard/housing">
-              <Button type="button" variant="outline">Précédent</Button>
-            </Link>
-            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
-              {updateMutation.isPending ? "Chargement..." : "Suivant"}
-            </Button>
-          </div>
+        <div className="flex items-center justify-end pt-4 gap-4">
+          <Link href="/dvp/wizard/housing">
+            <Button type="button" variant="outline">Précédent</Button>
+          </Link>
+          <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
+            {isSubmitting || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
+          </Button>
         </div>
       </form>
     </Form>

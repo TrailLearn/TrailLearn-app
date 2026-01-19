@@ -8,12 +8,13 @@ import { dvpDataSchema, type ViabilityResult } from "~/features/dvp/types";
 import { getDvpCompleteness } from "~/features/dvp/utils/dvp-completeness";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { MapPin, School, Calendar, Info, CheckCircle2, ShieldCheck } from "lucide-react";
+import { MapPin, School, Calendar, Info, CheckCircle2, ShieldCheck, Printer } from "lucide-react";
 import { AnalysisHistoryList } from "~/features/dvp/components/analysis-history-list";
 import { FindingsList } from "~/features/dvp/components/findings-list";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -46,14 +47,24 @@ export default function CockpitPage() {
             Pilotez votre projet et visualisez vos chances de succès.
           </p>
         </div>
-        {!diagnostic && (
-           <div className="flex-shrink-0">
-              <ViabilityGauge 
-                status={completeness.isGlobalComplete ? "AMBER" : "INCOMPLETE"} 
-                score={0} 
-              />
-           </div>
-        )}
+        <div className="flex items-center gap-3">
+          {dvpRecord?.status === "COMPLETED" && (
+            <Link href={`/dvp/print/${dvpRecord.id}`} target="_blank">
+              <Button variant="outline" className="gap-2">
+                <Printer className="h-4 w-4" />
+                Télécharger PDF
+              </Button>
+            </Link>
+          )}
+          {!diagnostic && (
+             <div className="flex-shrink-0">
+                <ViabilityGauge 
+                  status={completeness.isGlobalComplete ? "AMBER" : "INCOMPLETE"} 
+                  score={0} 
+                />
+             </div>
+          )}
+        </div>
       </div>
 
       <Tabs defaultValue="dashboard" className="w-full">

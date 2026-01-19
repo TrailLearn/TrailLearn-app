@@ -74,6 +74,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   dvpRecords    DvpRecord[]
+  auditLogs     AuditLog[]
 }
 
 model BusinessRule {
@@ -87,6 +88,21 @@ model BusinessRule {
   updatedBy   String?
 
   @@index([category])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  entityType  String   // e.g., "BusinessRule"
+  entityId    String
+  action      String   // e.g., "UPDATE"
+  details     Json?    // e.g., { old: ..., new: ..., reason: ... }
+  userId      String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([entityId])
+  @@index([userId])
 }
 
 model VerificationToken {

@@ -1,58 +1,65 @@
 import { z } from "zod";
-import { createTRPCRouter, adminProcedure, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 
 export const adminRouter = createTRPCRouter({
-  // Read rules (authenticated users)
   getAllRules: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.user.role !== "ADMIN") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
     return ctx.db.businessRule.findMany({
-      orderBy: { key: "asc" },
+      orderBy: { category: "asc" },
     });
   }),
 
-  // Get rule by key (authenticated users)
-  getRule: protectedProcedure
-    .input(z.object({ key: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.businessRule.findUnique({
-        where: { key: input.key },
-      });
-    }),
-
-  // Update rule (ADMIN only)
-  updateRule: adminProcedure
+  updateRule: protectedProcedure
     .input(z.object({
       id: z.string(),
-      value: z.union([
-        // Housing Prices Schema
-        z.object({
-          residence: z.object({ min: z.number(), max: z.number() }),
-          coloc: z.object({ min: z.number(), max: z.number() }),
-          studio: z.object({ min: z.number(), max: z.number() }),
-          homestay: z.object({ min: z.number(), max: z.number() }),
-        }),
-        // Thresholds Schema
-        z.object({
-          seuil_survie: z.number(),
-          seuil_confort: z.number(),
-          min_language_level: z.string(),
-        }),
-        // City Index Schema
-        z.record(z.string(), z.number()),
-        // Fallback for new rule types (must be an object)
-        z.record(z.string(), z.any()),
-      ]),
-      description: z.string().optional(),
-      version: z.string().optional(),
+      value: z.any(), // Value can be number or JSON
+      reason: z.string().min(3, "Justification requise").max(500, "Justification trop longue"),
     }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.businessRule.update({
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const rule = await ctx.db.businessRule.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!rule) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const oldValue = rule.value;
+
+      // Update Rule
+      const updatedRule = await ctx.db.businessRule.update({
         where: { id: input.id },
         data: {
           value: input.value,
-          description: input.description,
-          version: input.version,
           updatedBy: ctx.session.user.id,
+          // Increment version logic could be added here (e.g. semantic or simple integer)
+          // keeping simple for now
         },
       });
+
+      // Audit Log
+      await ctx.db.auditLog.create({
+        data: {
+          userId: ctx.session.user.id,
+          entityType: "BusinessRule",
+          entityId: rule.id,
+          action: "UPDATE",
+          details: {
+            reason: input.reason,
+            oldValue,
+            newValue: input.value,
+            key: rule.key
+          },
+        },
+      });
+
+      return updatedRule;
     }),
 });

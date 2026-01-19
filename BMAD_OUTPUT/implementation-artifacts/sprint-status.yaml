@@ -40,3 +40,10 @@ development_status:
   "4-4-simulator-what-if": "review"
   "4-5-cockpit-feedback-fixes": "done"
   "4-7-hotfix-ux-consistency": "done"
+  "4-8-stabilisation-ux-data": "done"
+
+  # Epic 5: Standard of Truth Admin
+  "5-0-admin-business-rules": "done"
+
+  # Epic 6: Sharing & Export
+  "6-0-sharing-export": "done"

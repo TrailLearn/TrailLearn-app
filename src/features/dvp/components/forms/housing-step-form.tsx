@@ -80,7 +80,6 @@ export function HousingStepForm() {
   const saveDraft = async (values: HousingFormValues) => {
     if (!existingDvp) return; 
 
-    setSaveStatus("saving");
     try {
       // Send only the housing part, server handles the merge
       const partialData: DvpData = {
@@ -94,27 +93,22 @@ export function HousingStepForm() {
         id: existingDvp.id,
         data: partialData,
       });
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
-      console.error("Failed to autosave housing", error);
-      setSaveStatus("error");
+      console.error("Failed to save housing", error);
+      throw error;
     }
-  };
-
-  const handleBlur = () => {
-    void saveDraft(getValues());
   };
 
   async function onSubmit(values: HousingFormValues) {
     try {
       await saveDraft(values);
-      router.push("/dvp/wizard/language"); // Next step
+      router.push("/dvp/wizard/language"); 
     } catch (error) {
       console.error("Failed to save and proceed", error);
     }
   }
 
+  const { formState: { isSubmitting } } = form;
   const isFormDisabled = isLoading || !existingDvp;
 
   return (
@@ -127,10 +121,7 @@ export function HousingStepForm() {
             <FormItem>
               <FormLabel>Type de logement</FormLabel>
               <Select 
-                onValueChange={(val) => {
-                  field.onChange(val);
-                  void saveDraft({ ...getValues(), type: val });
-                }} 
+                onValueChange={field.onChange} 
                 defaultValue={field.value} 
                 value={field.value}
                 disabled={isFormDisabled}
@@ -166,27 +157,20 @@ export function HousingStepForm() {
             <FormItem>
               <FormLabel>Loyer estimé (€)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} onBlur={() => { field.onBlur(); handleBlur(); }} disabled={isFormDisabled} />
+                <Input type="number" {...field} disabled={isFormDisabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-muted-foreground">
-            {saveStatus === "saving" && <span className="text-blue-500">Sauvegarde...</span>}
-            {saveStatus === "saved" && <span className="text-green-600">Brouillon sauvegardé</span>}
-            {saveStatus === "error" && <span className="text-red-500">Erreur de sauvegarde</span>}
-          </div>
-          <div className="flex gap-4">
-            <Link href="/dvp/wizard/budget">
-              <Button type="button" variant="outline">Précédent</Button>
-            </Link>
-            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
-              {updateMutation.isPending ? "Chargement..." : "Suivant"}
-            </Button>
-          </div>
+        <div className="flex items-center justify-end pt-4 gap-4">
+          <Link href="/dvp/wizard/budget">
+            <Button type="button" variant="outline">Précédent</Button>
+          </Link>
+          <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
+            {isSubmitting || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
+          </Button>
         </div>
       </form>
     </Form>

@@ -82,22 +82,30 @@ describe("HousingStepForm", () => {
     // Let's assume we can trigger value change.
   });
 
-  it("autosaves cost on blur", async () => {
+  it("submits form on button click", async () => {
     render(<HousingStepForm />);
-    const costInput = screen.getByLabelText(/Loyer estimé/i);
     
-    await userEvent.clear(costInput);
-    await userEvent.type(costInput, "600");
-    fireEvent.blur(costInput);
+    // Select type
+    const trigger = screen.getByRole("combobox");
+    await userEvent.click(trigger);
+    const option = await screen.findByRole("option", { name: /Colocation/i });
+    await userEvent.click(option);
+
+    const costInput = screen.getByLabelText(/Loyer estimé/i);
+    await userEvent.type(costInput, "500");
+
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
+    await userEvent.click(submitBtn);
 
     await waitFor(() => {
       expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
         id: "test-id",
         data: expect.objectContaining({
           housing: expect.objectContaining({
-            cost: 600
-          })
-        })
+            type: "coloc",
+            cost: 500,
+          }),
+        }),
       }));
     });
   });
