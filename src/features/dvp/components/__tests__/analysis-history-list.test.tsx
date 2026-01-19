@@ -22,6 +22,7 @@ vi.mock("lucide-react", () => ({
   Clock: () => <div data-testid="icon-clock" />,
   CheckCircle: () => <div data-testid="icon-check" />,
   AlertCircle: () => <div data-testid="icon-alert" />,
+  ChevronRight: () => <div data-testid="icon-chevron" />,
 }));
 
 // Mock Skeleton
@@ -63,7 +64,7 @@ describe("AnalysisHistoryList", () => {
     // Check status
     expect(screen.getByText(/Validé/i)).toBeInTheDocument();
     
-    // Check score
-    expect(screen.getByText(/Score: 85/i)).toBeInTheDocument();
+    // Check score (I removed the "Score: " prefix in the UI)
+    expect(screen.getByText(/85\/100/i)).toBeInTheDocument();
   });
 });
