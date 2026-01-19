@@ -107,7 +107,7 @@ export function AnalysisHistoryList() {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm font-semibold capitalize">
+                      <span className="text-sm font-semibold capitalize" suppressHydrationWarning>
                         {formatDate(date)} à {formatTime(date)}
                       </span>
                     </div>

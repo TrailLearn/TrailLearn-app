@@ -42,6 +42,7 @@ development_status:
   "4-7-hotfix-ux-consistency": "done"
   "4-8-stabilisation-ux-data": "done"
   "4-9-cockpit-synthesis-history-refinement": "done"
+  "4-10-stabilisation-data-timezone": "done"
 
   # Epic 5: Standard of Truth Admin
   "5-0-admin-business-rules": "done"

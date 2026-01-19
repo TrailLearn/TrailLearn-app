@@ -30,7 +30,7 @@ describe("DvpCompleteness", () => {
   });
 
   test("validates city completeness", () => {
-      expect(getDvpCompleteness({ city: "Paris", studyType: "Master" } as DvpData).isCityComplete).toBe(true);
+      expect(getDvpCompleteness({ city: "Paris", country: "France", studyType: "Master" } as DvpData).isCityComplete).toBe(true);
       expect(getDvpCompleteness({ city: "Paris" } as DvpData).isCityComplete).toBe(false);
   });
 });

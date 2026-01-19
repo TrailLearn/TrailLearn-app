@@ -19,7 +19,7 @@ export function getDvpCompleteness(data: DvpData | undefined | null): DvpComplet
     };
   }
 
-  const isCityComplete = !!(data.city && data.studyType);
+  const isCityComplete = !!(data.city && data.country && data.studyType);
 
   // Budget is complete if the object exists and has values
   const isBudgetComplete = !!(

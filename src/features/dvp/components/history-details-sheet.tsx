@@ -10,8 +10,9 @@ import {
 import { ViabilityGauge } from "./viability-gauge";
 import { FindingsList } from "./findings-list";
 import { Badge } from "~/components/ui/badge";
-import { Calendar, Tag } from "lucide-react";
+import { Calendar, Tag, MapPin, Wallet, School, Home } from "lucide-react";
 import type { ViabilityResult } from "../types";
+import { dvpDataSchema } from "../types";
 
 interface HistoryDetailsSheetProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ interface HistoryDetailsSheetProps {
     status: string;
     rulesVersion: string | null;
     calculationResult: any;
+    data: any;
   } | null;
 }
 
@@ -33,6 +35,19 @@ export function HistoryDetailsSheet({
 
   const result = record.calculationResult as ViabilityResult | null;
   const date = new Date(record.createdAt);
+  
+  const parsedData = dvpDataSchema.safeParse(record.data);
+  const data = parsedData.success ? parsedData.data : undefined;
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat(undefined, { // Use browser default locale/timezone
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
@@ -40,7 +55,7 @@ export function HistoryDetailsSheet({
         <SheetHeader className="text-left">
           <SheetTitle>Détails de l'analyse</SheetTitle>
           <SheetDescription>
-            Consultation du snapshot historique du {date.toLocaleDateString()}
+            Snapshot du {formatDate(date)}
           </SheetDescription>
         </SheetHeader>
 
@@ -49,7 +64,7 @@ export function HistoryDetailsSheet({
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              {date.toLocaleDateString()} à {date.toLocaleTimeString()}
+              {formatDate(date)}
             </div>
             {record.rulesVersion && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -61,6 +76,39 @@ export function HistoryDetailsSheet({
               {record.status === "COMPLETED" ? "Officiel" : "Brouillon"}
             </Badge>
           </div>
+
+          {/* Parameters Snapshot */}
+          {data && (
+            <div className="rounded-lg bg-muted/20 p-4 border space-y-3">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">Paramètres de simulation</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-3 w-3" /> Destination
+                  </div>
+                  <div className="font-medium">{data.city}, {data.country}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <School className="h-3 w-3" /> Études
+                  </div>
+                  <div className="font-medium">{data.studyType}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Wallet className="h-3 w-3" /> Budget
+                  </div>
+                  <div className="font-medium">{data.budget?.savings?.toLocaleString()} €</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Home className="h-3 w-3" /> Logement
+                  </div>
+                  <div className="font-medium capitalize">{data.housing?.type} ({data.housing?.cost}€)</div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Gauge */}
           <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-xl">
