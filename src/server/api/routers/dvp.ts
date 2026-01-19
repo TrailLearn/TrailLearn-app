@@ -106,6 +106,14 @@ export const dvpRouter = createTRPCRouter({
     });
   }),
 
+  getLastSnapshot: protectedProcedure.query(async ({ ctx }) => {
+    // Strictly the latest completed analysis for official display
+    return ctx.db.dvpRecord.findFirst({
+      where: { userId: ctx.session.user.id, status: "COMPLETED" },
+      orderBy: { createdAt: "desc" },
+    });
+  }),
+
   getHistory: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.dvpRecord.findMany({
       where: { 
@@ -120,6 +128,7 @@ export const dvpRouter = createTRPCRouter({
         status: true,
         rulesVersion: true,
         calculationResult: true,
+        data: true, // Included to show City/Study info in list
       },
     });
   }),

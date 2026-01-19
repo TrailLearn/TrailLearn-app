@@ -5,13 +5,16 @@ import { api } from "~/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Skeleton } from "~/components/ui/skeleton";
-import { History, Calendar, Clock, AlertCircle, ChevronRight } from "lucide-react";
+import { History, Calendar, Clock, AlertCircle, ChevronRight, MapPin, Wallet, School } from "lucide-react";
 import { HistoryDetailsSheet } from "./history-details-sheet";
 import { cn } from "~/lib/utils";
-import type { ViabilityResult } from "../types";
+import type { ViabilityResult, DvpData } from "../types";
+import { dvpDataSchema } from "../types";
 
 export function AnalysisHistoryList() {
-  const { data: history, isLoading } = api.dvp.getHistory.useQuery();
+  const { data: history, isLoading } = api.dvp.getHistory.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+  });
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -89,27 +92,44 @@ export function AnalysisHistoryList() {
               const hasResult = isViabilityResult(result);
               const date = new Date(record.createdAt);
               
+              const parsedData = dvpDataSchema.safeParse(record.data);
+              const data = parsedData.success ? parsedData.data : undefined;
+              
               return (
                 <button 
                   key={record.id} 
                   onClick={() => handleRecordClick(record)}
                   className={cn(
-                    "w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left",
-                    "hover:bg-accent hover:text-accent-foreground group"
+                    "w-full flex items-center justify-between p-4 rounded-lg transition-colors text-left",
+                    "hover:bg-accent hover:text-accent-foreground group border-b last:border-0"
                   )}
                 >
-                  <div className="space-y-1">
+                  <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm font-medium capitalize">
-                        {formatDate(date)}
+                      <span className="text-sm font-semibold capitalize">
+                        {formatDate(date)} à {formatTime(date)}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {formatTime(date)}
-                      {record.rulesVersion && ` • Règles v${record.rulesVersion}`}
-                    </div>
+                    
+                    {data && (
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {data.city || "-"}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <School className="h-3 w-3" />
+                          {data.studyType || "-"}
+                        </div>
+                        {data.budget && (
+                          <div className="flex items-center gap-1">
+                            <Wallet className="h-3 w-3" />
+                            {data.budget.savings?.toLocaleString()} €
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-4">
@@ -118,7 +138,7 @@ export function AnalysisHistoryList() {
                         {record.status === "COMPLETED" ? "Validé" : "Brouillon"}
                       </Badge>
                       {hasResult ? (
-                        <span className={`text-xs font-bold ${
+                        <span className={`text-sm font-bold ${
                             result.status === "GREEN" ? "text-green-600" : 
                             result.status === "AMBER" ? "text-orange-600" : "text-red-600"
                         }`}>
