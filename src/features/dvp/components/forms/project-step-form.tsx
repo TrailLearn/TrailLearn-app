@@ -98,13 +98,13 @@ export function ProjectStepForm() {
         }
       };
 
-      if (existingDvp) {
+      if (existingDvp && existingDvp.status === "DRAFT") {
         await updateMutation.mutateAsync({
           id: existingDvp.id,
           data: newData,
         });
       } else {
-        // Create only happens in edit mode usually, but handling edge case
+        // Create new draft (Fork) if no draft or if current is COMPLETED
         await createMutation.mutateAsync(newData);
       }
       await utils.dvp.getLatest.invalidate();

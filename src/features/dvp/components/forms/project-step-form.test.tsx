@@ -52,6 +52,7 @@ describe("ProjectStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { country: "", city: "", studyType: "" }
     });
   });

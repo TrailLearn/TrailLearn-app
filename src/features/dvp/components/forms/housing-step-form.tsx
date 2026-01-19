@@ -39,6 +39,7 @@ export function HousingStepForm() {
   const router = useRouter();
 
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
+  const createMutation = api.dvp.create.useMutation();
   const updateMutation = api.dvp.update.useMutation();
   const utils = api.useUtils();
 
@@ -104,10 +105,14 @@ export function HousingStepForm() {
         };
       }
 
-      await updateMutation.mutateAsync({
-        id: existingDvp.id,
-        data: newData,
-      });
+      if (existingDvp.status === "DRAFT") {
+        await updateMutation.mutateAsync({
+          id: existingDvp.id,
+          data: newData,
+        });
+      } else {
+        await createMutation.mutateAsync(newData);
+      }
       await utils.dvp.getLatest.invalidate();
     } catch (error) {
       console.error("Failed to update status", error);

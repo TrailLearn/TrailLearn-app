@@ -52,6 +52,7 @@ describe("BudgetStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { budget: { savings: 0, guarantorHelp: 0, otherIncome: 0 } }
     });
   });

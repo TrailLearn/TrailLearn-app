@@ -5,6 +5,7 @@ import { HousingStepForm } from "./housing-step-form";
 
 // Mock TRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
+const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
 const mockGetLatest = vi.fn();
 const mockInvalidate = vi.fn();
 
@@ -20,6 +21,12 @@ vi.mock("~/trpc/react", () => ({
       update: {
         useMutation: () => ({
           mutateAsync: mockUpdateMutation,
+          isPending: false,
+        }),
+      },
+      create: {
+        useMutation: () => ({
+          mutateAsync: mockCreateMutation,
           isPending: false,
         }),
       },
@@ -45,6 +52,7 @@ describe("HousingStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { housing: { type: "", cost: 0 } }
     });
   });
@@ -59,6 +67,7 @@ describe("HousingStepForm", () => {
     // Override mock for this test to simulate Paris
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { city: "Paris", housing: { type: "", cost: 0 } }
     });
 

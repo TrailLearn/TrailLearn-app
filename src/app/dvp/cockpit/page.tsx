@@ -122,6 +122,20 @@ export default function CockpitPage() {
                 </Button>
               </CardContent>
             </Card>
+          ) : dvpRecord?.status === "COMPLETED" && (
+            <Card className="bg-green-50 border-green-100 shadow-sm">
+              <CardContent className="pt-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <p className="text-sm text-green-800">
+                    Votre dossier est validé et officiel. Pour modifier vos données, une nouvelle analyse sera générée.
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => router.push("/dvp/wizard/project")} className="text-green-800 border-green-200 hover:bg-green-100 gap-2">
+                  Modifier / Nouvelle Analyse <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
           )}
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

@@ -5,6 +5,7 @@ import { LanguageStepForm } from "./language-step-form";
 
 // Mock tRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
+const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
 const mockGetLatest = vi.fn();
 const mockInvalidate = vi.fn();
 
@@ -14,6 +15,12 @@ vi.mock("~/trpc/react", () => ({
       update: {
         useMutation: () => ({
           mutateAsync: mockUpdateMutation,
+          isPending: false,
+        }),
+      },
+      create: {
+        useMutation: () => ({
+          mutateAsync: mockCreateMutation,
           isPending: false,
         }),
       },
@@ -45,6 +52,7 @@ describe("LanguageStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { language: { level: "" } }
     });
   });
@@ -57,6 +65,7 @@ describe("LanguageStepForm", () => {
   it.skip("shows warning for levels < B2", async () => {
     mockGetLatest.mockReturnValue({
       id: "test-id",
+      status: "DRAFT",
       data: { language: { level: "A2" } }
     });
 
@@ -71,6 +80,7 @@ describe("LanguageStepForm", () => {
 
   it("does not show warning for B2+", async () => {
     mockGetLatest.mockReturnValue({
+      status: "DRAFT",
       data: { language: { level: "C1" } }
     });
 
