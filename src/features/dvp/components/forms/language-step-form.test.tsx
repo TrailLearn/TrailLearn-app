@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { LanguageStepForm } from "./language-step-form";
 
 // Mock tRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
-const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
 const mockGetLatest = vi.fn();
+const mockInvalidate = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
@@ -16,12 +17,6 @@ vi.mock("~/trpc/react", () => ({
           isPending: false,
         }),
       },
-      create: {
-        useMutation: () => ({
-          mutateAsync: mockCreateMutation,
-          isPending: false,
-        }),
-      },
       getLatest: {
         useQuery: () => ({
           data: mockGetLatest(),
@@ -29,6 +24,11 @@ vi.mock("~/trpc/react", () => ({
         }),
       },
     },
+    useUtils: () => ({
+      dvp: {
+        getLatest: { invalidate: mockInvalidate }
+      }
+    })
   },
 }));
 
@@ -45,7 +45,7 @@ describe("LanguageStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
-      data: {}
+      data: { language: { level: "" } }
     });
   });
 
@@ -79,10 +79,26 @@ describe("LanguageStepForm", () => {
     expect(warning).toBeNull();
   });
 
-  it("autosaves level", async () => {
+  it("submits form on button click", async () => {
     render(<LanguageStepForm />);
-    // Testing autosave on Select requires firing onChange or mocking the Select component
-    // For simplicity in this env, we assume the component is wired correctly if it renders
-    // and rely on integration/e2e for interaction details.
+    
+    const trigger = screen.getByRole("combobox");
+    await userEvent.click(trigger);
+    const option = await screen.findByRole("option", { name: "C1" });
+    await userEvent.click(option);
+
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
+    await userEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
+        id: "test-id",
+        data: expect.objectContaining({
+          language: expect.objectContaining({
+            level: "C1",
+          }),
+        }),
+      }));
+    });
   });
 });

@@ -19,24 +19,17 @@ export function getDvpCompleteness(data: DvpData | undefined | null): DvpComplet
     };
   }
 
-  const isCityComplete = !!(data.city && data.country && data.studyType);
+  const status = data.stepStatus || {
+    project: "EDITING",
+    budget: "EDITING",
+    housing: "EDITING",
+    language: "EDITING",
+  };
 
-  // Budget is complete if the object exists and has values
-  const isBudgetComplete = !!(
-    data.budget &&
-    (data.budget.savings !== undefined ||
-      data.budget.guarantorHelp !== undefined ||
-      data.budget.otherIncome !== undefined)
-  );
-
-  // Housing complete: Type non empty AND Cost is >= 0
-  const isHousingComplete = !!(
-    data.housing?.type && 
-    data.housing.type.trim() !== "" &&
-    (data.housing.cost ?? -1) >= 0
-  );
-
-  const isLanguageComplete = !!(data.language?.level && data.language.level.trim() !== "");
+  const isCityComplete = status.project === "VALIDATED";
+  const isBudgetComplete = status.budget === "VALIDATED";
+  const isHousingComplete = status.housing === "VALIDATED";
+  const isLanguageComplete = status.language === "VALIDATED";
 
   const isGlobalComplete =
     isCityComplete && isBudgetComplete && isHousingComplete && isLanguageComplete;

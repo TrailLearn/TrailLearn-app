@@ -2,20 +2,20 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProjectStepForm } from "./project-step-form";
-import { act } from "react";
 
-// Mock des hooks tRPC
+// Mock TRPC
+const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
 const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
-const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "existing-id" });
 const mockGetLatest = vi.fn();
+const mockInvalidate = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
     dvp: {
-      create: {
-        useMutation: () => ({
-          mutateAsync: mockCreateMutation,
-          isPending: false,
+      getLatest: {
+        useQuery: () => ({
+          data: mockGetLatest(),
+          isLoading: false,
         }),
       },
       update: {
@@ -24,13 +24,18 @@ vi.mock("~/trpc/react", () => ({
           isPending: false,
         }),
       },
-      getLatest: {
-        useQuery: () => ({
-          data: mockGetLatest(),
-          isLoading: false,
+      create: {
+        useMutation: () => ({
+          mutateAsync: mockCreateMutation,
+          isPending: false,
         }),
       },
     },
+    useUtils: () => ({
+      dvp: {
+        getLatest: { invalidate: mockInvalidate }
+      }
+    })
   },
 }));
 
@@ -45,7 +50,10 @@ vi.mock("next/navigation", () => ({
 describe("ProjectStepForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetLatest.mockReturnValue(null); // Par défaut, pas de données existantes
+    mockGetLatest.mockReturnValue({
+      id: "test-id",
+      data: { country: "", city: "", studyType: "" }
+    });
   });
 
   it("renders the form fields correctly", () => {
@@ -62,43 +70,57 @@ describe("ProjectStepForm", () => {
 
     await userEvent.click(submitBtn);
 
-    expect(await screen.findAllByText(/requis/i)).toHaveLength(3);
+    expect(mockUpdateMutation).not.toHaveBeenCalled();
   });
 
   it("submits form on button click", async () => {
     render(<ProjectStepForm />);
     
-    // Fill required fields
-    // We need to interact with Select components (shadcn/radix).
-    // Testing library userEvent works well if we find the inputs or roles.
-    // For simplicity in this environment, let's just check if button is clickable and calls mutation if form valid.
-    // Or we rely on existing tests that fill form? 
-    // The previous test "autosaves on blur" filled city.
-    
+    // Fill form
+    // Country Select
+    const countryTrigger = screen.getAllByRole("combobox")[0]; // First select
+    if (!countryTrigger) throw new Error("Country select not found");
+    await userEvent.click(countryTrigger);
+    const countryOption = await screen.findByRole("option", { name: /France/i });
+    await userEvent.click(countryOption);
+
+    // City Input
     const cityInput = screen.getByLabelText(/Ville cible/i);
     await userEvent.type(cityInput, "Paris");
-    
-    // We mock the Select interactions or set values directly if possible, 
-    // but Select is hard to test without setup. 
-    // Let's assume validation passes if we mock form state or just check mutation call on valid form.
-    // Actually, let's just remove the autosave test and replace with a simple existence check or manual save check if feasible.
-    // I will replace "autosaves on blur" with a placeholder test or remove it.
+
+    // Study Type Select
+    const studyTrigger = screen.getAllByRole("combobox")[1]; // Second select
+    if (!studyTrigger) throw new Error("Study select not found");
+    await userEvent.click(studyTrigger);
+    const studyOption = await screen.findByRole("option", { name: /Master/i });
+    await userEvent.click(studyOption);
+
+    // Submit
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
+    await userEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
+        id: "test-id",
+        data: expect.objectContaining({
+          country: "france",
+          city: "Paris",
+          studyType: "master",
+          stepStatus: expect.objectContaining({
+            project: "VALIDATED"
+          })
+        }),
+      }));
+    });
   });
 
-  it("loads existing data correctly", async () => {
+  it("loads existing data correctly", () => {
     mockGetLatest.mockReturnValue({
       id: "test-id",
-      data: {
-        country: "france",
-        city: "Bordeaux",
-        studyType: "master"
-      }
+      data: { country: "france", city: "Lyon", studyType: "license" }
     });
 
-    await act(async () => {
-      render(<ProjectStepForm />);
-    });
-    
-    expect(screen.getByDisplayValue("Bordeaux")).toBeDefined();
+    render(<ProjectStepForm />);
+    expect(screen.getByDisplayValue("Lyon")).toBeDefined();
   });
 });

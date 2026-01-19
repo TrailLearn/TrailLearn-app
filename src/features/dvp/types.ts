@@ -24,6 +24,14 @@ export const dvpDataSchema = z.object({
   language: z.object({
     level: z.string().optional(),
   }).optional(),
+
+  // Step Status Tracking (Administrative Model)
+  stepStatus: z.object({
+    project: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    budget: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    housing: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    language: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+  }).optional(),
 });
 
 export type DvpData = z.infer<typeof dvpDataSchema>;

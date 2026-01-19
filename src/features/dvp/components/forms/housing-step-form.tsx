@@ -22,10 +22,11 @@ import {
 } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { type DvpData, dvpDataSchema } from "~/features/dvp/types";
 import { HOUSING_TYPES, getHousingPriceRange } from "~/features/dvp/utils/housing-prices";
-import Link from "next/link";
+import { Edit2, CheckCircle2 } from "lucide-react";
+import { Card, CardContent } from "~/components/ui/card";
 
 const housingStepSchema = z.object({
   type: z.string().min(1, "Type requis"),
@@ -36,15 +37,10 @@ type HousingFormValues = z.infer<typeof housingStepSchema>;
 
 export function HousingStepForm() {
   const router = useRouter();
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
+  const updateMutation = api.dvp.update.useMutation();
   const utils = api.useUtils();
-  const updateMutation = api.dvp.update.useMutation({
-    onSuccess: () => {
-      void utils.dvp.getLatest.invalidate();
-    },
-  });
 
   const form = useForm<HousingFormValues>({
     resolver: zodResolver(housingStepSchema),
@@ -54,62 +50,111 @@ export function HousingStepForm() {
     },
   });
 
-  const { control, reset, getValues } = form;
+  const { control, reset, formState: { isSubmitting } } = form;
   const watchedType = useWatch({ control, name: "type" });
 
-  // Get city from loaded DVP data safely
   const parsedData = dvpDataSchema.safeParse(existingDvp?.data);
-  const currentCity = parsedData.success ? parsedData.data.city : undefined;
-
+  const data = parsedData.success ? parsedData.data : undefined;
+  const currentCity = data?.city;
   const priceRange = getHousingPriceRange(currentCity, watchedType);
+  const isLocked = data?.stepStatus?.housing === "VALIDATED";
+
+  const prevDataRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (existingDvp?.data) {
-      const result = dvpDataSchema.safeParse(existingDvp.data);
-      if (result.success && result.data.housing) {
-        // Only reset if we have values, to avoid overwriting work in progress if data is weird
-        // But here we trust the DB as source of truth on load
-        form.reset({
-          type: result.data.housing.type || "",
-          cost: result.data.housing.cost || 0,
+    if (!isLoading && !existingDvp) {
+      router.push("/dvp/wizard/project");
+    }
+  }, [isLoading, existingDvp, router]);
+
+  useEffect(() => {
+    if (data && data.housing) {
+      const dataToCompare = data.housing;
+      const dataString = JSON.stringify(dataToCompare);
+
+      if (dataString !== prevDataRef.current) {
+        prevDataRef.current = dataString;
+        reset({
+          type: data.housing.type || "",
+          cost: data.housing.cost || 0,
         });
       }
     }
-  }, [existingDvp, form]);
+  }, [data, reset]);
 
-  const saveDraft = async (values: HousingFormValues) => {
-    if (!existingDvp) return; 
+  const updateStatus = async (status: "EDITING" | "VALIDATED", values?: HousingFormValues) => {
+    if (!existingDvp) return;
 
     try {
-      // Send only the housing part, server handles the merge
-      const partialData: DvpData = {
-        housing: {
-          type: values.type,
-          cost: Number(values.cost),
+      const currentData = data || {};
+      const currentStatus = currentData.stepStatus || { project: "EDITING", budget: "EDITING", housing: "EDITING", language: "EDITING" };
+      
+      const newData: DvpData = {
+        ...currentData,
+        stepStatus: {
+          ...currentStatus,
+          housing: status,
         },
       };
 
+      if (values) {
+        newData.housing = {
+          type: values.type,
+          cost: Number(values.cost),
+        };
+      }
+
       await updateMutation.mutateAsync({
         id: existingDvp.id,
-        data: partialData,
+        data: newData,
       });
+      await utils.dvp.getLatest.invalidate();
     } catch (error) {
-      console.error("Failed to save housing", error);
+      console.error("Failed to update status", error);
       throw error;
     }
   };
 
+  const handleUnlock = () => {
+    void updateStatus("EDITING");
+  };
+
   async function onSubmit(values: HousingFormValues) {
     try {
-      await saveDraft(values);
+      await updateStatus("VALIDATED", values);
       router.push("/dvp/wizard/language"); 
     } catch (error) {
       console.error("Failed to save and proceed", error);
     }
   }
 
-  const { formState: { isSubmitting } } = form;
-  const isFormDisabled = isLoading || !existingDvp;
+  const isFormDisabled = isLoading;
+
+  if (isLoading) return <div>Chargement...</div>;
+
+  if (isLocked) {
+    return (
+      <Card className="border-green-200 bg-green-50/30">
+        <CardContent className="pt-6 flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-green-900 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4" /> Section Validée
+            </h3>
+            <div className="text-sm text-green-800">
+              <p>Type: {HOUSING_TYPES.find(t => t.value === data?.housing?.type)?.label || data?.housing?.type}</p>
+              <p>Loyer: {data?.housing?.cost} €/mois</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleUnlock} className="gap-2 border-green-200 hover:bg-green-100">
+            <Edit2 className="h-3 w-3" /> Modifier
+          </Button>
+        </CardContent>
+        <div className="px-6 pb-6 flex justify-end">
+           <Button onClick={() => router.push("/dvp/wizard/language")}>Suivant</Button>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -165,9 +210,7 @@ export function HousingStepForm() {
         />
 
         <div className="flex items-center justify-end pt-4 gap-4">
-          <Link href="/dvp/wizard/budget">
-            <Button type="button" variant="outline">Précédent</Button>
-          </Link>
+          <Button type="button" variant="outline" onClick={() => router.push("/dvp/wizard/budget")}>Précédent</Button>
           <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
             {isSubmitting || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
           </Button>

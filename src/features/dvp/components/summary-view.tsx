@@ -15,6 +15,7 @@ export function SummaryView() {
   const router = useRouter();
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
   const submitMutation = api.dvp.submit.useMutation();
+  const utils = api.useUtils();
 
   useEffect(() => {
     if (existingDvp?.status === "COMPLETED") {
@@ -41,6 +42,8 @@ export function SummaryView() {
       await submitMutation.mutateAsync({
         id: existingDvp.id,
       });
+      await utils.dvp.getLastSnapshot.invalidate();
+      await utils.dvp.getLatest.invalidate();
       router.push("/dvp/cockpit");
     } catch (error) {
       console.error("Failed to submit", error);

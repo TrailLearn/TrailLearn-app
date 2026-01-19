@@ -3,44 +3,32 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HousingStepForm } from "./housing-step-form";
 
-// Mock tRPC
+// Mock TRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
-const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
 const mockGetLatest = vi.fn();
+const mockInvalidate = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
-    useUtils: () => ({
-      dvp: {
-        getLatest: {
-          invalidate: vi.fn(),
-        },
-      },
-    }),
     dvp: {
-      update: {
-        useMutation: (options?: any) => ({
-          mutateAsync: async (args: any) => {
-            const result = await mockUpdateMutation(args);
-            options?.onSuccess?.(result); // Trigger onSuccess if provided
-            return result;
-          },
-          isPending: false,
-        }),
-      },
-      create: {
-        useMutation: () => ({
-          mutateAsync: mockCreateMutation,
-          isPending: false,
-        }),
-      },
       getLatest: {
         useQuery: () => ({
           data: mockGetLatest(),
           isLoading: false,
         }),
       },
+      update: {
+        useMutation: () => ({
+          mutateAsync: mockUpdateMutation,
+          isPending: false,
+        }),
+      },
     },
+    useUtils: () => ({
+      dvp: {
+        getLatest: { invalidate: mockInvalidate }
+      }
+    })
   },
 }));
 
@@ -57,29 +45,32 @@ describe("HousingStepForm", () => {
     vi.clearAllMocks();
     mockGetLatest.mockReturnValue({
       id: "test-id",
-      data: { city: "Paris", housing: { cost: 0 } }
+      data: { housing: { type: "", cost: 0 } }
     });
   });
 
   it("renders fields", () => {
     render(<HousingStepForm />);
-    expect(screen.getByText(/Type de logement/i)).toBeDefined();
+    expect(screen.getByLabelText(/Type de logement/i)).toBeDefined();
     expect(screen.getByLabelText(/Loyer estimé/i)).toBeDefined();
   });
 
   it("shows price range feedback when type is selected", async () => {
-    // Mock city in DVP data to trigger city-specific prices
+    // Override mock for this test to simulate Paris
     mockGetLatest.mockReturnValue({
       id: "test-id",
-      data: { city: "Paris" }
+      data: { city: "Paris", housing: { type: "", cost: 0 } }
     });
-    
+
     render(<HousingStepForm />);
     
-    // Select housing type
-    // Radix Select is tricky in tests, we rely on the component using standard Select or we mock it.
-    // For simplicity, we'll assume standard interactions or use specific selectors.
-    // Let's assume we can trigger value change.
+    // Select type
+    const trigger = screen.getByRole("combobox");
+    await userEvent.click(trigger);
+    const option = await screen.findByRole("option", { name: /Colocation/i });
+    await userEvent.click(option);
+
+    expect(await screen.findByText(/Prix moyen/i)).toBeDefined();
   });
 
   it("submits form on button click", async () => {

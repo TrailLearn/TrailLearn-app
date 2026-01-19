@@ -21,86 +21,135 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { type DvpData, dvpDataSchema } from "~/features/dvp/types";
-import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
-
-const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
+import { CEFR_LEVELS } from "~/features/dvp/utils/language-levels";
+import { Edit2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Card, CardContent } from "~/components/ui/card";
 
 const languageStepSchema = z.object({
-  level: z.enum(CEFR_LEVELS, { required_error: "Niveau requis" }),
+  level: z.string().min(1, "Niveau requis"),
 });
 
 type LanguageFormValues = z.infer<typeof languageStepSchema>;
 
 export function LanguageStepForm() {
   const router = useRouter();
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const { data: existingDvp, isLoading } = api.dvp.getLatest.useQuery();
   const updateMutation = api.dvp.update.useMutation();
+  const utils = api.useUtils();
 
   const form = useForm<LanguageFormValues>({
     resolver: zodResolver(languageStepSchema),
     defaultValues: {
-      level: undefined,
+      level: "", // Initialize with empty string to match Select value type
     },
   });
 
-  const { control, reset, getValues } = form;
+  const { control, reset, formState: { isSubmitting } } = form;
   const watchedLevel = useWatch({ control, name: "level" });
 
   const isLowLevel = watchedLevel && ["A1", "A2", "B1"].includes(watchedLevel);
 
+  const parsedData = dvpDataSchema.safeParse(existingDvp?.data);
+  const data = parsedData.success ? parsedData.data : undefined;
+  const isLocked = data?.stepStatus?.language === "VALIDATED";
+
+  const prevDataRef = useRef<string | undefined>(undefined);
+
   useEffect(() => {
-    if (existingDvp?.data) {
-      const result = dvpDataSchema.safeParse(existingDvp.data);
-      if (result.success && result.data.language?.level) {
-        // Safe cast because Zod schema might be looser than CEFR enum
-        const level = result.data.language.level as any;
-        if (CEFR_LEVELS.includes(level)) {
-           reset({ level });
-        }
+    if (!isLoading && !existingDvp) {
+      router.push("/dvp/wizard/project");
+    }
+  }, [isLoading, existingDvp, router]);
+
+  useEffect(() => {
+    if (data && data.language?.level) {
+      const level = data.language.level;
+      if (CEFR_LEVELS.includes(level as any)) {
+         const dataToCompare = { level };
+         const dataString = JSON.stringify(dataToCompare);
+         
+         if (dataString !== prevDataRef.current) {
+            prevDataRef.current = dataString;
+            reset({ level });
+         }
       }
     }
-  }, [existingDvp, reset]);
+  }, [data, reset]);
 
-  const saveDraft = async (values: LanguageFormValues) => {
+  const updateStatus = async (status: "EDITING" | "VALIDATED", values?: LanguageFormValues) => {
     if (!existingDvp) return;
 
     try {
-      const result = dvpDataSchema.safeParse(existingDvp.data);
-      const currentData = result.success ? result.data : {};
+      const currentData = data || {};
+      const currentStatus = currentData.stepStatus || { project: "EDITING", budget: "EDITING", housing: "EDITING", language: "EDITING" };
       
       const newData: DvpData = {
         ...currentData,
-        language: {
-          level: values.level,
+        stepStatus: {
+          ...currentStatus,
+          language: status,
         },
       };
+
+      if (values) {
+        newData.language = {
+          level: values.level,
+        };
+      }
 
       await updateMutation.mutateAsync({
         id: existingDvp.id,
         data: newData,
       });
+      await utils.dvp.getLatest.invalidate();
     } catch (error) {
-      console.error("Failed to save language", error);
+      console.error("Failed to update status", error);
       throw error;
     }
   };
 
+  const handleUnlock = () => {
+    void updateStatus("EDITING");
+  };
+
   async function onSubmit(values: LanguageFormValues) {
     try {
-      await saveDraft(values);
+      await updateStatus("VALIDATED", values);
       router.push("/dvp/wizard/summary"); 
     } catch (error) {
       console.error("Failed to save and proceed", error);
     }
   }
 
-  const { formState: { isSubmitting } } = form;
-  const isFormDisabled = isLoading || !existingDvp;
+  const isFormDisabled = isLoading;
+
+  if (isLoading) return <div>Chargement...</div>;
+
+  if (isLocked) {
+    return (
+      <Card className="border-green-200 bg-green-50/30">
+        <CardContent className="pt-6 flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-green-900 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4" /> Section Validée
+            </h3>
+            <div className="text-sm text-green-800">
+              <p>Niveau CECRL: {data?.language?.level}</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleUnlock} className="gap-2 border-green-200 hover:bg-green-100">
+            <Edit2 className="h-3 w-3" /> Modifier
+          </Button>
+        </CardContent>
+        <div className="px-6 pb-6 flex justify-end">
+           <Button onClick={() => router.push("/dvp/wizard/summary")}>Suivant</Button>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -112,7 +161,7 @@ export function LanguageStepForm() {
             <FormItem>
               <FormLabel>Niveau de langue (CECRL)</FormLabel>
               <Select 
-                onValueChange={field.onChange} 
+                onValueChange={(val) => field.onChange(val)} 
                 defaultValue={field.value} 
                 value={field.value || ""}
                 disabled={isFormDisabled}
@@ -146,9 +195,7 @@ export function LanguageStepForm() {
         )}
 
         <div className="flex items-center justify-end pt-4 gap-4">
-          <Link href="/dvp/wizard/housing">
-            <Button type="button" variant="outline">Précédent</Button>
-          </Link>
+          <Button type="button" variant="outline" onClick={() => router.push("/dvp/wizard/housing")}>Précédent</Button>
           <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
             {isSubmitting || updateMutation.isPending ? "Sauvegarde..." : "Valider et Continuer"}
           </Button>
