@@ -108,7 +108,7 @@ export default function CockpitPage() {
                 </Button>
               </CardContent>
             </Card>
-          ) : dvpRecord?.status === "DRAFT" && (
+          ) : dvpRecord?.status === "DRAFT" ? (
             <Card className="bg-yellow-50 border-yellow-100 border-dashed">
               <CardContent className="pt-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -122,7 +122,7 @@ export default function CockpitPage() {
                 </Button>
               </CardContent>
             </Card>
-          ) : dvpRecord?.status === "COMPLETED" && (
+          ) : dvpRecord?.status === "COMPLETED" ? (
             <Card className="bg-green-50 border-green-100 shadow-sm">
               <CardContent className="pt-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -136,7 +136,7 @@ export default function CockpitPage() {
                 </Button>
               </CardContent>
             </Card>
-          )}
+          ) : null}
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <PillarStatusCard 
