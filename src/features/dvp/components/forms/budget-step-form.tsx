@@ -44,7 +44,7 @@ export function BudgetStepForm() {
     },
   });
 
-  const { control, reset, getValues } = form;
+  const { control, reset, getValues, formState: { isSubmitting } } = form;
   // Opti: Watch only needed fields
   const watchedValues = useWatch({ 
     control,
@@ -58,6 +58,12 @@ export function BudgetStepForm() {
     (Number(savings || 0) / STUDY_DURATION_MONTHS) + 
     Number(guarantorHelp || 0) + 
     Number(otherIncome || 0);
+
+  useEffect(() => {
+    if (!isLoading && !existingDvp) {
+      router.push("/dvp/wizard/project");
+    }
+  }, [isLoading, existingDvp, router]);
 
   useEffect(() => {
     if (existingDvp?.data) {
@@ -109,13 +115,13 @@ export function BudgetStepForm() {
   async function onSubmit(values: BudgetFormValues) {
     try {
       await saveDraft(values);
-      router.push("/dvp/wizard/housing"); // Next step (placeholder for now)
+      router.push("/dvp/wizard/housing"); 
     } catch (error) {
       console.error("Failed to save and proceed", error);
     }
   }
 
-  const isFormDisabled = isLoading || !existingDvp;
+  const isFormDisabled = isLoading;
 
   return (
     <Form {...form}>
@@ -182,8 +188,8 @@ export function BudgetStepForm() {
             <Link href="/dvp/wizard/project">
               <Button type="button" variant="outline">Précédent</Button>
             </Link>
-            <Button type="submit" disabled={updateMutation.isPending || isFormDisabled}>
-              {updateMutation.isPending ? "Chargement..." : "Suivant"}
+            <Button type="submit" disabled={isSubmitting || updateMutation.isPending || isFormDisabled}>
+              {isSubmitting || updateMutation.isPending ? "Chargement..." : "Suivant"}
             </Button>
           </div>
         </div>

@@ -109,6 +109,8 @@ export function ProjectStepForm() {
     }
   }
 
+  const { formState: { isSubmitting } } = form;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -126,6 +128,7 @@ export function ProjectStepForm() {
                 }} 
                 defaultValue={field.value} 
                 value={field.value}
+                disabled={isLoadingDvp || isSubmitting}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -157,6 +160,7 @@ export function ProjectStepForm() {
                     field.onBlur();
                     handleBlur();
                   }}
+                  disabled={isLoadingDvp || isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -188,6 +192,7 @@ export function ProjectStepForm() {
                 }} 
                 defaultValue={field.value} 
                 value={field.value}
+                disabled={isLoadingDvp || isSubmitting}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -211,8 +216,8 @@ export function ProjectStepForm() {
             {saveStatus === "saved" && <span className="text-green-600">Brouillon sauvegardé</span>}
             {saveStatus === "error" && <span className="text-red-500">Erreur de sauvegarde</span>}
           </div>
-          <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-            {createMutation.isPending || updateMutation.isPending ? "Sauvegarde..." : "Suivant"}
+          <Button type="submit" disabled={isLoadingDvp || isSubmitting || createMutation.isPending || updateMutation.isPending}>
+            {isSubmitting || createMutation.isPending || updateMutation.isPending ? "Sauvegarde..." : "Suivant"}
           </Button>
         </div>
       </form>

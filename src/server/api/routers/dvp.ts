@@ -82,15 +82,27 @@ export const dvpRouter = createTRPCRouter({
     }),
 
   getLatest: protectedProcedure.query(async ({ ctx }) => {
+    // Priority 1: Current Draft
+    const draft = await ctx.db.dvpRecord.findFirst({
+      where: { userId: ctx.session.user.id, status: "DRAFT" },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    if (draft) return draft;
+
+    // Priority 2: Latest Completed (to initialize new draft if needed)
     return ctx.db.dvpRecord.findFirst({
-      where: { userId: ctx.session.user.id },
+      where: { userId: ctx.session.user.id, status: "COMPLETED" },
       orderBy: { createdAt: "desc" },
     });
   }),
 
   getHistory: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.dvpRecord.findMany({
-      where: { userId: ctx.session.user.id },
+      where: { 
+        userId: ctx.session.user.id,
+        status: "COMPLETED", // Only show validated snapshots in history
+      },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
