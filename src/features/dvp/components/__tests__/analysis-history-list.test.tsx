@@ -15,23 +15,25 @@ vi.mock("~/trpc/react", () => ({
   },
 }));
 
-// Mock Lucide icons to avoid issues
+// Mock Lucide icons
 vi.mock("lucide-react", () => ({
   History: () => <div data-testid="icon-history" />,
   Calendar: () => <div data-testid="icon-calendar" />,
   Clock: () => <div data-testid="icon-clock" />,
   CheckCircle: () => <div data-testid="icon-check" />,
+  AlertCircle: () => <div data-testid="icon-alert" />,
 }));
 
-// Mock Badge and Card components if they are complex, but usually they are fine. 
-// If they use other contexts/hooks, we might need to mock them.
-// Assuming they are simple UI components.
+// Mock Skeleton
+vi.mock("~/components/ui/skeleton", () => ({
+  Skeleton: () => <div data-testid="skeleton" />,
+}));
 
 describe("AnalysisHistoryList", () => {
   it("renders loading state", () => {
     mockGetHistory.mockReturnValue({ data: undefined, isLoading: true });
     render(<AnalysisHistoryList />);
-    expect(screen.getByText(/Chargement de l'historique/i)).toBeInTheDocument();
+    expect(screen.getAllByTestId("skeleton")).toHaveLength(3);
   });
 
   it("renders empty state", () => {

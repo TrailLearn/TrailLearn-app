@@ -101,7 +101,7 @@ export function AnalysisHistoryList() {
                   {hasResult ? (
                      <span className={`text-xs font-bold ${
                         result.status === "GREEN" ? "text-green-600" : 
-                        result.status === "ORANGE" ? "text-orange-600" : "text-red-600"
+                        result.status === "AMBER" ? "text-orange-600" : "text-red-600"
                      }`}>
                        Score: {result.score}/100
                      </span>
