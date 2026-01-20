@@ -5,12 +5,23 @@ import { useChat } from '@ai-sdk/react';
 import { Send, User, Bot, Loader2 } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 
 export function ChatInterface() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat();
+  const { messages, sendMessage, status, error } = useChat();
+  const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const isLoading = status === 'submitted' || status === 'streaming';
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    
+    await sendMessage({ text: inputValue });
+    setInputValue('');
+  };
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -58,7 +69,12 @@ export function ChatInterface() {
                     ? "bg-blue-600 text-white" 
                     : "bg-gray-100 text-gray-900"
                 )}>
-                  {m.content}
+                  {m.parts.map((part, i) => {
+                    if (part.type === 'text') {
+                      return <span key={i}>{part.text}</span>;
+                    }
+                    return null;
+                  })}
                 </div>
               </div>
             ))}
@@ -90,15 +106,15 @@ export function ChatInterface() {
 
       {/* Zone de saisie */}
       <div className="p-4 border-t bg-gray-50">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={onSubmit} className="flex gap-2">
           <input
             className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
-            value={input}
-            onChange={handleInputChange}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Posez votre question..."
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading || !input.trim()}>
+          <Button type="submit" disabled={isLoading || !inputValue.trim()}>
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             <span className="sr-only">Envoyer</span>
           </Button>
