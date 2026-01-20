@@ -6,7 +6,7 @@ import { AiCoachService } from '~/features/ai-coach/services/ai-service';
 vi.mock('~/features/ai-coach/services/ai-service', () => ({
   AiCoachService: {
     getChatStream: vi.fn().mockResolvedValue({
-      toDataStreamResponse: () => new Response('Mocked Stream'),
+      toUIMessageStreamResponse: () => new Response('Mocked Stream'),
     }),
   },
 }));

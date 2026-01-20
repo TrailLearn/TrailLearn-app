@@ -9,5 +9,5 @@ export async function POST(req: Request) {
   // Future: Extract user tier from session to choose model
   const result = await AiCoachService.getChatStream(messages);
 
-  return result.toDataStreamResponse();
+  return result.toUIMessageStreamResponse();
 }
