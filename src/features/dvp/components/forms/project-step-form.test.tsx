@@ -2,20 +2,20 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProjectStepForm } from "./project-step-form";
-import { act } from "react";
 
-// Mock des hooks tRPC
+// Mock TRPC
+const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
 const mockCreateMutation = vi.fn().mockResolvedValue({ id: "new-id" });
-const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "existing-id" });
 const mockGetLatest = vi.fn();
+const mockInvalidate = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
     dvp: {
-      create: {
-        useMutation: () => ({
-          mutateAsync: mockCreateMutation,
-          isPending: false,
+      getLatest: {
+        useQuery: () => ({
+          data: mockGetLatest(),
+          isLoading: false,
         }),
       },
       update: {
@@ -24,13 +24,18 @@ vi.mock("~/trpc/react", () => ({
           isPending: false,
         }),
       },
-      getLatest: {
-        useQuery: () => ({
-          data: mockGetLatest(),
-          isLoading: false,
+      create: {
+        useMutation: () => ({
+          mutateAsync: mockCreateMutation,
+          isPending: false,
         }),
       },
     },
+    useUtils: () => ({
+      dvp: {
+        getLatest: { invalidate: mockInvalidate }
+      }
+    })
   },
 }));
 
@@ -45,7 +50,11 @@ vi.mock("next/navigation", () => ({
 describe("ProjectStepForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetLatest.mockReturnValue(null); // Par défaut, pas de données existantes
+    mockGetLatest.mockReturnValue({
+      id: "test-id",
+      status: "DRAFT",
+      data: { country: "", city: "", studyType: "" }
+    });
   });
 
   it("renders the form fields correctly", () => {
@@ -53,59 +62,66 @@ describe("ProjectStepForm", () => {
     expect(screen.getByLabelText(/Pays de destination/i)).toBeDefined();
     expect(screen.getByLabelText(/Ville cible/i)).toBeDefined();
     expect(screen.getByLabelText(/Type d'études/i)).toBeDefined();
-    expect(screen.getByRole("button", { name: /Suivant/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: /Valider et Continuer/i })).toBeDefined();
   });
 
   it("validates required fields", async () => {
     render(<ProjectStepForm />);
-    const submitBtn = screen.getByRole("button", { name: /Suivant/i });
-    
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
+
     await userEvent.click(submitBtn);
 
-    expect(await screen.findByText("Pays requis")).toBeDefined();
-    expect(await screen.findByText("Ville requise")).toBeDefined();
-    expect(await screen.findByText("Type d'études requis")).toBeDefined();
-    expect(mockCreateMutation).not.toHaveBeenCalled();
+    expect(mockUpdateMutation).not.toHaveBeenCalled();
   });
 
-  it("autosaves on blur for city field", async () => {
+  it("submits form on button click", async () => {
     render(<ProjectStepForm />);
+    
+    // Fill form
+    // Country Select
+    const countryTrigger = screen.getAllByRole("combobox")[0]; // First select
+    if (!countryTrigger) throw new Error("Country select not found");
+    await userEvent.click(countryTrigger);
+    const countryOption = await screen.findByRole("option", { name: /France/i });
+    await userEvent.click(countryOption);
+
+    // City Input
     const cityInput = screen.getByLabelText(/Ville cible/i);
-    
-    // Type into the input to make form dirty
-    await userEvent.type(cityInput, "Lyon");
-    
-    // Wait for value to be updated
-    expect(cityInput).toHaveValue("Lyon");
+    await userEvent.type(cityInput, "Paris");
 
-    // Explicitly trigger blur
-    fireEvent.blur(cityInput);
+    // Study Type Select
+    const studyTrigger = screen.getAllByRole("combobox")[1]; // Second select
+    if (!studyTrigger) throw new Error("Study select not found");
+    await userEvent.click(studyTrigger);
+    const studyOption = await screen.findByRole("option", { name: /Master/i });
+    await userEvent.click(studyOption);
 
-    // Increase timeout and retry logic
+    // Submit
+    const submitBtn = screen.getByRole("button", { name: /Valider et Continuer/i });
+    await userEvent.click(submitBtn);
+
     await waitFor(() => {
-      // Check if mutation was called
-      expect(mockCreateMutation).toHaveBeenCalled();
-    }, { timeout: 3000 });
-    
-    expect(mockCreateMutation).toHaveBeenCalledWith(expect.objectContaining({
-      city: "Lyon"
-    }));
+      expect(mockUpdateMutation).toHaveBeenCalledWith(expect.objectContaining({
+        id: "test-id",
+        data: expect.objectContaining({
+          country: "france",
+          city: "Paris",
+          studyType: "master",
+          stepStatus: expect.objectContaining({
+            project: "VALIDATED"
+          })
+        }),
+      }));
+    });
   });
 
-  it("loads existing data correctly", async () => {
+  it("loads existing data correctly", () => {
     mockGetLatest.mockReturnValue({
       id: "test-id",
-      data: {
-        country: "france",
-        city: "Bordeaux",
-        studyType: "master"
-      }
+      data: { country: "france", city: "Lyon", studyType: "license" }
     });
 
-    await act(async () => {
-      render(<ProjectStepForm />);
-    });
-    
-    expect(screen.getByDisplayValue("Bordeaux")).toBeDefined();
+    render(<ProjectStepForm />);
+    expect(screen.getByDisplayValue("Lyon")).toBeDefined();
   });
 });

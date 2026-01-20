@@ -131,3 +131,19 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+/**
+ * Admin procedure
+ *
+ * Use this for actions that require the ADMIN role.
+ */
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.session.user.role !== "ADMIN") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+  }
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});

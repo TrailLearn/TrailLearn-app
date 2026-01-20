@@ -16,12 +16,14 @@ enum DvpStatus {
 }
 
 model DvpRecord {
-  id        String    @id @default(cuid())
-  userId    String
-  status    DvpStatus @default(DRAFT)
-  data      Json      @default("{}") // Flexible JSONB storage for DVP content
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  userId            String
+  status            DvpStatus @default(DRAFT)
+  data              Json      @default("{}") // Flexible JSONB storage for DVP content
+  calculationResult Json?     // Snapshot of the diagnostic result
+  rulesVersion      String?   // Version of rules used for calculation
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -56,6 +58,11 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id            String      @id @default(cuid())
   name          String?
@@ -63,9 +70,39 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          UserRole    @default(USER)
   accounts      Account[]
   sessions      Session[]
   dvpRecords    DvpRecord[]
+  auditLogs     AuditLog[]
+}
+
+model BusinessRule {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  category    String
+  version     String   @default("1.0.0")
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@index([category])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  entityType  String   // e.g., "BusinessRule"
+  entityId    String
+  action      String   // e.g., "UPDATE"
+  details     Json?    // e.g., { old: ..., new: ..., reason: ... }
+  userId      String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([entityId])
+  @@index([userId])
 }
 
 model VerificationToken {

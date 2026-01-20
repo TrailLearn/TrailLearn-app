@@ -4,7 +4,10 @@ import { SummaryView } from "./summary-view";
 
 // Mock tRPC
 const mockUpdateMutation = vi.fn().mockResolvedValue({ id: "test-id" });
+const mockSubmitMutation = vi.fn().mockResolvedValue({ id: "test-id" });
 const mockGetLatest = vi.fn();
+
+const mockInvalidate = vi.fn();
 
 vi.mock("~/trpc/react", () => ({
   api: {
@@ -15,6 +18,12 @@ vi.mock("~/trpc/react", () => ({
           isPending: false,
         }),
       },
+      submit: {
+        useMutation: () => ({
+          mutateAsync: mockSubmitMutation,
+          isPending: false,
+        }),
+      },
       getLatest: {
         useQuery: () => ({
           data: mockGetLatest(),
@@ -22,6 +31,12 @@ vi.mock("~/trpc/react", () => ({
         }),
       },
     },
+    useUtils: () => ({
+      dvp: {
+        getLastSnapshot: { invalidate: mockInvalidate },
+        getLatest: { invalidate: mockInvalidate },
+      }
+    }),
   },
 }));
 
@@ -64,7 +79,13 @@ describe("SummaryView", () => {
         city: "Paris", country: "France", studyType: "Master",
         budget: { savings: 1000 },
         housing: { type: "coloc", cost: 500 },
-        language: { level: "B2" }
+        language: { level: "B2" },
+        stepStatus: {
+          project: "VALIDATED",
+          budget: "VALIDATED",
+          housing: "VALIDATED",
+          language: "VALIDATED"
+        }
       }
     });
 

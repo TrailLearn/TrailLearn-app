@@ -26,3 +26,27 @@ development_status:
   "2-5-saisie-logement": "done"
   "2-6-saisie-langue": "done"
   "2-7-synthese-dvp": "done"
+
+  # Epic 3: The Truth Engine
+  "3-1-referentiel-regles-db": "review"
+  "3-2-moteur-calcul-logic": "review"
+  "3-3-versioning-snapshot": "review"
+  "3-4-trace-calcul-whitebox": "review"
+
+  # Epic 4: Cockpit & Simulation
+  "4-1-cockpit-overview": "review"
+  "4-2-restitution-diagnostic-gauge": "review"
+  "4-3-justifications-insight-cards": "review"
+  "4-4-simulator-what-if": "review"
+  "4-5-cockpit-feedback-fixes": "done"
+  "4-7-hotfix-ux-consistency": "done"
+  "4-8-stabilisation-ux-data": "done"
+  "4-9-cockpit-synthesis-history-refinement": "done"
+  "4-10-stabilisation-data-timezone": "done"
+  "4-11-dvp-administrative-model": "in-progress"
+
+  # Epic 5: Standard of Truth Admin
+  "5-0-admin-business-rules": "done"
+
+  # Epic 6: Sharing & Export
+  "6-0-sharing-export": "done"

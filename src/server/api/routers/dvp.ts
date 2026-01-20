@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { dvpDataSchema } from "~/features/dvp/types";
 import { TRPCError } from "@trpc/server";
+import { calculateViability } from "~/features/dvp/engine/calculate-viability";
 
 export const dvpRouter = createTRPCRouter({
   create: protectedProcedure
@@ -56,10 +57,79 @@ export const dvpRouter = createTRPCRouter({
       });
     }),
 
+  submit: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const record = await ctx.db.dvpRecord.findUnique({
+        where: { id: input.id, userId: ctx.session.user.id },
+      });
+
+      if (!record) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Record not found" });
+      }
+
+      const rules = await ctx.db.businessRule.findMany();
+      const diagnostic = calculateViability(record.data as any, rules);
+
+      return ctx.db.dvpRecord.update({
+        where: { id: input.id },
+        data: {
+          status: "COMPLETED",
+          calculationResult: diagnostic as any,
+          rulesVersion: diagnostic.rulesVersion,
+        },
+      });
+    }),
+
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.dvpRecord.findUnique({
+        where: { id: input.id, userId: ctx.session.user.id },
+        include: { user: { select: { name: true, email: true } } },
+      });
+    }),
+
   getLatest: protectedProcedure.query(async ({ ctx }) => {
+    // Priority 1: Current Draft
+    const draft = await ctx.db.dvpRecord.findFirst({
+      where: { userId: ctx.session.user.id, status: "DRAFT" },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    if (draft) return draft;
+
+    // Priority 2: Latest Completed (to initialize new draft if needed)
     return ctx.db.dvpRecord.findFirst({
-      where: { userId: ctx.session.user.id },
+      where: { userId: ctx.session.user.id, status: "COMPLETED" },
       orderBy: { createdAt: "desc" },
+    });
+  }),
+
+  getLastSnapshot: protectedProcedure.query(async ({ ctx }) => {
+    // Strictly the latest completed analysis for official display
+    return ctx.db.dvpRecord.findFirst({
+      where: { userId: ctx.session.user.id, status: "COMPLETED" },
+      orderBy: { createdAt: "desc" },
+    });
+  }),
+
+  getHistory: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.dvpRecord.findMany({
+      where: { 
+        userId: ctx.session.user.id,
+        status: "COMPLETED", // Only show validated snapshots in history
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+        rulesVersion: true,
+        calculationResult: true,
+        data: true, // Included to show City/Study info in list
+      },
     });
   }),
 });

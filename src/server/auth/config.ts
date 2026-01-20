@@ -5,7 +5,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { db } from "~/server/db";
-import { type User } from "@prisma/client";
+import { type User, type UserRole } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -15,6 +15,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: UserRole;
     } & DefaultSession["user"];
   }
 }
@@ -65,7 +66,9 @@ export const authConfig = {
   callbacks: {
     jwt: ({ token, user }) => {
       if (user) {
+        const prismaUser = user as User;
         token.id = user.id;
+        token.role = prismaUser.role;
       }
       return token;
     },
@@ -74,6 +77,7 @@ export const authConfig = {
       user: {
         ...session.user,
         id: token.id as string,
+        role: token.role as UserRole,
       },
     }),
   },

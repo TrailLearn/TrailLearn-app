@@ -24,6 +24,38 @@ export const dvpDataSchema = z.object({
   language: z.object({
     level: z.string().optional(),
   }).optional(),
+
+  // Step Status Tracking (Administrative Model)
+  stepStatus: z.object({
+    project: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    budget: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    housing: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+    language: z.enum(["EDITING", "VALIDATED"]).default("EDITING"),
+  }).optional(),
 });
 
 export type DvpData = z.infer<typeof dvpDataSchema>;
+
+export type ViabilityStatus = "RED" | "AMBER" | "GREEN" | "INCOMPLETE";
+
+export interface ViabilityFinding {
+  pillar: "project" | "budget" | "housing" | "language";
+  severity: "RED" | "AMBER";
+  message: string;
+}
+
+export interface ViabilityResult {
+  status: ViabilityStatus;
+  score: number; // 0-100
+  resteAVivre: number;
+  findings: ViabilityFinding[];
+  calculationTrace: string[]; // Step-by-step logs
+  calculatedAt: string;
+  rulesVersion: string;
+}
+
+export interface BusinessRuleSummary {
+  key: string;
+  value: any;
+  category: string;
+}
