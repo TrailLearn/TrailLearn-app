@@ -1,6 +1,7 @@
-import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
-import { LLM_MODELS, DEFAULT_MODEL } from '~/lib/llm-config';
+import { getLLMModel } from '~/lib/llm-config';
+import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
+import { LLMGuardrails } from '~/server/lib/llm-guardrails';
 
 /**
  * Service to handle AI Coach interactions.
@@ -9,16 +10,31 @@ import { LLM_MODELS, DEFAULT_MODEL } from '~/lib/llm-config';
 export const AiCoachService = {
   /**
    * Generates a streaming response for the maieutic chat.
-   * @param messages - The conversation history
-   * @param modelTier - 'PREMIUM' | 'FREE' (Optional, defaults to PREMIUM/DEFAULT)
+   * Uses the configured LLM provider from llm-config.
    */
-  async getChatStream(messages: any[], modelTier: keyof typeof LLM_MODELS = 'PREMIUM') {
-    const modelName = LLM_MODELS[modelTier] || DEFAULT_MODEL;
-    
-    return streamText({
-      model: openai(modelName),
-      messages,
-      // System prompts will be injected here in Story 7.2
-    });
+  async getChatStream(
+    messages: any[],
+    context?: { userName?: string; projectContext?: string }
+  ) {
+    try {
+      const model = getLLMModel(); // Récupère le modèle configuré dynamiquement
+      const systemPrompt = getMaieuticSystemPrompt(context);
+
+      return streamText({
+        model: model,
+        messages,
+        system: systemPrompt,
+        onFinish: ({ text }) => {
+          // Async Ethical Check (Monitoring)
+          const check = LLMGuardrails.validateNonClosure(text);
+          if (!check.isValid) {
+            console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
+          }
+        }
+      });
+    } catch (error) {
+      console.error("LLM Service Error:", error);
+      throw new Error("Le Coach IA est indisponible pour le moment. Veuillez vérifier la configuration.");
+    }
   },
 };
