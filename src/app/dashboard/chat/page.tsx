@@ -5,17 +5,26 @@ import { ViabilityGauge } from '~/features/ai-coach/components/viability-gauge';
 import { InsightCard } from '~/features/ai-coach/components/insight-card';
 import { api } from '~/trpc/react';
 import { Skeleton } from '~/components/ui/skeleton';
+import { BrainCircuit } from 'lucide-react';
 
 export default function ChatPage() {
   const { data: clarity, isLoading } = api.ai.getLatestClarity.useQuery();
 
   return (
     <div className="container py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-blue-600">Coach IA - Miroir Lucide</h1>
-        <p className="text-muted-foreground">
-          Discutez avec votre coach pour clarifier votre projet et identifier vos priorités.
-        </p>
+      <div className="mb-8 flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-blue-600">Coach IA - Miroir Lucide</h1>
+          <p className="text-muted-foreground">
+            Discutez avec votre coach pour clarifier votre projet et identifier vos priorités.
+          </p>
+        </div>
+        {clarity && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-100">
+            <BrainCircuit className="w-3 h-3" />
+            <span>Mémoire Active</span>
+          </div>
+        )}
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

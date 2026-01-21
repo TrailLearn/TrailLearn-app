@@ -54,12 +54,12 @@ development_status:
   # Epic 7: Socle Conversationnel & Miroir Lucide (NEW)
   "7-1-initialisation-chat": "done"
   "7-2-miroir-lucide": "done"
-  "7-3-indice-clarte": "review"
-  "7-4-jauge-viabilite": "review"
+  "7-3-indice-clarte": "done"
+  "7-4-jauge-viabilite": "done"
 
   # Epic 8: Finalisation & Sortie de Session (NEW)
-  "8-1-dvp-b-generation": "ready-for-dev"
-  "8-2-persistance-session": "ready-for-dev"
+  "8-1-dvp-b-generation": "review"
+  "8-2-persistance-session": "review"
 
   # Epic 9: Exécution Assistée & Focus Mode (NEW)
   "9-1-focus-engine": "ready-for-dev"

@@ -2,14 +2,16 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { Send, User, Bot, Loader2 } from 'lucide-react';
+import { Send, User, Bot, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
+import { useRouter } from 'next/navigation';
 
 export function ChatInterface() {
+  const router = useRouter();
   const { messages, sendMessage, status, error } = useChat();
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -23,7 +25,13 @@ export function ChatInterface() {
     }
   });
 
-  const isLoading = status === 'submitted' || status === 'streaming';
+  const finalize = api.ai.finalizeSession.useMutation({
+    onSuccess: () => {
+      router.push('/dashboard'); // Rediriger vers le dashboard focus
+    }
+  });
+
+  const isLoading = status === 'submitted' || status === 'streaming' || finalize.isPending;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +52,11 @@ export function ChatInterface() {
     }
   };
 
+  const handleFinalize = () => {
+    if (messages.length < 2) return;
+    finalize.mutate({ messages });
+  };
+
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,6 +69,33 @@ export function ChatInterface() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)] max-w-3xl mx-auto border rounded-xl shadow-sm bg-white overflow-hidden">
+      {/* Header avec action de finalisation */}
+      <div className="px-4 py-2 bg-gray-50 border-b flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Session Active</span>
+        </div>
+        
+        {messages.length >= 4 && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8 text-xs gap-2 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+            onClick={handleFinalize}
+            disabled={isLoading}
+          >
+            {finalize.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />}
+            Finaliser le projet
+          </Button>
+        )}
+      </div>
+      
+      {finalize.isError && (
+        <div className="bg-red-50 text-red-600 text-xs text-center py-1 border-b border-red-100">
+          Impossible de finaliser le projet. Veuillez réessayer.
+        </div>
+      )}
+
       {/* Zone de messages */}
       <ScrollArea ref={scrollRef} className="flex-1 p-4">
         {messages.length === 0 ? (

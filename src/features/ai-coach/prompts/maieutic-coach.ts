@@ -20,12 +20,19 @@ EXEMPLES DE REFORMULATION:
 CONTEXTE:
 L'utilisateur s'appelle {{userName}}.
 Son projet actuel (si connu): {{projectContext}}.
+Préférences mémorisées: {{preferences}}.
 `;
 
-export function getMaieuticSystemPrompt(context?: { userName?: string; projectContext?: string }) {
-  if (!context) return BASE_PROMPT.replace('{{userName}}', 'Étudiant').replace('{{projectContext}}', 'Non défini');
+export function getMaieuticSystemPrompt(context?: { userName?: string; projectContext?: string; preferences?: any }) {
+  if (!context) return BASE_PROMPT
+    .replace('{{userName}}', 'Étudiant')
+    .replace('{{projectContext}}', 'Non défini')
+    .replace('{{preferences}}', 'Aucune');
   
+  const prefsString = context.preferences ? JSON.stringify(context.preferences, null, 2) : "Aucune";
+
   return BASE_PROMPT
     .replace('{{userName}}', context.userName || 'Étudiant')
-    .replace('{{projectContext}}', context.projectContext || 'Non défini');
+    .replace('{{projectContext}}', context.projectContext || 'Non défini')
+    .replace('{{preferences}}', prefsString);
 }

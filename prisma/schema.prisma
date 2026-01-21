@@ -71,11 +71,14 @@ model User {
   image         String?
   password      String?
   role          UserRole    @default(USER)
+  preferences   Json        @default("{}") // Stores conversational fragments (city, budget, etc.)
   accounts      Account[]
   sessions      Session[]
   dvpRecords    DvpRecord[]
   auditLogs     AuditLog[]
   clarityIndices ClarityIndex[]
+  hypotheses    Hypothesis[]
+  dvpBSnapshots DvpBSnapshot[]
 }
 
 model BusinessRule {
@@ -130,6 +133,35 @@ model ClarityIndex {
 
   @@index([userId])
   @@index([ruleVersionId])
+}
+
+model Hypothesis {
+  id               String   @id @default(cuid())
+  userId           String
+  title            String   // e.g., "MBA at Harvard"
+  description      String?  @db.Text
+  feasibilityScore Int      // 0-100
+  isPreferred      Boolean  @default(false)
+  details          Json?    // Specific parameters (budget, city, etc.)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model DvpBSnapshot {
+  id          String   @id @default(cuid())
+  userId      String
+  summary     String   @db.Text
+  finalScore  Int
+  data        Json     // Structured extracted data
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model VerificationToken {

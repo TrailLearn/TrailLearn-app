@@ -2,6 +2,8 @@ import { streamText } from 'ai';
 import { getLLMModel } from '~/lib/llm-config';
 import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
 import { LLMGuardrails } from '~/server/lib/llm-guardrails';
+import { extractPreferences } from './logic/synthesis/extract-preferences';
+import { db } from '~/server/db'; // Direct DB access for background task
 
 /**
  * Service to handle AI Coach interactions.
@@ -14,7 +16,7 @@ export const AiCoachService = {
    */
   async getChatStream(
     messages: any[],
-    context?: { userName?: string; projectContext?: string }
+    context?: { userName?: string; projectContext?: string; userId?: string; preferences?: any }
   ) {
     try {
       const model = getLLMModel(); // Récupère le modèle configuré dynamiquement
@@ -31,11 +33,28 @@ export const AiCoachService = {
         model: model,
         messages: coreMessages,
         system: systemPrompt,
-        onFinish: ({ text }) => {
-          // Async Ethical Check (Monitoring)
+        onFinish: async ({ text }) => {
+          // 1. Async Ethical Check (Monitoring)
           const check = LLMGuardrails.validateNonClosure(text);
           if (!check.isValid) {
             console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
+          }
+
+          // 2. Async Preference Extraction (Background persistence)
+          if (context?.userId) {
+            try {
+              // We use the full message history + the new response (text)
+              const allMessages = [...coreMessages, { role: 'assistant', content: text }];
+              const newPrefs = await extractPreferences(allMessages, context.preferences || {});
+              
+              await db.user.update({
+                where: { id: context.userId },
+                data: { preferences: newPrefs as any },
+              });
+              console.log(`[Preferences] Updated for user ${context.userId}`);
+            } catch (err) {
+              console.error("[Preferences] Extraction failed:", err);
+            }
           }
         }
       });
