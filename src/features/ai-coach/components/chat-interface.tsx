@@ -7,11 +7,21 @@ import { Button } from '~/components/ui/button';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
+import { api } from '~/trpc/react';
 
 export function ChatInterface() {
   const { messages, sendMessage, status, error } = useChat();
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastUpdateRef = useRef<number>(0);
+  
+  const utils = api.useUtils();
+  const updateClarity = api.ai.updateClarityIndex.useMutation({
+    onSuccess: () => {
+      // Refresh the latest clarity index if needed (e.g., in a parent dashboard component)
+      void utils.ai.getLatestClarity.invalidate();
+    }
+  });
 
   const isLoading = status === 'submitted' || status === 'streaming';
 
@@ -19,8 +29,19 @@ export function ChatInterface() {
     e.preventDefault();
     if (!inputValue.trim()) return;
     
-    await sendMessage({ text: inputValue });
+    const text = inputValue;
     setInputValue('');
+    
+    // 1. Send message to AI
+    await sendMessage({ text });
+    
+    // 2. Trigger Clarity Index Update (Throttled: Max once every 30s)
+    // This prevents database bloat while keeping "near real-time" feedback
+    const now = Date.now();
+    if (now - lastUpdateRef.current > 30000) {
+      updateClarity.mutate({ source: "USER_INPUT" });
+      lastUpdateRef.current = now;
+    }
   };
 
   // Auto-scroll to bottom

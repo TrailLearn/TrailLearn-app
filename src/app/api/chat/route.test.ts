@@ -2,6 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { POST } from './route';
 import { AiCoachService } from '~/features/ai-coach/services/ai-service';
 
+// Mock Auth to avoid NextAuth import issues (and "next/server" resolution errors)
+vi.mock('~/server/auth', () => ({
+  auth: vi.fn().mockResolvedValue({
+    user: { name: 'Test User', email: 'test@example.com' },
+  }),
+}));
+
 // Mock the AI Service to avoid real API calls
 vi.mock('~/features/ai-coach/services/ai-service', () => ({
   AiCoachService: {
@@ -24,7 +31,15 @@ describe('Chat API Route', () => {
     const response = await POST(req);
 
     // 3. Assertions
-    expect(AiCoachService.getChatStream).toHaveBeenCalledWith(mockMessages);
+    // Expect specific context based on the mocked auth session
+    expect(AiCoachService.getChatStream).toHaveBeenCalledWith(
+      mockMessages,
+      expect.objectContaining({
+        userName: 'Test User',
+        projectContext: expect.any(String), // Matches the hardcoded string in route.ts
+      })
+    );
+    
     expect(response).toBeInstanceOf(Response);
     
     // Optional: Check response body if needed

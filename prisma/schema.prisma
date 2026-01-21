@@ -75,6 +75,7 @@ model User {
   sessions      Session[]
   dvpRecords    DvpRecord[]
   auditLogs     AuditLog[]
+  clarityIndices ClarityIndex[]
 }
 
 model BusinessRule {
@@ -103,6 +104,32 @@ model AuditLog {
 
   @@index([entityId])
   @@index([userId])
+}
+
+model RuleVersion {
+  id          String         @id @default(cuid())
+  version     String         @unique // e.g., "1.0.0"
+  description String?        // Description of the heuristic/logic changes
+  isActive    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  
+  clarityIndices ClarityIndex[]
+}
+
+model ClarityIndex {
+  id            String   @id @default(cuid())
+  userId        String
+  score         Int      // Score out of 100
+  details       Json?    // Breakdown of the score (e.g., completeness, coherence)
+  ruleVersionId String
+  source        String   // "USER_INPUT" | "RULE_UPDATE"
+  createdAt     DateTime @default(now())
+  
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ruleVersion RuleVersion @relation(fields: [ruleVersionId], references: [id])
+
+  @@index([userId])
+  @@index([ruleVersionId])
 }
 
 model VerificationToken {
