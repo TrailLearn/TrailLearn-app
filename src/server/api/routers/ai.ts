@@ -15,7 +15,70 @@ export const aiRouter = createTRPCRouter({
       source: z.enum(["USER_INPUT", "RULE_UPDATE"]),
     }))
     .mutation(async ({ ctx, input }) => {
-      // ... existing code ...
+      // 1. Get the latest DVP data AND User Preferences
+      const [latestDvp, user] = await Promise.all([
+        ctx.db.dvpRecord.findFirst({
+          where: { userId: ctx.session.user.id },
+          orderBy: { updatedAt: "desc" },
+        }),
+        ctx.db.user.findUnique({
+          where: { id: ctx.session.user.id },
+          select: { preferences: true },
+        }),
+      ]);
+
+      // 2. Calculate Clarity (with Type Safety & Chat Fallback)
+      let parsedData = null;
+      if (latestDvp?.data) {
+        const result = dvpDataSchema.safeParse(latestDvp.data);
+        if (result.success) {
+          parsedData = result.data;
+        } else {
+          console.warn("Invalid DVP Data found during Clarity calculation:", result.error);
+        }
+      }
+
+      // Pass both sources: Wizard Data (parsedData) + Chat Data (user.preferences)
+      const clarityResult = calculateClarity(parsedData, user?.preferences);
+
+      // 3. Ensure RuleVersion exists (V1)
+      const ruleVersion = await ctx.db.ruleVersion.upsert({
+        where: { version: clarityResult.rulesVersion },
+        update: {},
+        create: {
+          version: clarityResult.rulesVersion,
+          description: "Initial Clarity Index Heuristic (Completion + Presence)",
+          isActive: true,
+        },
+      });
+
+      // 4. Store the new index
+      const newIndex = await ctx.db.clarityIndex.create({
+        data: {
+          userId: ctx.session.user.id,
+          score: clarityResult.score,
+          details: clarityResult.details as any,
+          ruleVersionId: ruleVersion.id,
+          source: input.source,
+        },
+      });
+
+      // 5. Audit Log
+      await ctx.db.auditLog.create({
+        data: {
+          entityType: "ClarityIndex",
+          entityId: newIndex.id,
+          action: "CREATE",
+          userId: ctx.session.user.id,
+          details: {
+            score: clarityResult.score,
+            source: input.source,
+            ruleVersion: ruleVersion.version,
+          },
+        },
+      });
+
+      return newIndex;
     }),
 
   /**
@@ -25,18 +88,14 @@ export const aiRouter = createTRPCRouter({
     .input(z.object({
       messages: z.array(z.object({
         role: z.string(),
-        content: z.string().optional(), // Content might be empty or missing in some edge cases
-        // Add other fields if necessary, but role/content are core
+        content: z.string().optional(),
       })),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // 1. Generate Synthesis via LLM
         const synthesis = await generateDvpBSynthesis(input.messages);
 
-        // 2. Wrap in transaction for atomic storage
         return await ctx.db.$transaction(async (tx) => {
-          // A. Store Snapshot
           const snapshot = await tx.dvpBSnapshot.create({
             data: {
               userId: ctx.session.user.id,
@@ -46,7 +105,6 @@ export const aiRouter = createTRPCRouter({
             },
           });
 
-          // B. Create Hypotheses
           const hypotheses = await Promise.all(
             synthesis.hypotheses.map((h) =>
               tx.hypothesis.create({
@@ -62,7 +120,6 @@ export const aiRouter = createTRPCRouter({
             )
           );
 
-          // C. Audit Log
           await tx.auditLog.create({
             data: {
               entityType: "DvpBSnapshot",
@@ -87,9 +144,6 @@ export const aiRouter = createTRPCRouter({
       }
     }),
 
-  /**
-   * Retrieves the latest Clarity Index for the dashboard.
-   */
   getLatestClarity: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.clarityIndex.findFirst({
       where: { userId: ctx.session.user.id },

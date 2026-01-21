@@ -23,22 +23,13 @@ export interface ClarityResult {
  * - 70% Weight: Administrative Completion (Validated Steps)
  * - 30% Weight: Data Presence (Coherence/Filling)
  */
-export function calculateClarity(data: DvpData | undefined | null): ClarityResult {
+export function calculateClarity(data: DvpData | undefined | null, preferences?: any): ClarityResult {
   const rulesVersion = "1.0.0";
   
-  if (!data) {
-    return {
-      score: 0,
-      details: {
-        completion: 0,
-        coherence: 0,
-        breakdown: { project: false, budget: false, housing: false, language: false }
-      },
-      rulesVersion,
-    };
-  }
+  // Normalize preferences to avoid null access
+  const prefs = preferences || {};
 
-  // 1. Completion Score (70% weight)
+  // 1. Completion Score (70% weight) - Strict Administrative Validation (Wizard only)
   const completeness = getDvpCompleteness(data);
   const validatedCount = [
     completeness.isCityComplete,
@@ -49,13 +40,13 @@ export function calculateClarity(data: DvpData | undefined | null): ClarityResul
   
   const completionScore = (validatedCount / 4) * 100;
 
-  // 2. Coherence/Data Presence Score (30% weight)
-  // Check if data is present even if not validated
+  // 2. Coherence/Data Presence Score (30% weight) - Flexible (Wizard OR Chat Memory)
+  const dvp = data || {};
   const presence = {
-    project: !!(data.city && data.country),
-    budget: !!(data.budget && (data.budget.savings !== undefined || data.budget.guarantorHelp !== undefined)),
-    housing: !!(data.housing && data.housing.cost !== undefined),
-    language: !!(data.language && data.language.level),
+    project: !!(dvp.city || prefs.city) && !!(dvp.country || prefs.country),
+    budget: !!(dvp.budget?.savings !== undefined || prefs.budget !== undefined),
+    housing: !!(dvp.housing?.cost !== undefined), // Housing is harder to extract from chat currently
+    language: !!(dvp.language?.level || prefs.languageLevel), // Assuming prefs might have this
   };
 
   const presenceCount = Object.values(presence).filter(Boolean).length;
