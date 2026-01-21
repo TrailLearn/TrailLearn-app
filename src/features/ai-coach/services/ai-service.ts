@@ -29,6 +29,14 @@ export const AiCoachService = {
         content: m.content || '', // Ensure content is never undefined
       }));
 
+      // --- DEBUG LOGS (Temporary) ---
+      console.log("--- AI COACH DEBUG ---");
+      console.log("Context Data:", JSON.stringify(context, null, 2));
+      console.log("System Prompt Preview:", systemPrompt.substring(0, 500) + "...");
+      console.log("Message History Length:", coreMessages.length);
+      console.log("Last Message:", JSON.stringify(coreMessages[coreMessages.length - 1], null, 2));
+      // -----------------------------
+
       return streamText({
         model: model,
         messages: coreMessages,
