@@ -15,15 +15,24 @@ So that I can reduce the user's cognitive load and prevent paralysis.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Focus Logic Implementation
-  - [ ] Implement `src/features/execution/logic/get-focus-tasks.ts`.
-  - [ ] Define priority algorithm (Deadline proximity + Criticality).
-- [ ] Task 2: API Endpoint
-  - [ ] Create tRPC procedure `execution.getFocusTasks`.
+- [x] Task 1: Focus Logic Implementation
+  - [x] Implement `src/features/execution/logic/get-focus-tasks.ts`.
+  - [x] Define priority algorithm (Deadline proximity + Criticality).
+- [x] Task 2: API Endpoint
+  - [x] Create tRPC procedure `execution.getFocusTasks`.
 
 ## Dev Notes
+
+### Architecture
+- **Separation of Concerns**: Logic is isolated in `logic/focus-engine.ts`, tested independently of the database.
+- **Priority Handling**: Custom sorting logic handles the enum-like priorities correctly.
 
 ## Dev Agent Record
 
 ### Status
-ready-for-dev
+review
+
+### Implementation Notes
+- Added `ActionPlan` and `Task` schema.
+- Implemented core focus logic with unit tests.
+- Created `executionRouter` and registered it.

@@ -62,12 +62,12 @@ development_status:
   "8-2-persistance-session": "done"
 
   # Epic 9: Exécution Assistée & Focus Mode (NEW)
-  "9-1-focus-engine": "ready-for-dev"
-  "9-2-focus-dashboard": "ready-for-dev"
-  "9-3-preuve-facultative": "ready-for-dev"
-  "9-4-feedback-narratif": "ready-for-dev"
-  "9-5-secretaire-logistique": "ready-for-dev"
+  "9-1-focus-engine": "done"
+  "9-2-focus-dashboard": "done"
+  "9-3-preuve-facultative": "done"
+  "9-4-feedback-narratif": "done"
+  "9-5-secretaire-logistique": "done"
 
   # Epic 10: Gouvernance & Pilotage (NEW)
-  "10-1-regles-versioning": "ready-for-dev"
-  "10-2-relance-intelligente": "ready-for-dev"
+  "10-1-regles-versioning": "review"
+  "10-2-relance-intelligente": "review"

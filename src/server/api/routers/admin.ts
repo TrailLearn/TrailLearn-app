@@ -12,6 +12,15 @@ export const adminRouter = createTRPCRouter({
     });
   }),
 
+  getRuleVersions: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.user.role !== "ADMIN") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+    return ctx.db.ruleVersion.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }),
+
   updateRule: protectedProcedure
     .input(z.object({
       id: z.string(),
@@ -33,33 +42,69 @@ export const adminRouter = createTRPCRouter({
 
       const oldValue = rule.value;
 
-      // Update Rule
-      const updatedRule = await ctx.db.businessRule.update({
-        where: { id: input.id },
-        data: {
-          value: input.value,
-          updatedBy: ctx.session.user.id,
-          // Increment version logic could be added here (e.g. semantic or simple integer)
-          // keeping simple for now
-        },
-      });
-
-      // Audit Log
-      await ctx.db.auditLog.create({
-        data: {
-          userId: ctx.session.user.id,
-          entityType: "BusinessRule",
-          entityId: rule.id,
-          action: "UPDATE",
-          details: {
-            reason: input.reason,
-            oldValue,
-            newValue: input.value,
-            key: rule.key
+      // --- VERSIONING LOGIC ---
+      
+      return await ctx.db.$transaction(async (tx) => {
+        // 1. Update the Rule itself
+        const updatedRule = await tx.businessRule.update({
+          where: { id: input.id },
+          data: {
+            value: input.value,
+            updatedBy: ctx.session.user.id,
           },
-        },
-      });
+        });
 
-      return updatedRule;
+        // 2. Determine next Version Number
+        const lastVersion = await tx.ruleVersion.findFirst({
+          orderBy: { createdAt: "desc" },
+        });
+
+        let nextVersion = "1.0.0";
+        if (lastVersion) {
+          const parts = lastVersion.version.split('.');
+          if (parts.length === 3 && parts.every(p => !isNaN(Number(p)))) {
+            const numbers = parts.map(Number);
+            numbers[2]! += 1; // Increment patch version
+            nextVersion = numbers.join('.');
+          } else {
+            // Fallback for non-standard versions: append timestamp
+            nextVersion = `v-${Date.now()}`;
+          }
+        }
+
+        // 3. Create new RuleVersion
+        const newRuleVersion = await tx.ruleVersion.create({
+          data: {
+            version: nextVersion,
+            description: `Auto-generated after update of rule: ${rule.key}. Reason: ${input.reason}`,
+            isActive: true,
+          },
+        });
+
+        // 4. Mark all other versions as inactive
+        await tx.ruleVersion.updateMany({
+          where: { id: { not: newRuleVersion.id } },
+          data: { isActive: false },
+        });
+
+        // 5. Audit Log
+        await tx.auditLog.create({
+          data: {
+            userId: ctx.session.user.id,
+            entityType: "BusinessRule",
+            entityId: rule.id,
+            action: "UPDATE",
+            details: {
+              reason: input.reason,
+              oldValue,
+              newValue: input.value,
+              key: rule.key,
+              newRuleVersion: nextVersion,
+            },
+          },
+        });
+
+        return updatedRule;
+      });
     }),
 });

@@ -15,8 +15,8 @@ export const aiRouter = createTRPCRouter({
       source: z.enum(["USER_INPUT", "RULE_UPDATE"]),
     }))
     .mutation(async ({ ctx, input }) => {
-      // 1. Get the latest DVP data AND User Preferences
-      const [latestDvp, user] = await Promise.all([
+      // 1. Get the latest DVP data AND User Preferences AND Rules
+      const [latestDvp, user, weightsRule, latestVersion] = await Promise.all([
         ctx.db.dvpRecord.findFirst({
           where: { userId: ctx.session.user.id },
           orderBy: { updatedAt: "desc" },
@@ -24,6 +24,13 @@ export const aiRouter = createTRPCRouter({
         ctx.db.user.findUnique({
           where: { id: ctx.session.user.id },
           select: { preferences: true },
+        }),
+        ctx.db.businessRule.findUnique({
+          where: { key: "clarity_heuristic_weights" },
+        }),
+        ctx.db.ruleVersion.findFirst({
+          where: { isActive: true },
+          orderBy: { createdAt: "desc" },
         }),
       ]);
 
@@ -38,19 +45,27 @@ export const aiRouter = createTRPCRouter({
         }
       }
 
-      // Pass both sources: Wizard Data (parsedData) + Chat Data (user.preferences)
-      const clarityResult = calculateClarity(parsedData, user?.preferences);
+      // Weights from DB or default
+      const weights = (weightsRule?.value as any) || { completion_weight: 0.7, coherence_weight: 0.3 };
 
-      // 3. Ensure RuleVersion exists (V1)
-      const ruleVersion = await ctx.db.ruleVersion.upsert({
-        where: { version: clarityResult.rulesVersion },
-        update: {},
-        create: {
-          version: clarityResult.rulesVersion,
-          description: "Initial Clarity Index Heuristic (Completion + Presence)",
-          isActive: true,
-        },
-      });
+      // Pass both sources: Wizard Data (parsedData) + Chat Data (user.preferences)
+      const clarityResult = calculateClarity(parsedData, user?.preferences, weights);
+
+      // 3. Ensure RuleVersion exists (V1 Fallback if no active version)
+      let activeVersionId = latestVersion?.id;
+      
+      if (!activeVersionId) {
+        const defaultVersion = await ctx.db.ruleVersion.upsert({
+          where: { version: clarityResult.rulesVersion },
+          update: {},
+          create: {
+            version: clarityResult.rulesVersion,
+            description: "Initial Clarity Index Heuristic (Completion + Presence)",
+            isActive: true,
+          },
+        });
+        activeVersionId = defaultVersion.id;
+      }
 
       // 4. Store the new index
       const newIndex = await ctx.db.clarityIndex.create({
@@ -58,7 +73,7 @@ export const aiRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           score: clarityResult.score,
           details: clarityResult.details as any,
-          ruleVersionId: ruleVersion.id,
+          ruleVersionId: activeVersionId,
           source: input.source,
         },
       });
@@ -66,14 +81,14 @@ export const aiRouter = createTRPCRouter({
       // 5. Audit Log
       await ctx.db.auditLog.create({
         data: {
+          userId: ctx.session.user.id,
           entityType: "ClarityIndex",
           entityId: newIndex.id,
           action: "CREATE",
-          userId: ctx.session.user.id,
           details: {
             score: clarityResult.score,
             source: input.source,
-            ruleVersion: ruleVersion.version,
+            ruleVersion: latestVersion?.version || clarityResult.rulesVersion,
           },
         },
       });

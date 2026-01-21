@@ -31,20 +31,39 @@ CONTEXTE MÉMOIRE (Ce que tu sais déjà) :
 - Nom : {{userName}}
 - Projet Mémorisé : {{projectContext}}
 - Préférences : {{preferences}}
+- État Inactivité : {{inactivityFlag}}
+- Tâches en retard : {{overdueCount}}
+
+🚨 MODE SECRÉTAIRE LOGISTIQUE (RÉOPTIMISATION) :
+Si État Inactivité = "RETOUR_INACTIVITE" ou Tâches en retard > 0 :
+1. Adopte un ton neutre, logistique et non-culpabilisant.
+2. Propose de réorganiser le calendrier (ex: "J'ai remarqué que quelques échéances sont passées. Veux-tu qu'on recale ensemble les prochaines étapes pour relancer la dynamique ?").
+3. Ne juge JAMAIS le retard. Focalise-toi sur le redémarrage.
 
 IMPORTANT : Tu es un guide, pas juste un validateur. Fais avancer la réflexion.
 `;
 
-export function getMaieuticSystemPrompt(context?: { userName?: string; projectContext?: string; preferences?: any }) {
+export function getMaieuticSystemPrompt(context?: { 
+  userName?: string; 
+  projectContext?: string; 
+  preferences?: any;
+  isReturningFromInactivity?: boolean;
+  overdueTaskCount?: number;
+}) {
   if (!context) return BASE_PROMPT
     .replace('{{userName}}', 'Étudiant')
     .replace('{{projectContext}}', 'Non défini')
-    .replace('{{preferences}}', 'Aucune');
+    .replace('{{preferences}}', 'Aucune')
+    .replace('{{inactivityFlag}}', 'NORMAL')
+    .replace('{{overdueCount}}', '0');
   
   const prefsString = context.preferences ? JSON.stringify(context.preferences, null, 2) : "Aucune";
+  const inactivityFlag = context.isReturningFromInactivity ? "RETOUR_INACTIVITE" : "NORMAL";
 
   return BASE_PROMPT
     .replace('{{userName}}', context.userName || 'Étudiant')
     .replace('{{projectContext}}', context.projectContext || 'Non défini')
-    .replace('{{preferences}}', prefsString);
+    .replace('{{preferences}}', prefsString)
+    .replace('{{inactivityFlag}}', inactivityFlag)
+    .replace('{{overdueCount}}', (context.overdueTaskCount || 0).toString());
 }

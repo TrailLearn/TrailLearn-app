@@ -16,7 +16,14 @@ export const AiCoachService = {
    */
   async getChatStream(
     messages: any[],
-    context?: { userName?: string; projectContext?: string; userId?: string; preferences?: any }
+    context?: { 
+      userName?: string; 
+      projectContext?: string; 
+      userId?: string; 
+      preferences?: any;
+      isReturningFromInactivity?: boolean;
+      overdueTaskCount?: number;
+    }
   ) {
     try {
       const model = getLLMModel(); // Récupère le modèle configuré dynamiquement

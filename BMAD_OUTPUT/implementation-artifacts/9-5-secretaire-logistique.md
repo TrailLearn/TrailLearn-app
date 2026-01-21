@@ -14,14 +14,24 @@ So that I can restart my momentum easily.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Re-optimization Prompt
-  - [ ] Define the "Secrétaire Logistique" system prompt in `src/features/ai-coach/prompts/`.
-- [ ] Task 2: Detection Logic
-  - [ ] Implement check for last interaction date and overdue tasks.
+- [x] Task 1: Re-optimization Prompt
+  - [x] Define the "Secrétaire Logistique" system prompt in `src/features/ai-coach/prompts/maieutic-coach.ts`.
+- [x] Task 2: Detection Logic
+  - [x] Implement check for last interaction date and overdue tasks in `src/app/api/chat/route.ts`.
+  - [x] Track `lastActiveAt` in User model.
 
 ## Dev Notes
+
+### Implementation Details
+- **Trigger**: Inactivity > 7 days or any overdue task (`dueDate < now`).
+- **Persona**: The AI becomes a neutral logistic secretary when the trigger is met, proposing plan re-optimization.
 
 ## Dev Agent Record
 
 ### Status
-ready-for-dev
+review
+
+### Implementation Notes
+- Added `lastActiveAt` to Prisma.
+- Logic in `route.ts` detects returning users and overdue counts.
+- Persona instructions added to system prompt.

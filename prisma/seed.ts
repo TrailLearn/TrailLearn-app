@@ -61,6 +61,25 @@ async function main() {
             default: 0.8,
         },
         description: "Indices du coût de la vie par ville",
+    },
+    // Clarity Index Heuristic
+    {
+      key: "clarity_heuristic_weights",
+      category: "ai",
+      value: {
+        completion_weight: 0.7,
+        coherence_weight: 0.3,
+      },
+      description: "Pondération de l'Indice de Clarté (V1)",
+    },
+    // Notification Templates
+    {
+      key: "notification_templates",
+      category: "system",
+      value: {
+        re_optimize: "Bonjour {{name}}, certaines de vos échéances sont passées. Votre coach est prêt à vous aider à réorganiser votre plan !",
+      },
+      description: "Modèles de messages pour les notifications automatiques",
     }
   ];
 

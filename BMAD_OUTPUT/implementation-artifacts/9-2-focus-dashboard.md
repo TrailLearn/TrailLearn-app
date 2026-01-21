@@ -15,16 +15,29 @@ So that I don't feel overwhelmed by the total amount of work.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `FocusDashboard` Component
-  - [ ] Implement `src/features/execution/components/focus-dashboard.tsx`.
-- [ ] Task 2: Implement `TaskCard` Component
-  - [ ] Display task title, status, and optional evidence indicator.
-- [ ] Task 3: "View Full Plan" Toggle
-  - [ ] Implement the collapsible backlog view.
+- [x] Task 1: UI Layout
+  - [x] Create `src/app/dashboard/focus/page.tsx`.
+  - [x] Implement the 3-column grid for Top 3 tasks.
+- [x] Task 2: TaskCard Component
+  - [x] Create `src/features/execution/components/task-card.tsx`.
+  - [x] Display priority badges and colors.
+- [x] Task 3: Interaction
+  - [x] Add "Mark as Done" action.
+  - [x] Implement automatic re-filtering (Top 3 refreshes when a task is completed).
 
 ## Dev Notes
+
+### UI Design
+- **Color Coding**: RED (High), AMBER (Medium), EMERALD (Low).
+- **Focus Mode**: Restricted view to exactly 3 items to reduce cognitive load.
 
 ## Dev Agent Record
 
 ### Status
-ready-for-dev
+review
+
+### Implementation Notes
+- Created `FocusDashboard` page.
+- Created `TaskCard` with support for Evidence (9.3) and Feedback (9.4).
+- Added `updateTaskStatus` and `addEvidence` to tRPC router.
+

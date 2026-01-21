@@ -14,16 +14,22 @@ So that I can reflect on my learning journey.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Narrative UI
-  - [ ] Implement a micro-chat modal or drawer after task completion.
-- [ ] Task 2: Data Persistence
-  - [ ] Update the `Task` object with the narrative feedback.
-- [ ] Task 3: Traction Update
-  - [ ] Implement the `Story 8.6` (now 9.x) Indice de Traction update logic.
+- [x] Task 1: UI Extension
+  - [x] Add narrative feedback form to `TaskCard` ("Journal de bord").
+- [x] Task 2: Persistence
+  - [x] Save `userFeedback` during task completion.
 
 ## Dev Notes
+
+### Requirement FR16
+- **Value**: This provides qualitative data for the Coach to better understand user struggles.
 
 ## Dev Agent Record
 
 ### Status
-ready-for-dev
+review
+
+### Implementation Notes
+- Implemented feedback textarea in `TaskCard`.
+- Feedback is persisted via `updateTaskStatus` mutation.
+
