@@ -3,12 +3,12 @@ import { getLLMModel } from '~/lib/llm-config';
 import { z } from 'zod';
 
 const preferencesSchema = z.object({
-  city: z.string().optional(),
-  country: z.string().optional(),
-  budget: z.number().optional(),
-  studyField: z.string().optional(),
-  degreeLevel: z.string().optional(),
-  keyConcerns: z.array(z.string()).optional(),
+  city: z.string().nullable().describe("Cible de ville (ex: Paris)"),
+  country: z.string().nullable().describe("Pays cible"),
+  budget: z.number().nullable().describe("Budget annuel en euros"),
+  studyField: z.string().nullable().describe("Domaine d'études"),
+  degreeLevel: z.string().nullable().describe("Niveau (Licence, Master...)"),
+  keyConcerns: z.array(z.string()).describe("Liste des craintes ou points d'attention"),
 });
 
 export type UserPreferences = z.infer<typeof preferencesSchema>;

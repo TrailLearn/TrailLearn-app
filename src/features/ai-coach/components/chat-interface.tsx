@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 
 export function ChatInterface() {
   const router = useRouter();
+  // Retour aux helpers qui semblaient fonctionner au niveau compilation
   const { messages, sendMessage, status, error } = useChat();
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -20,14 +21,13 @@ export function ChatInterface() {
   const utils = api.useUtils();
   const updateClarity = api.ai.updateClarityIndex.useMutation({
     onSuccess: () => {
-      // Refresh the latest clarity index if needed (e.g., in a parent dashboard component)
       void utils.ai.getLatestClarity.invalidate();
     }
   });
 
   const finalize = api.ai.finalizeSession.useMutation({
     onSuccess: () => {
-      router.push('/dashboard'); // Rediriger vers le dashboard focus
+      router.push('/dashboard');
     }
   });
 
@@ -40,11 +40,14 @@ export function ChatInterface() {
     const text = inputValue;
     setInputValue('');
     
-    // 1. Send message to AI
-    await sendMessage({ text });
+    // Utilisation du format 'parts' détecté dans les logs de debug
+    // Cela garantit la transmission du texte pour cette version spécifique du SDK.
+    await sendMessage({
+      role: 'user',
+      parts: [{ type: 'text', text: text }]
+    } as any);
     
-    // 2. Trigger Clarity Index Update (Throttled: Max once every 30s)
-    // This prevents database bloat while keeping "near real-time" feedback
+    // Update de l'indice (Throttle)
     const now = Date.now();
     if (now - lastUpdateRef.current > 30000) {
       updateClarity.mutate({ source: "USER_INPUT" });
@@ -54,7 +57,20 @@ export function ChatInterface() {
 
   const handleFinalize = () => {
     if (messages.length < 2) return;
-    finalize.mutate({ messages });
+    
+    // Extraction sécurisée du texte pour la finalisation
+    const mappedMessages = messages.map(m => {
+      let text = (m as any).content || '';
+      if (!text && Array.isArray((m as any).parts)) {
+        text = (m as any).parts
+          .filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('\n');
+      }
+      return { role: m.role, content: text };
+    });
+
+    finalize.mutate({ messages: mappedMessages });
   };
 
   // Auto-scroll to bottom
@@ -130,12 +146,13 @@ export function ChatInterface() {
                     ? "bg-blue-600 text-white" 
                     : "bg-gray-100 text-gray-900"
                 )}>
-                  {m.parts.map((part, i) => {
-                    if (part.type === 'text') {
-                      return <span key={i}>{part.text}</span>;
-                    }
-                    return null;
-                  })}
+                  {Array.isArray((m as any).parts) ? (
+                    (m as any).parts.map((part: any, i: number) => (
+                      part.type === 'text' ? <span key={i}>{part.text}</span> : null
+                    ))
+                  ) : (
+                    (m as any).content
+                  )}
                 </div>
               </div>
             ))}

@@ -22,7 +22,7 @@ describe('generateDvpBSynthesis', () => {
             description: 'Top tier ambition',
             feasibilityScore: 40,
             isPreferred: true,
-            details: { country: 'USA' }
+            details: { city: null, country: 'USA', budget: null, studyType: null }
           }
         ],
         globalClarityScore: 80

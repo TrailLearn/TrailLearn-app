@@ -22,19 +22,31 @@ export const AiCoachService = {
       const model = getLLMModel(); // Récupère le modèle configuré dynamiquement
       const systemPrompt = getMaieuticSystemPrompt(context);
 
-      // Conversion manuelle des messages UI vers CoreMessage pour éviter les erreurs de type
-      // et les champs superflus (id, createdAt...) qui cassent la validation strict du SDK.
-      const coreMessages = messages.map((m) => ({
-        role: m.role as 'user' | 'assistant' | 'system',
-        content: m.content || '', // Ensure content is never undefined
-      }));
+      // Conversion manuelle des messages UI vers CoreMessage
+      // Supporte le format classique 'content' et le format moderne 'parts'
+      const coreMessages = messages.map((m) => {
+        let textContent = m.content || '';
+        
+        // Si content est vide, on cherche dans 'parts' (nouveau standard SDK)
+        if (!textContent && Array.isArray(m.parts)) {
+          textContent = m.parts
+            .filter((p: any) => p.type === 'text')
+            .map((p: any) => p.text)
+            .join('\n');
+        }
+
+        return {
+          role: m.role as 'user' | 'assistant' | 'system',
+          content: textContent,
+        };
+      });
 
       // --- DEBUG LOGS (Temporary) ---
       console.log("--- AI COACH DEBUG ---");
       console.log("Context Data:", JSON.stringify(context, null, 2));
       console.log("System Prompt Preview:", systemPrompt.substring(0, 500) + "...");
       console.log("Message History Length:", coreMessages.length);
-      console.log("Last Message:", JSON.stringify(coreMessages[coreMessages.length - 1], null, 2));
+      console.log("Full History Dump:", JSON.stringify(coreMessages, null, 2)); // Dump full history to be sure
       // -----------------------------
 
       return streamText({

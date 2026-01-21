@@ -16,7 +16,10 @@ describe('extractPreferences', () => {
     vi.mocked(generateObject).mockResolvedValueOnce({
       object: {
         city: 'Berlin',
+        country: null,
         budget: 1000,
+        studyField: null,
+        degreeLevel: null,
         keyConcerns: ['Cost of living']
       },
     } as any);

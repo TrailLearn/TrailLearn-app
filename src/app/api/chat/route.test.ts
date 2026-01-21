@@ -17,6 +17,9 @@ vi.mock('~/server/db', () => ({
         preferences: { city: 'Paris', budget: 1000 },
       }),
     },
+    dvpRecord: {
+      findFirst: vi.fn().mockResolvedValue(null),
+    },
   },
 }));
 
