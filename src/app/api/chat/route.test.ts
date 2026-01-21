@@ -5,8 +5,19 @@ import { AiCoachService } from '~/features/ai-coach/services/ai-service';
 // Mock Auth to avoid NextAuth import issues (and "next/server" resolution errors)
 vi.mock('~/server/auth', () => ({
   auth: vi.fn().mockResolvedValue({
-    user: { name: 'Test User', email: 'test@example.com' },
+    user: { id: 'test-user-id', name: 'Test User', email: 'test@example.com' },
   }),
+}));
+
+// Mock DB to avoid environment variable access issues during test
+vi.mock('~/server/db', () => ({
+  db: {
+    user: {
+      findUnique: vi.fn().mockResolvedValue({
+        preferences: { city: 'Paris', budget: 1000 },
+      }),
+    },
+  },
 }));
 
 // Mock the AI Service to avoid real API calls
@@ -31,12 +42,14 @@ describe('Chat API Route', () => {
     const response = await POST(req);
 
     // 3. Assertions
-    // Expect specific context based on the mocked auth session
+    // Expect specific context based on the mocked auth session and db preferences
     expect(AiCoachService.getChatStream).toHaveBeenCalledWith(
       mockMessages,
       expect.objectContaining({
         userName: 'Test User',
-        projectContext: expect.any(String), // Matches the hardcoded string in route.ts
+        userId: 'test-user-id',
+        projectContext: expect.any(String),
+        preferences: { city: 'Paris', budget: 1000 },
       })
     );
     

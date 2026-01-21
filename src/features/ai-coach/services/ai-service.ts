@@ -2,7 +2,7 @@ import { streamText } from 'ai';
 import { getLLMModel } from '~/lib/llm-config';
 import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
 import { LLMGuardrails } from '~/server/lib/llm-guardrails';
-import { extractPreferences } from './logic/synthesis/extract-preferences';
+import { extractPreferences } from '../logic/synthesis/extract-preferences';
 import { db } from '~/server/db'; // Direct DB access for background task
 
 /**
