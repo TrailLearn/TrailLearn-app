@@ -16,11 +16,14 @@ export type LLMProvider = typeof LLM_PROVIDERS[keyof typeof LLM_PROVIDERS];
 
 // --- ENVIRONMENT VARIABLES ---
 
-const provider = (process.env.LLM_PROVIDER || 'openai') as LLMProvider;
+// Removed top-level provider constant to allow dynamic runtime evaluation
+// const provider = (process.env.LLM_PROVIDER || 'openai') as LLMProvider;
 
 // --- PROVIDER FACTORY ---
 
 export function getLLMModel(): LanguageModel {
+  const provider = (process.env.LLM_PROVIDER || 'openai') as LLMProvider;
+
   switch (provider) {
     case LLM_PROVIDERS.OPENAI:
       if (!process.env.OPENAI_API_KEY) throw new Error('Missing OPENAI_API_KEY');
@@ -30,6 +33,7 @@ export function getLLMModel(): LanguageModel {
     case LLM_PROVIDERS.AZURE_OPENAI:
       if (!process.env.AZURE_RESOURCE_NAME || !process.env.AZURE_API_KEY) 
         throw new Error('Missing AZURE_RESOURCE_NAME or AZURE_API_KEY');
+      
       const azure = createAzure({
         resourceName: process.env.AZURE_RESOURCE_NAME,
         apiKey: process.env.AZURE_API_KEY,
