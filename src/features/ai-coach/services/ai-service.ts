@@ -24,7 +24,7 @@ export const AiCoachService = {
       // et les champs superflus (id, createdAt...) qui cassent la validation strict du SDK.
       const coreMessages = messages.map((m) => ({
         role: m.role as 'user' | 'assistant' | 'system',
-        content: m.content,
+        content: m.content || '', // Ensure content is never undefined
       }));
 
       return streamText({
