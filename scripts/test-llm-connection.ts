@@ -10,11 +10,14 @@ if (fs.existsSync(envPath)) {
   const envConfig = fs.readFileSync(envPath, 'utf-8');
   envConfig.split('\n').forEach((line) => {
     const match = line.match(/^\s*([\w_]+)\s*=\s*(.*)?\s*$/);
-    if (match) {
+    if (match && match[1]) {
       const key = match[1];
       let value = match[2] || '';
+      // Remove quotes if they exist
       if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
       if (value.startsWith("'") && value.endsWith("'")) value = value.slice(1, -1);
+      
+      // Override or set process.env (Force override to pick up manual edits)
       process.env[key] = value;
     }
   });
