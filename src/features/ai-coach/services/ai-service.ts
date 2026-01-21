@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { streamText, convertToCoreMessages } from 'ai';
 import { getLLMModel } from '~/lib/llm-config';
 import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
 import { LLMGuardrails } from '~/server/lib/llm-guardrails';
@@ -20,9 +20,12 @@ export const AiCoachService = {
       const model = getLLMModel(); // Récupère le modèle configuré dynamiquement
       const systemPrompt = getMaieuticSystemPrompt(context);
 
+      // Conversion des messages UI (useChat) vers CoreMessage (AI SDK)
+      const coreMessages = convertToCoreMessages(messages);
+
       return streamText({
         model: model,
-        messages,
+        messages: coreMessages,
         system: systemPrompt,
         onFinish: ({ text }) => {
           // Async Ethical Check (Monitoring)
