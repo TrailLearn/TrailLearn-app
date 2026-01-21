@@ -1,4 +1,4 @@
-import { streamText, convertToCoreMessages } from 'ai';
+import { streamText } from 'ai';
 import { getLLMModel } from '~/lib/llm-config';
 import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
 import { LLMGuardrails } from '~/server/lib/llm-guardrails';
@@ -20,8 +20,12 @@ export const AiCoachService = {
       const model = getLLMModel(); // Récupère le modèle configuré dynamiquement
       const systemPrompt = getMaieuticSystemPrompt(context);
 
-      // Conversion des messages UI (useChat) vers CoreMessage (AI SDK)
-      const coreMessages = convertToCoreMessages(messages);
+      // Conversion manuelle des messages UI vers CoreMessage pour éviter les erreurs de type
+      // et les champs superflus (id, createdAt...) qui cassent la validation strict du SDK.
+      const coreMessages = messages.map((m) => ({
+        role: m.role as 'user' | 'assistant' | 'system',
+        content: m.content,
+      }));
 
       return streamText({
         model: model,
