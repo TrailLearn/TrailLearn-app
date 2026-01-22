@@ -77,27 +77,17 @@ export const AiCoachService = {
         system: systemPrompt,
         tools: {
           createActionPlan: tool({
-            description: 'Creates a structured Action Plan with tasks in the user dashboard. The input MUST be a valid JSON string representing an object with a "tasks" array. Each task object must have "title", "description", and "priority" (HIGH/MEDIUM/LOW). Example: \'{"tasks": [{"title": "...", "description": "...", "priority": "HIGH"}]}\'. Use this ONLY after the user has explicitly agreed to the proposed plan.',
+            description: 'Creates a structured Action Plan with tasks in the user dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
             parameters: z.object({
-              planJson: z.string().describe('A valid JSON string containing the action plan tasks.'),
+              tasks: z.array(z.object({
+                title: z.string(),
+                description: z.string(),
+                priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
+              })),
             }),
-            execute: async ({ planJson }: { planJson: string }) => {
+            execute: async ({ tasks }: { tasks: { title: string; description: string; priority: 'HIGH' | 'MEDIUM' | 'LOW' }[] }) => {
               if (!context?.userId) {
                 return "Error: User not identified. Cannot create plan.";
-              }
-
-              let tasks = [];
-              try {
-                const parsed = JSON.parse(planJson);
-                if (Array.isArray(parsed.tasks)) {
-                    tasks = parsed.tasks;
-                } else if (Array.isArray(parsed)) {
-                    tasks = parsed;
-                } else {
-                    return "Error: JSON must contain a 'tasks' array.";
-                }
-              } catch (e) {
-                return "Error: Invalid JSON format provided.";
               }
 
               try {
@@ -114,11 +104,11 @@ export const AiCoachService = {
 
                 // Create tasks
                 await db.task.createMany({
-                  data: tasks.map((t: any) => ({
+                  data: tasks.map(t => ({
                     actionPlanId: plan!.id,
-                    title: t.title || "Nouvelle tâche",
-                    description: t.description || "",
-                    priority: (['HIGH', 'MEDIUM', 'LOW'].includes(t.priority) ? t.priority : 'MEDIUM') as "HIGH" | "MEDIUM" | "LOW",
+                    title: t.title,
+                    description: t.description,
+                    priority: t.priority,
                     status: "PENDING"
                   }))
                 });
