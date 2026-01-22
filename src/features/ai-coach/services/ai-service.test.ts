@@ -37,6 +37,7 @@ vi.mock('ai', () => ({
   streamText: vi.fn().mockReturnValue({
     toUIMessageStreamResponse: vi.fn(),
   }),
+  tool: vi.fn().mockReturnValue({}),
 }));
 
 describe('AiCoachService', () => {
