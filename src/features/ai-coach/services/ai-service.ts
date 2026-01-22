@@ -75,57 +75,9 @@ export const AiCoachService = {
         model: model,
         messages: coreMessages,
         system: systemPrompt,
-        tools: {
-          createActionPlan: tool({
-            description: 'Creates a structured Action Plan with tasks in the user dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
-            parameters: z.object({
-              tasks: z.array(z.object({
-                title: z.string(),
-                description: z.string(),
-                priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
-              })),
-            }),
-            execute: async ({ tasks }: { tasks: { title: string; description: string; priority: 'HIGH' | 'MEDIUM' | 'LOW' }[] }) => {
-              if (!context?.userId) {
-                return "Error: User not identified. Cannot create plan.";
-              }
-
-              try {
-                // Find or create Action Plan
-                let plan = await db.actionPlan.findUnique({
-                  where: { userId: context.userId },
-                });
-
-                if (!plan) {
-                  plan = await db.actionPlan.create({
-                    data: { userId: context.userId, status: "DRAFT" },
-                  });
-                }
-
-                // Create tasks
-                await db.task.createMany({
-                  data: tasks.map(t => ({
-                    actionPlanId: plan!.id,
-                    title: t.title,
-                    description: t.description,
-                    priority: t.priority,
-                    status: "PENDING"
-                  }))
-                });
-
-                return `Success. ${tasks.length} tasks created in the Action Plan. Tell the user to check their Focus Dashboard to validate them.`;
-              } catch (e) {
-                console.error("Tool Execution Error:", e);
-                return "Error creating tasks in database.";
-              }
-            },
-          } as any),
-        },
         onFinish: async ({ text }) => {
           // 2. Persistence: Save Assistant Response
           if (context?.userId) {
-            // Note: If tool was called, 'text' might be empty or contain the tool result summary
-            // We should ideally capture the tool calls too, but for now we just save the text response.
             if (text) {
                 await db.chatMessage.create({
                 data: {
@@ -149,7 +101,7 @@ export const AiCoachService = {
           if (context?.userId) {
             try {
               // We use the full message history + the new response (text)
-              const allMessages = [...coreMessages, { role: 'assistant', content: text || "Tool Execution" }];
+              const allMessages = [...coreMessages, { role: 'assistant', content: text || "Interaction" }];
               const newPrefs = await extractPreferences(allMessages, context.preferences || {});
               
               await db.user.update({
