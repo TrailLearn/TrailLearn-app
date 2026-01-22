@@ -77,15 +77,15 @@ export const AiCoachService = {
         system: systemPrompt,
         tools: {
           createActionPlan: tool({
-            description: 'Creates a structured Action Plan with tasks in the users dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
+            description: 'Creates a structured Action Plan with tasks in the user\'s dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
             parameters: z.object({
               tasks: z.array(z.object({
                 title: z.string(),
                 description: z.string(),
-                priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
+                priority: z.string(),
               })),
             }),
-            execute: async ({ tasks }: { tasks: { title: string; description: string; priority: 'HIGH' | 'MEDIUM' | 'LOW' }[] }) => {
+            execute: async ({ tasks }: { tasks: { title: string; description: string; priority: string }[] }) => {
               if (!context?.userId) {
                 return "Error: User not identified. Cannot create plan.";
               }
@@ -108,7 +108,7 @@ export const AiCoachService = {
                     actionPlanId: plan!.id,
                     title: t.title,
                     description: t.description,
-                    priority: t.priority,
+                    priority: (['HIGH', 'MEDIUM', 'LOW'].includes(t.priority) ? t.priority : 'MEDIUM') as "HIGH" | "MEDIUM" | "LOW",
                     status: "PENDING"
                   }))
                 });
