@@ -107,4 +107,62 @@ export const adminRouter = createTRPCRouter({
         return updatedRule;
       });
     }),
+
+  getUsers: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.user.role !== "ADMIN") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+    return ctx.db.user.findMany({
+      orderBy: { email: "asc" },
+      select: { id: true, name: true, email: true, role: true, lastActiveAt: true },
+    });
+  }),
+
+  toggleUserRole: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const targetUser = await ctx.db.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!targetUser) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      // Prevent self-demotion
+      if (targetUser.id === ctx.session.user.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Impossible de modifier son propre rôle.",
+        });
+      }
+
+      const newRole = targetUser.role === "ADMIN" ? "USER" : "ADMIN";
+
+      await ctx.db.user.update({
+        where: { id: input.userId },
+        data: { role: newRole },
+      });
+
+      // Audit Log
+      await ctx.db.auditLog.create({
+        data: {
+          userId: ctx.session.user.id,
+          entityType: "User",
+          entityId: targetUser.id,
+          action: "UPDATE_ROLE",
+          details: {
+            oldRole: targetUser.role,
+            newRole: newRole,
+            targetEmail: targetUser.email,
+          },
+        },
+      });
+
+      return { success: true, newRole };
+    }),
 });

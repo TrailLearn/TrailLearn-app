@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { UserDropdown } from "~/features/auth/components/user-dropdown";
-import { type User } from "next-auth";
+import { type Session } from "next-auth";
 import { MessageSquare } from "lucide-react";
 
 interface AppNavbarProps {
-  user?: User;
+  user?: Session["user"];
 }
 
 export function AppNavbar({ user }: AppNavbarProps) {
