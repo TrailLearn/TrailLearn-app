@@ -59,7 +59,7 @@ export const AiCoachService = {
       // 1. Persistence: Save User Message (Last one in the array)
       if (context?.userId && coreMessages.length > 0) {
         const lastMsg = coreMessages[coreMessages.length - 1];
-        if (lastMsg.role === 'user') {
+        if (lastMsg?.role === 'user') {
           await db.chatMessage.create({
             data: {
               userId: context.userId,

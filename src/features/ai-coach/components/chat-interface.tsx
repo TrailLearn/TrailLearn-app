@@ -19,7 +19,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
   const router = useRouter();
   // Retour aux helpers qui semblaient fonctionner au niveau compilation
   const { messages, sendMessage, status, error } = useChat({
-    initialMessages,
+    messages: initialMessages,
   });
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
