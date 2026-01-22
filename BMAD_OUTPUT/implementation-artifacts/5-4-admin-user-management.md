@@ -39,8 +39,19 @@ Administration needs to be self-sufficient. Admins must be able to promote other
 6.  System updates role and logs action.
 7.  Target user must re-login or refresh session to see changes (NextAuth session strategy).
 
+## Admin Account (Dev/Seed)
+
+The default admin account is created via `prisma/seed.ts`.
+- **Email**: `admin@traillearn.com`
+- **Password**: `admin123` (Min 6 chars)
+
+### Password Policy
+- **Minimum Length**: 6 characters.
+- **Enforcement**: Frontend (Zod schema in `sign-in-form.tsx`) and Backend (`auth/config.ts`).
+
 ## Dev Agent Record
 - Implemented `getUsers` and `toggleUserRole` in `admin` router.
 - Created `UsersTable` component.
 - Updated `AdminPage` with Tabs.
 - Verified security with unit tests (`admin-role.test.ts`).
+- **Hotfix:** Updated seed password to `admin123` to comply with validation rules.
