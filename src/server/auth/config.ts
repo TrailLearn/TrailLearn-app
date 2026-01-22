@@ -85,4 +85,5 @@ export const authConfig = {
     signIn: "/auth/signin", // Custom sign-in page
     // newUser: "/auth/signup", // We handle signup manually via tRPC
   },
+  trustHost: true,
 } satisfies NextAuthConfig;

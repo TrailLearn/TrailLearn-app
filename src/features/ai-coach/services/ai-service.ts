@@ -73,9 +73,9 @@ export const AiCoachService = {
 
       const planSchema = z.object({
         tasks: z.array(z.object({
-          title: z.string().describe('Concise title of the task'),
-          description: z.string().describe('Brief description of the task'),
-          priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).describe('Priority level'),
+          title: z.string(),
+          description: z.string(),
+          priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
         })),
       });
 
