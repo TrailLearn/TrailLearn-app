@@ -15,7 +15,12 @@ vi.mock('~/server/db', () => ({
     user: {
       findUnique: vi.fn().mockResolvedValue({
         preferences: { city: 'Paris', budget: 1000 },
+        lastActiveAt: new Date(),
       }),
+      update: vi.fn().mockResolvedValue({}),
+    },
+    task: {
+      count: vi.fn().mockResolvedValue(0),
     },
     dvpRecord: {
       findFirst: vi.fn().mockResolvedValue(null),

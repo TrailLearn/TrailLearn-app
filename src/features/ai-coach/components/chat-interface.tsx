@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 
 export function ChatInterface() {
   const router = useRouter();
@@ -124,7 +125,12 @@ export function ChatInterface() {
           </div>
         ) : (
           <div className="space-y-6">
-            {messages.map((m) => (
+            {messages.map((m) => {
+              const content = Array.isArray((m as any).parts) 
+                ? (m as any).parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('')
+                : (m as any).content;
+
+              return (
               <div
                 key={m.id}
                 className={cn(
@@ -141,21 +147,17 @@ export function ChatInterface() {
                 </Avatar>
                 
                 <div className={cn(
-                  "rounded-lg px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap",
+                  "rounded-lg px-4 py-2 max-w-[80%] text-sm overflow-hidden prose prose-sm max-w-none break-words",
                   m.role === 'user' 
-                    ? "bg-blue-600 text-white" 
-                    : "bg-gray-100 text-gray-900"
+                    ? "bg-blue-600 text-white prose-invert" 
+                    : "bg-gray-100 text-gray-900 prose-neutral"
                 )}>
-                  {Array.isArray((m as any).parts) ? (
-                    (m as any).parts.map((part: any, i: number) => (
-                      part.type === 'text' ? <span key={i}>{part.text}</span> : null
-                    ))
-                  ) : (
-                    (m as any).content
-                  )}
+                  <ReactMarkdown>
+                    {content}
+                  </ReactMarkdown>
                 </div>
               </div>
-            ))}
+            )})}
             
             {/* Indicateur de pensée (Streaming) */}
             {isLoading && (
