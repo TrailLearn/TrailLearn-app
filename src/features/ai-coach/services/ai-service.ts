@@ -120,4 +120,50 @@ export const AiCoachService = {
       throw new Error("Le Coach IA est indisponible pour le moment. Veuillez vérifier la configuration.");
     }
   },
+
+  /**
+   * Generates a structured Action Plan based on chat history and DVP context.
+   * Used by the "Generate Plan" button in Focus Dashboard.
+   */
+  async generatePlanFromContext(messages: any[], dvpContext: any) {
+    try {
+      const model = getLLMModel();
+      const contextString = JSON.stringify(dvpContext);
+      const conversationString = messages.map(m => `${m.role}: ${m.content}`).join('\n');
+
+      const prompt = `
+        You are an expert academic coach. 
+        Based on the student's project context and their recent conversation history, generate a concrete Action Plan with 3-5 tasks.
+        
+        Context: ${contextString}
+        
+        Recent Conversation:
+        ${conversationString}
+        
+        Return a JSON object with a "tasks" array. Each task must have:
+        - title (string)
+        - description (string)
+        - priority ("HIGH", "MEDIUM", "LOW")
+      `;
+
+      const { generateText } = await import('ai');
+      
+      const { text } = await generateText({
+        model: model,
+        system: "You are a helpful assistant that outputs only valid JSON.",
+        prompt: prompt,
+      });
+
+      const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const result = JSON.parse(cleanText);
+      
+      if (result && Array.isArray(result.tasks)) {
+        return result.tasks;
+      }
+      return null;
+    } catch (error) {
+      console.error("AI Plan Generation Error:", error);
+      return null;
+    }
+  },
 };
