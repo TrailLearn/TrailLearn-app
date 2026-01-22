@@ -71,6 +71,14 @@ export const AiCoachService = {
         }
       }
 
+      const planSchema = z.object({
+        tasks: z.array(z.object({
+          title: z.string().describe('Concise title of the task'),
+          description: z.string().describe('Brief description of the task'),
+          priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).describe('Priority level'),
+        })),
+      });
+
       return streamText({
         model: model,
         messages: coreMessages,
@@ -78,14 +86,8 @@ export const AiCoachService = {
         tools: {
           createActionPlan: tool({
             description: 'Creates a structured Action Plan with tasks in the user\'s dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
-            parameters: z.object({
-              tasks: z.array(z.object({
-                title: z.string().describe('Concise title of the task'),
-                description: z.string().describe('Brief description of the task'),
-                priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).describe('Priority level'),
-              })),
-            }),
-            execute: async ({ tasks }) => {
+            parameters: planSchema,
+            execute: (async ({ tasks }: { tasks: { title: string; description: string; priority: 'HIGH' | 'MEDIUM' | 'LOW' }[] }) => {
               if (!context?.userId) {
                 return "Error: User not identified. Cannot create plan.";
               }
@@ -100,14 +102,6 @@ export const AiCoachService = {
                   plan = await db.actionPlan.create({
                     data: { userId: context.userId, status: "DRAFT" },
                   });
-                } else {
-                   // Ensure plan is open for editing (or set to draft if we are regenerating)
-                   if (plan.status === 'ACTIVE') {
-                     // Option: Archive old plan or just append? 
-                     // For now, let's just append to the active plan or reset to DRAFT if specifically asked. 
-                     // But the prompt says "Generate Plan". Let's assume it adds to the current plan.
-                     // Actually, user wants "Coach Generates Tasks".
-                   }
                 }
 
                 // Create tasks
@@ -126,8 +120,8 @@ export const AiCoachService = {
                 console.error("Tool Execution Error:", e);
                 return "Error creating tasks in database.";
               }
-            },
-          }),
+            }),
+          } as any),
         },
         onFinish: async ({ text }) => {
           // 2. Persistence: Save Assistant Response
