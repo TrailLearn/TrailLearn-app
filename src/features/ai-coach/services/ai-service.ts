@@ -76,29 +76,28 @@ export const AiCoachService = {
         messages: coreMessages,
         system: systemPrompt,
         tools: {
-          createActionPlan: {
-            description: 'Creates a structured Action Plan with tasks in the user dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
-            parameters: {
-              type: 'object',
-              properties: {
-                tasks: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      title: { type: 'string', description: 'Task title' },
-                      description: { type: 'string', description: 'Task details' },
-                      priority: { type: 'string', enum: ['HIGH', 'MEDIUM', 'LOW'] },
-                    },
-                    required: ['title', 'description', 'priority'],
-                  },
-                },
-              },
-              required: ['tasks'],
-            },
-            execute: async ({ tasks }: any) => {
+          createActionPlan: tool({
+            description: 'Creates a structured Action Plan with tasks in the user dashboard. The input MUST be a valid JSON string representing an object with a "tasks" array. Each task object must have "title", "description", and "priority" (HIGH/MEDIUM/LOW). Example: \'{"tasks": [{"title": "...", "description": "...", "priority": "HIGH"}]}\'. Use this ONLY after the user has explicitly agreed to the proposed plan.',
+            parameters: z.object({
+              planJson: z.string().describe('A valid JSON string containing the action plan tasks.'),
+            }),
+            execute: async ({ planJson }: { planJson: string }) => {
               if (!context?.userId) {
                 return "Error: User not identified. Cannot create plan.";
+              }
+
+              let tasks = [];
+              try {
+                const parsed = JSON.parse(planJson);
+                if (Array.isArray(parsed.tasks)) {
+                    tasks = parsed.tasks;
+                } else if (Array.isArray(parsed)) {
+                    tasks = parsed;
+                } else {
+                    return "Error: JSON must contain a 'tasks' array.";
+                }
+              } catch (e) {
+                return "Error: Invalid JSON format provided.";
               }
 
               try {
@@ -117,9 +116,9 @@ export const AiCoachService = {
                 await db.task.createMany({
                   data: tasks.map((t: any) => ({
                     actionPlanId: plan!.id,
-                    title: t.title,
-                    description: t.description,
-                    priority: t.priority,
+                    title: t.title || "Nouvelle tâche",
+                    description: t.description || "",
+                    priority: (['HIGH', 'MEDIUM', 'LOW'].includes(t.priority) ? t.priority : 'MEDIUM') as "HIGH" | "MEDIUM" | "LOW",
                     status: "PENDING"
                   }))
                 });
@@ -130,7 +129,7 @@ export const AiCoachService = {
                 return "Error creating tasks in database.";
               }
             },
-          } as any,
+          } as any),
         },
         onFinish: async ({ text }) => {
           // 2. Persistence: Save Assistant Response
