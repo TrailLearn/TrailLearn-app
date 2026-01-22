@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import Link from "next/link";
-import { type User } from "next-auth";
+import { type Session } from "next-auth";
 
 interface UserDropdownProps {
-  user?: User;
+  user?: Session["user"];
 }
 
 export function UserDropdown({ user }: UserDropdownProps) {
@@ -50,8 +50,21 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-            <Link href="/account" className="cursor-pointer">Mon compte</Link>
+            <Link href="/dashboard/profile" className="cursor-pointer">Mon Profil</Link>
         </DropdownMenuItem>
+        
+        {/* Admin Link - Only for Admins */}
+        {user.role === "ADMIN" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer font-semibold text-red-600">
+                Administration
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="cursor-pointer">
           Se déconnecter

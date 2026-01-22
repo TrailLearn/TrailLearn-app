@@ -253,6 +253,18 @@ Quatre composants spécifiques sont conçus pour porter l'expérience unique de 
     *   *But* : Réduire la peur du jugement pendant la saisie.
     *   *Usage* : Lien discret "Pourquoi c'est important ?" ou "D'où vient ce chiffre ?" ouvrant un tooltip ou une micro-explication contextuelle.
 
+5.  **ChatInterface (Le Miroir Lucide - Epic 7)** :
+    *   *But* : Porter la conversation maïeutique d'orientation.
+    *   *Anatomie* : Zone de dialogue fluide, bulles distinctes (IA = Neutre/Expert, User = Accentué). Indicateur de "Pensée" (Streaming) visible pour matérialiser la réflexion.
+    *   *Interaction* : Réponses libres ou Chips de suggestion pour fluidifier.
+    *   *Mobile* : Plein écran immersif pour favoriser l'introspection. Desktop : Sidebar persistante ou Modal large.
+
+6.  **FocusDashboard (Le Secrétaire Logistique - Epic 8)** :
+    *   *But* : Réduire la charge mentale de l'exécution.
+    *   *Anatomie* : Affichage strict des **3 prochaines actions**. Le reste du backlog est masqué sous un pli "Voir tout le plan" (discret).
+    *   *Feedback* : Micro-célébration (confettis sobres) à la complétion d'une tâche.
+    *   *Ton* : Neutre et encourageant ("Voici ta prochaine étape").
+
 ### Component Implementation Strategy
 *   **Atomic Design** : Les composants custom sont bâtis en utilisant les primitives de shadcn/ui et les utilitaires Tailwind CSS.
 *   **Boîte Blanche par défaut** : Chaque composant affichant un résultat calculé doit intégrer ou pointer vers une `InsightCard`.
@@ -296,7 +308,7 @@ Quatre composants spécifiques sont conçus pour porter l'expérience unique de 
 TrailLearn adopte une stratégie d'adaptation par usage, privilégiant la profondeur sur Desktop et la consultation agile sur Mobile.
 *   **Desktop (Le Cockpit complet)** : Utilisation du triptyque Navigation | Analyse | What-If pour une expérience de lucidité totale.
 *   **Tablette** : Simplification avec sidebar What-If pliable (Drawer) pour préserver la lisibilité de l'analyse centrale.
-*   **Mobile (Le Compagnon)** : Passage en mode "Compagnon". La saisie DVP utilise le mode "Focus Tunnel" plein écran. Le What-If est accessible via un "Bottom Sheet" (tiroir bas). Navigation simplifiée par une Tab Bar (Dashboard, Mon DVP, Forums, Profil).
+*   **Mobile (Le Compagnon)** : Passage en mode "Compagnon". La saisie DVP utilise le mode "Focus Tunnel" plein écran. Le Chatbot (Epic 7) passe en plein écran pour l'immersion. Le What-If est accessible via un "Bottom Sheet" (tiroir bas). Navigation simplifiée par une Tab Bar (Dashboard, Mon DVP, Forums, Profil).
 
 ### Breakpoint Strategy
 Alignement sur les standards de **shadcn/ui** et Tailwind CSS :
@@ -308,12 +320,12 @@ Alignement sur les standards de **shadcn/ui** et Tailwind CSS :
 Engagement sur un niveau de conformité **WCAG 2.1 AA** pour garantir l'inclusion et la fiabilité :
 *   **Contraste** : Ratio minimum de 4.5:1 sur tous les éléments porteurs d'information.
 *   **Navigation Clavier** : Support complet (Tab, Enter, Escape) avec focus visuel explicite (Ring Blue-600).
-*   **Lecteurs d'écran** : Labels ARIA descriptifs pour tous les composants custom, notamment pour traduire verbalement le statut de la `ViabilityGauge`.
+*   **Lecteurs d'écran** : Labels ARIA descriptifs pour tous les composants custom, notamment pour traduire verbalement le statut de la `ViabilityGauge` et les réponses du Chatbot.
 *   **Cibles tactiles** : Minimum 44x44px sur mobile pour tous les éléments interactifs.
 *   **Alternative à la couleur** : Un diagnostic (🔴🟠🟢) n'est jamais communiqué par la couleur seule ; il est toujours doublé d'un texte explicite ou d'une icône.
 
 ### Testing Strategy
-*   **Responsive** : Tests sur les navigateurs majeurs (Chrome, Safari, Firefox) et une sélection de devices réels (iOS/Android).
+*   **Responsive** : Tests sur les navigateurs majeurs (Chrome, Safari, Firefox) et une sélection de devices réels (iOS/Android). Priorité Chrome Mobile & Safari iOS.
 *   **Accessibilité** : Audits automatisés réguliers (Lighthouse, axe-core) complétés par des tests manuels au clavier et avec lecteurs d'écran (VoiceOver/NVDA).
 
 ### Implementation Guidelines

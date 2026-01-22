@@ -2,6 +2,8 @@ import "~/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "~/server/auth";
 
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -21,13 +23,17 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await auth();
+
   return (
     <html lang="fr" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <SessionProvider session={session}>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </SessionProvider>
       </body>
     </html>
   );

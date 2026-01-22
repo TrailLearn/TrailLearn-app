@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { UserDropdown } from "~/features/auth/components/user-dropdown";
-import { type User } from "next-auth";
+import { type Session } from "next-auth";
+import { MessageSquare } from "lucide-react";
 
 interface AppNavbarProps {
-  user?: User;
+  user?: Session["user"];
 }
 
 export function AppNavbar({ user }: AppNavbarProps) {
@@ -20,6 +21,16 @@ export function AppNavbar({ user }: AppNavbarProps) {
             </Link>
             <Link href="/dvp/wizard" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Mon DVP
+            </Link>
+            <Link href="/dashboard/focus" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Focus
+            </Link>
+            <Link href="/dashboard/plan" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Plan
+            </Link>
+            <Link href="/dashboard/chat" className="transition-colors hover:text-foreground/80 text-blue-600 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Coach IA
             </Link>
           </nav>
         </div>

@@ -17,7 +17,6 @@ export default async function AdminLayout({
     <div className="flex min-h-screen flex-col">
       <AppNavbar user={session.user} />
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold mb-8">Administration</h1>
         {children}
       </div>
     </div>
