@@ -59,12 +59,24 @@ export async function POST(req: Request) {
 
     // 4. Build Unified Context string
     const dvpData = (dvp?.data as any) || {};
-    const city = dvpData.city || userPreferences.city || "Non défini";
-    const country = dvpData.country || userPreferences.country || "Non défini";
-    const budget = dvpData.budget?.savings || userPreferences.budget || "Non défini";
-    const field = dvpData.studyType || userPreferences.studyField || "Non défini";
+    
+    // Safely access nested DVP data or fallback to preferences
+    const city = dvpData.project?.city || userPreferences.city || "Non défini";
+    const country = dvpData.project?.country || userPreferences.country || "Non défini";
+    const field = dvpData.project?.studyType || userPreferences.studyField || "Non défini";
+    
+    // Calculate estimated monthly budget if available
+    let budgetDisplay = userPreferences.budget || "Non défini";
+    if (dvpData.budget) {
+        const savings = Number(dvpData.budget.savings || 0);
+        const guarantor = Number(dvpData.budget.guarantorHelp || 0);
+        const other = Number(dvpData.budget.otherIncome || 0);
+        // Estimate for 10 months
+        const monthly = Math.round((savings / 10) + guarantor + other);
+        budgetDisplay = `${monthly}€/mois (estimé)`;
+    }
 
-    projectContext = `Projet: ${field} à ${city}, ${country}. Budget: ${budget}.`;
+    projectContext = `Projet: ${field} à ${city}, ${country}. Budget: ${budgetDisplay}.`;
   } else {
     projectContext = "Utilisateur non connecté (Mode Démo)";
   }

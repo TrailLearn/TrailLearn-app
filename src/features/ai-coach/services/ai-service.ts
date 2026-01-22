@@ -56,18 +56,43 @@ export const AiCoachService = {
       console.log("Full History Dump:", JSON.stringify(coreMessages, null, 2)); // Dump full history to be sure
       // -----------------------------
 
+      // 1. Persistence: Save User Message (Last one in the array)
+      if (context?.userId && coreMessages.length > 0) {
+        const lastMsg = coreMessages[coreMessages.length - 1];
+        if (lastMsg.role === 'user') {
+          await db.chatMessage.create({
+            data: {
+              userId: context.userId,
+              role: 'user',
+              content: lastMsg.content as string,
+            },
+          });
+        }
+      }
+
       return streamText({
         model: model,
         messages: coreMessages,
         system: systemPrompt,
         onFinish: async ({ text }) => {
-          // 1. Async Ethical Check (Monitoring)
+          // 2. Persistence: Save Assistant Response
+          if (context?.userId) {
+            await db.chatMessage.create({
+              data: {
+                userId: context.userId,
+                role: 'assistant',
+                content: text,
+              },
+            });
+          }
+
+          // 3. Async Ethical Check (Monitoring)
           const check = LLMGuardrails.validateNonClosure(text);
           if (!check.isValid) {
             console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
           }
 
-          // 2. Async Preference Extraction (Background persistence)
+          // 4. Async Preference Extraction (Background persistence)
           if (context?.userId) {
             try {
               // We use the full message history + the new response (text)

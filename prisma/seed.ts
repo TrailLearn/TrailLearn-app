@@ -1,9 +1,25 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Start seeding...");
+
+  // Create Admin User
+  const hashedPassword = await bcrypt.hash("admin", 10);
+  await prisma.user.upsert({
+    where: { email: "admin@traillearn.com" },
+    update: {},
+    create: {
+      email: "admin@traillearn.com",
+      name: "Admin User",
+      password: hashedPassword,
+      role: "ADMIN",
+      emailVerified: new Date(),
+    },
+  });
+  console.log("Admin user created/verified.");
 
   const rules = [
     // Housing Prices

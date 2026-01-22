@@ -11,10 +11,16 @@ import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 
-export function ChatInterface() {
+interface ChatInterfaceProps {
+  initialMessages?: any[];
+}
+
+export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
   const router = useRouter();
   // Retour aux helpers qui semblaient fonctionner au niveau compilation
-  const { messages, sendMessage, status, error } = useChat();
+  const { messages, sendMessage, status, error } = useChat({
+    initialMessages,
+  });
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastUpdateRef = useRef<number>(0);

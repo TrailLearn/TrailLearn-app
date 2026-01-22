@@ -50,7 +50,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-            <Link href="/account" className="cursor-pointer">Mon compte</Link>
+            <Link href="/dashboard/profile" className="cursor-pointer">Mon Profil</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="cursor-pointer">
