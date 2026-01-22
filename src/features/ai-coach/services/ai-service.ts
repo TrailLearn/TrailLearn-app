@@ -76,16 +76,27 @@ export const AiCoachService = {
         messages: coreMessages,
         system: systemPrompt,
         tools: {
-          createActionPlan: tool({
-            description: 'Creates a structured Action Plan with tasks in the user\'s dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
-            parameters: z.object({
-              tasks: z.array(z.object({
-                title: z.string(),
-                description: z.string(),
-                priority: z.string(),
-              })),
-            }),
-            execute: async ({ tasks }: { tasks: { title: string; description: string; priority: string }[] }) => {
+          createActionPlan: {
+            description: 'Creates a structured Action Plan with tasks in the user dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
+            parameters: {
+              type: 'object',
+              properties: {
+                tasks: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      title: { type: 'string', description: 'Task title' },
+                      description: { type: 'string', description: 'Task details' },
+                      priority: { type: 'string', enum: ['HIGH', 'MEDIUM', 'LOW'] },
+                    },
+                    required: ['title', 'description', 'priority'],
+                  },
+                },
+              },
+              required: ['tasks'],
+            },
+            execute: async ({ tasks }: any) => {
               if (!context?.userId) {
                 return "Error: User not identified. Cannot create plan.";
               }
@@ -104,11 +115,11 @@ export const AiCoachService = {
 
                 // Create tasks
                 await db.task.createMany({
-                  data: tasks.map(t => ({
+                  data: tasks.map((t: any) => ({
                     actionPlanId: plan!.id,
                     title: t.title,
                     description: t.description,
-                    priority: (['HIGH', 'MEDIUM', 'LOW'].includes(t.priority) ? t.priority : 'MEDIUM') as "HIGH" | "MEDIUM" | "LOW",
+                    priority: t.priority,
                     status: "PENDING"
                   }))
                 });
@@ -119,7 +130,7 @@ export const AiCoachService = {
                 return "Error creating tasks in database.";
               }
             },
-          } as any),
+          } as any,
         },
         onFinish: async ({ text }) => {
           // 2. Persistence: Save Assistant Response
