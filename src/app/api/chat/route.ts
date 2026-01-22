@@ -2,8 +2,8 @@ import { AiCoachService } from '~/features/ai-coach/services/ai-service';
 import { auth } from '~/server/auth';
 import { db } from '~/server/db';
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+// Allow streaming responses up to 60 seconds
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const { messages } = await req.json();

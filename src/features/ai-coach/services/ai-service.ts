@@ -1,9 +1,10 @@
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
 import { getLLMModel } from '~/lib/llm-config';
 import { getMaieuticSystemPrompt } from '~/features/ai-coach/prompts/maieutic-coach';
 import { LLMGuardrails } from '~/server/lib/llm-guardrails';
 import { extractPreferences } from '../logic/synthesis/extract-preferences';
 import { db } from '~/server/db'; // Direct DB access for background task
+import { z } from 'zod';
 
 /**
  * Service to handle AI Coach interactions.
@@ -74,29 +75,89 @@ export const AiCoachService = {
         model: model,
         messages: coreMessages,
         system: systemPrompt,
+        tools: {
+          createActionPlan: tool({
+            description: 'Creates a structured Action Plan with tasks in the user\'s dashboard. Use this ONLY after the user has explicitly agreed to the proposed plan.',
+            parameters: z.object({
+              tasks: z.array(z.object({
+                title: z.string().describe('Concise title of the task'),
+                description: z.string().describe('Brief description of the task'),
+                priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).describe('Priority level'),
+              })),
+            }),
+            execute: async ({ tasks }) => {
+              if (!context?.userId) {
+                return "Error: User not identified. Cannot create plan.";
+              }
+
+              try {
+                // Find or create Action Plan
+                let plan = await db.actionPlan.findUnique({
+                  where: { userId: context.userId },
+                });
+
+                if (!plan) {
+                  plan = await db.actionPlan.create({
+                    data: { userId: context.userId, status: "DRAFT" },
+                  });
+                } else {
+                   // Ensure plan is open for editing (or set to draft if we are regenerating)
+                   if (plan.status === 'ACTIVE') {
+                     // Option: Archive old plan or just append? 
+                     // For now, let's just append to the active plan or reset to DRAFT if specifically asked. 
+                     // But the prompt says "Generate Plan". Let's assume it adds to the current plan.
+                     // Actually, user wants "Coach Generates Tasks".
+                   }
+                }
+
+                // Create tasks
+                await db.task.createMany({
+                  data: tasks.map(t => ({
+                    actionPlanId: plan!.id,
+                    title: t.title,
+                    description: t.description,
+                    priority: t.priority,
+                    status: "PENDING"
+                  }))
+                });
+
+                return `Success. ${tasks.length} tasks created in the Action Plan. Tell the user to check their Focus Dashboard to validate them.`;
+              } catch (e) {
+                console.error("Tool Execution Error:", e);
+                return "Error creating tasks in database.";
+              }
+            },
+          }),
+        },
         onFinish: async ({ text }) => {
           // 2. Persistence: Save Assistant Response
           if (context?.userId) {
-            await db.chatMessage.create({
-              data: {
-                userId: context.userId,
-                role: 'assistant',
-                content: text,
-              },
-            });
+            // Note: If tool was called, 'text' might be empty or contain the tool result summary
+            // We should ideally capture the tool calls too, but for now we just save the text response.
+            if (text) {
+                await db.chatMessage.create({
+                data: {
+                    userId: context.userId,
+                    role: 'assistant',
+                    content: text,
+                },
+                });
+            }
           }
 
           // 3. Async Ethical Check (Monitoring)
-          const check = LLMGuardrails.validateNonClosure(text);
-          if (!check.isValid) {
-            console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
+          if (text) {
+            const check = LLMGuardrails.validateNonClosure(text);
+            if (!check.isValid) {
+                console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
+            }
           }
 
           // 4. Async Preference Extraction (Background persistence)
           if (context?.userId) {
             try {
               // We use the full message history + the new response (text)
-              const allMessages = [...coreMessages, { role: 'assistant', content: text }];
+              const allMessages = [...coreMessages, { role: 'assistant', content: text || "Tool Execution" }];
               const newPrefs = await extractPreferences(allMessages, context.preferences || {});
               
               await db.user.update({
