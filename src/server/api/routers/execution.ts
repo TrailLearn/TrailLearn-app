@@ -14,10 +14,15 @@ export const executionRouter = createTRPCRouter({
       include: { tasks: true },
     });
 
-    if (!actionPlan) return [];
+    if (!actionPlan) return { tasks: [], planStatus: null };
 
     // 2. Filter & Sort via Logic Engine
-    return getTopFocusTasks(actionPlan.tasks);
+    const tasks = getTopFocusTasks(actionPlan.tasks);
+    
+    return {
+      tasks,
+      planStatus: actionPlan.status,
+    };
   }),
 
   /**
@@ -29,6 +34,44 @@ export const executionRouter = createTRPCRouter({
       include: { tasks: { orderBy: { createdAt: "desc" } } },
     });
     return actionPlan?.tasks || [];
+  }),
+
+  /**
+   * Deletes a task.
+   */
+  deleteTask: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const task = await ctx.db.task.findFirst({
+        where: {
+          id: input.id,
+          actionPlan: { userId: ctx.session.user.id },
+        },
+      });
+
+      if (!task) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return ctx.db.task.delete({
+        where: { id: input.id },
+      });
+    }),
+
+  /**
+   * Validates the current Action Plan (DRAFT -> ACTIVE).
+   */
+  validatePlan: protectedProcedure.mutation(async ({ ctx }) => {
+    const actionPlan = await ctx.db.actionPlan.findUnique({
+      where: { userId: ctx.session.user.id },
+    });
+
+    if (!actionPlan) throw new TRPCError({ code: "NOT_FOUND" });
+
+    return ctx.db.actionPlan.update({
+      where: { id: actionPlan.id },
+      data: { status: "ACTIVE" },
+    });
   }),
 
   /**
@@ -47,7 +90,7 @@ export const executionRouter = createTRPCRouter({
 
       if (!plan) {
         plan = await ctx.db.actionPlan.create({
-          data: { userId: ctx.session.user.id },
+          data: { userId: ctx.session.user.id, status: "DRAFT" },
         });
       }
 
@@ -127,7 +170,13 @@ export const executionRouter = createTRPCRouter({
 
     if (!plan) {
       plan = await ctx.db.actionPlan.create({
-        data: { userId: ctx.session.user.id },
+        data: { userId: ctx.session.user.id, status: "DRAFT" },
+      });
+    } else {
+      // If plan exists, reset to DRAFT if explicitly regenerating
+      await ctx.db.actionPlan.update({
+        where: { id: plan.id },
+        data: { status: "DRAFT" },
       });
     }
 

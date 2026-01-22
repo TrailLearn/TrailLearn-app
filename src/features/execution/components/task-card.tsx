@@ -3,7 +3,7 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Button } from '~/components/ui/button';
 import { Badge } from '~/components/ui/badge';
-import { CheckCircle2, Clock, Link as LinkIcon, MessageSquareQuote } from 'lucide-react';
+import { CheckCircle2, Clock, Link as LinkIcon, MessageSquareQuote, Trash2 } from 'lucide-react';
 import { type Task } from '@prisma/client';
 import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
@@ -35,12 +35,25 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
     }
   });
 
+  const deleteTask = api.execution.deleteTask.useMutation({
+    onSuccess: () => {
+      void utils.execution.getFocusTasks.invalidate();
+      onUpdate?.();
+    }
+  });
+
   const handleComplete = () => {
     updateStatus.mutate({ 
       id: task.id, 
       status: "DONE",
       feedback: feedback || undefined 
     });
+  };
+
+  const handleDelete = () => {
+    if (confirm("Supprimer cette tâche ?")) {
+        deleteTask.mutate({ id: task.id });
+    }
   };
 
   const handleAddEvidence = (e: React.FormEvent) => {
@@ -124,21 +137,33 @@ export function TaskCard({ task, onUpdate }: TaskCardProps) {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-xs gap-2 text-gray-500 hover:text-gray-900"
-          onClick={() => setShowFeedback(!showFeedback)}
+          className="text-xs gap-2 text-gray-500 hover:text-red-600 px-2"
+          onClick={handleDelete}
+          disabled={deleteTask.isPending}
         >
-          <MessageSquareQuote className="w-3.5 h-3.5" />
-          {showFeedback ? "Annuler note" : "Ajouter note"}
+          <Trash2 className="w-3.5 h-3.5" />
         </Button>
-        <Button 
-          size="sm" 
-          className="text-xs gap-2 bg-emerald-600 hover:bg-emerald-700"
-          onClick={handleComplete}
-          disabled={updateStatus.isPending}
-        >
-          <CheckCircle2 className="w-3.5 h-3.5" />
-          Marquer fait
-        </Button>
+
+        <div className="flex gap-2">
+            <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-xs gap-2 text-gray-500 hover:text-gray-900"
+            onClick={() => setShowFeedback(!showFeedback)}
+            >
+            <MessageSquareQuote className="w-3.5 h-3.5" />
+            {showFeedback ? "Annuler" : "Note"}
+            </Button>
+            <Button 
+            size="sm" 
+            className="text-xs gap-2 bg-emerald-600 hover:bg-emerald-700"
+            onClick={handleComplete}
+            disabled={updateStatus.isPending}
+            >
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Fait
+            </Button>
+        </div>
       </CardFooter>
     </Card>
   );
