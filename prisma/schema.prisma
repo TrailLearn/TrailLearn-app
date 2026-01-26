@@ -83,6 +83,33 @@ model User {
   dvpBSnapshots DvpBSnapshot[]
   actionPlan    ActionPlan?
   notifications Notification[]
+  beingProfile  BeingProfile?
+}
+
+model BeingProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  
+  // Experience Texture & Values
+  values            Json     @default("[]") // Archeology of values
+  meaningScale      Int?     // Jauge de Sens Perçu (0-100)
+  complexityLevel   Int?     // Sélecteur de Complexité Cognitive (0-100)
+  psychologicalSafety Int?   // Métrique de Sécurité Psychologique (0-100)
+
+  // Evolutionary Kinetics
+  vitalRenewalRate  Int?     // TRV in months
+  growthArchetype   String?  // e.g., "Cyclic Explorer"
+  kineticSignature  Json?    // Curves/Intentions
+
+  // Shadow Zone (Protection)
+  sabotagePatterns  Json     @default("[]") // Self-Sabotage Modes
+  exposureTolerance Int?     // Seuil de Tolérance à l'Exposition (0-100)
+  shadowTriggers    Json     @default("[]") // Emotional/Systemic triggers
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ChatMessage {
