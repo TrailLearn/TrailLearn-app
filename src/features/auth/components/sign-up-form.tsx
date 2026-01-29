@@ -61,8 +61,8 @@ export function SignUpForm() {
       if (result?.error) {
         setError("Compte créé mais échec de connexion automatique.");
       } else {
-        router.push("/dashboard");
         router.refresh();
+        router.push("/dashboard");
       }
     } catch (e) {
       if (e instanceof Error) {

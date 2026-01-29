@@ -41,7 +41,8 @@ export default function OnboardingPage() {
         onboardingStatus: "COMPLETED", 
         onboardingVersion: ONBOARDING_VERSION 
       });
-      router.push("/dashboard");
+      // Force hard redirect to ensure middleware sees the new session cookie immediately
+      window.location.href = "/dashboard";
     },
   });
 

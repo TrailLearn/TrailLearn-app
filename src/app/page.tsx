@@ -16,7 +16,7 @@ export default async function LandingPage() {
             <span className="text-2xl font-bold tracking-tight text-primary font-mono">TrailLearn</span>
           </div>
           <nav className="flex items-center gap-4">
-            <Link href={session ? "/dashboard" : "/api/auth/signin"}>
+            <Link href={session ? "/dashboard" : "/auth/signin"}>
               <Button variant={session ? "outline" : "default"}>
                 {session ? "Tableau de Bord" : "Se connecter"}
               </Button>

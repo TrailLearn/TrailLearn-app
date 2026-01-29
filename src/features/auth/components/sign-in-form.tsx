@@ -51,8 +51,8 @@ export function SignInForm() {
       setError("Identifiants invalides");
       form.resetField("password"); // Reset password on error
     } else {
-      router.push(callbackUrl);
       router.refresh();
+      router.push(callbackUrl);
     }
   }
 
