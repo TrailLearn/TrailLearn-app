@@ -71,6 +71,19 @@ export default function OnboardingPage() {
     },
     onError: (error) => {
       console.error("Onboarding mutation error:", error);
+      
+      if (error.message.includes("Utilisateur introuvable") || error.data?.code === "UNAUTHORIZED") {
+        toast({
+          title: "Session expirée",
+          description: "Votre session n'est plus valide. Redirection vers la connexion...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/auth/signout";
+        }, 2000);
+        return;
+      }
+
       toast({
         title: "Erreur critique",
         description: "Impossible de finaliser l'onboarding : " + error.message,
