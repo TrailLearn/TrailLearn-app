@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "~/server/auth";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { Toaster } from "~/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "TrailLearn | Lucidité vs Sélection",
@@ -33,6 +34,7 @@ export default async function RootLayout({
       <body className="font-sans antialiased">
         <SessionProvider session={session}>
           <TRPCReactProvider>{children}</TRPCReactProvider>
+          <Toaster />
         </SessionProvider>
       </body>
     </html>
