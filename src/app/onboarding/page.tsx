@@ -113,7 +113,6 @@ export default function OnboardingPage() {
               <TrvSelector
                 currentValue={effectiveTrv}
                 onSelect={handleTrvSelect}
-                isSaving={updateTrv.isPending}
               />
               <div className="flex justify-end">
                 <Button 
