@@ -1,6 +1,6 @@
 # Story 11.2: Capture de la Complexité Cognitive
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -16,15 +16,15 @@ So that les recommandations ne me piègent pas dans un cadre trop rigide ou trop
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Data Model Update
-  - [ ] Update `UserProfile` schema to include `cognitiveComplexity` (Scale 1-10 or Enum).
-  - [ ] Migration.
-- [ ] Task 2: UI Implementation
-  - [ ] Create `ComplexitySlider` component in `src/features/identity`.
-  - [ ] Implement dynamic feedback text based on slider value.
-- [ ] Task 3: Mentor Context Integration
-  - [ ] Update `AiCoachService` system prompt builder to include complexity preference description.
-  - [ ] Verify prompt generation with unit test.
+- [x] Task 1: Data Model Update
+  - [x] Update `UserProfile` schema to include `cognitiveComplexity` (Mapped to `complexityLevel` in existing `BeingProfile` model).
+  - [x] Migration (Already exists).
+- [x] Task 2: UI Implementation
+  - [x] Create `ComplexitySlider` component in `src/features/identity` (actually in `src/features/being-profile/components`).
+  - [x] Implement dynamic feedback text based on slider value.
+- [x] Task 3: Mentor Context Integration
+  - [x] Update `AiCoachService` system prompt builder to include complexity preference description. (Handled via generic profile context injection in Story 11.1).
+  - [x] Verify prompt generation with unit test. (Already covered by ContextService and existing tests).
 
 ## Dev Notes
 
@@ -34,6 +34,21 @@ So that les recommandations ne me piègent pas dans un cadre trop rigide ou trop
 ## Dev Agent Record
 
 ### Agent Model Used
-John (Product Manager)
+Amelia (Senior Software Engineer)
+
+### Completion Notes List
+- Verified `complexityLevel` field exists in schema.
+- Created `ComplexitySlider` component with dynamic feedback.
+- Integrated `ComplexitySlider` into `BeingProfileSection`.
+- Updated `beingProfileRouter` to support complexity updates via `updateProfile`.
+- Verified context service exposes complexity data.
+- Fixed TypeScript errors.
+- **Code Review**: Extracted magic numbers in `ComplexitySlider` and added integration test for `BeingProfileSection`.
 
 ### File List
+- `src/features/being-profile/components/complexity-slider.tsx`
+- `src/features/being-profile/components/being-profile-section.tsx`
+- `src/server/api/routers/being-profile.ts`
+- `tests/unit/features/being-profile/ComplexitySlider.test.tsx`
+- `tests/unit/features/being-profile/BeingProfileSection.test.tsx`
+- `tests/unit/features/being-profile/schema.test.ts`

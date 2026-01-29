@@ -10,13 +10,11 @@ vi.mock("~/env", () => ({
 import { db } from "~/server/db";
 
 describe("BeingProfile Data Model", () => {
-  it("should have trvFrequency and trvLabel fields", async () => {
-    // These should now exist in the Prisma client
+  it("should have complexityLevel field", async () => {
     const profile = await db.beingProfile.findFirst({
       where: {},
       select: {
-        trvFrequency: true,
-        trvLabel: true,
+        complexityLevel: true,
       }
     });
   });

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { api } from "~/trpc/react";
 import { TrvSelector } from "./trv-selector";
+import { ComplexitySlider } from "./complexity-slider";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/components/ui/use-toast";
@@ -13,21 +14,27 @@ export function BeingProfileSection() {
   
   const [localTrv, setLocalTrv] = useState<number | null>(null);
   const [localTrvLabel, setLocalTrvLabel] = useState<string>("");
+  const [localComplexity, setLocalComplexity] = useState<number | null>(null);
 
   // Sync initial state
   useEffect(() => {
-    if (profile?.trvFrequency && localTrv === null) {
-      setLocalTrv(profile.trvFrequency);
-      setLocalTrvLabel(profile.trvLabel || "");
+    if (profile) {
+      if (localTrv === null) {
+        setLocalTrv(profile.trvFrequency ?? null);
+        setLocalTrvLabel(profile.trvLabel ?? "");
+      }
+      if (localComplexity === null) {
+        setLocalComplexity(profile.complexityLevel ?? 50); // Default to balanced
+      }
     }
-  }, [profile, localTrv]);
+  }, [profile, localTrv, localComplexity]);
 
-  const updateTrv = api.beingProfile.updateTrv.useMutation({
+  const updateProfile = api.beingProfile.updateProfile.useMutation({
     onSuccess: () => {
       void refetch();
       toast({
         title: "Profil sauvegardé",
-        description: "Vos préférences de rythme ont été mises à jour.",
+        description: "Vos préférences ont été mises à jour.",
       });
     },
     onError: (error) => {
@@ -39,39 +46,53 @@ export function BeingProfileSection() {
     },
   });
 
-  const handleSelect = (option: { trvFrequency: number; trvLabel: string }) => {
+  const handleTrvSelect = (option: { trvFrequency: number; trvLabel: string }) => {
     setLocalTrv(option.trvFrequency);
     setLocalTrvLabel(option.trvLabel);
   };
 
+  const handleComplexityChange = (val: number) => {
+    setLocalComplexity(val);
+  };
+
   const handleSave = () => {
-    if (localTrv && localTrvLabel) {
-      updateTrv.mutate({
+    if (localTrv && localTrvLabel && localComplexity !== null) {
+      updateProfile.mutate({
         trvFrequency: localTrv,
         trvLabel: localTrvLabel,
+        complexityLevel: localComplexity,
       });
     }
   };
 
-  const isDirty = localTrv !== (profile?.trvFrequency ?? null);
+  const isDirty = 
+    (localTrv !== (profile?.trvFrequency ?? null)) || 
+    (localComplexity !== (profile?.complexityLevel ?? 50));
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Profil Étendu (Être)</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-8">
         <TrvSelector
           currentValue={localTrv ?? profile?.trvFrequency}
-          onSelect={handleSelect}
+          onSelect={handleTrvSelect}
         />
+        
+        <div className="border-t pt-6">
+          <ComplexitySlider 
+            value={localComplexity ?? profile?.complexityLevel ?? 50}
+            onChange={handleComplexityChange}
+          />
+        </div>
       </CardContent>
       <CardFooter className="flex justify-end border-t pt-4">
         <Button 
           onClick={handleSave} 
-          disabled={!isDirty || updateTrv.isPending}
+          disabled={!isDirty || updateProfile.isPending}
         >
-          {updateTrv.isPending ? "Sauvegarde..." : "Sauvegarder"}
+          {updateProfile.isPending ? "Sauvegarde..." : "Sauvegarder"}
         </Button>
       </CardFooter>
     </Card>

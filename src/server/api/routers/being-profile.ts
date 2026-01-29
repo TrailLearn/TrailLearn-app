@@ -8,6 +8,7 @@ export const beingProfileRouter = createTRPCRouter({
     });
   }),
 
+  // Legacy: kept for compatibility if needed, but updateProfile is preferred
   updateTrv: protectedProcedure
     .input(
       z.object({
@@ -28,6 +29,34 @@ export const beingProfileRouter = createTRPCRouter({
           trvFrequency: input.trvFrequency,
           trvLabel: input.trvLabel,
           vitalRenewalRate: input.trvFrequency,
+        },
+      });
+    }),
+
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        trvFrequency: z.number().optional(),
+        trvLabel: z.string().optional(),
+        complexityLevel: z.number().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Prepare update data
+      const data: any = {};
+      if (input.trvFrequency !== undefined) {
+        data.trvFrequency = input.trvFrequency;
+        data.vitalRenewalRate = input.trvFrequency; // Sync
+      }
+      if (input.trvLabel !== undefined) data.trvLabel = input.trvLabel;
+      if (input.complexityLevel !== undefined) data.complexityLevel = input.complexityLevel;
+
+      return ctx.db.beingProfile.upsert({
+        where: { userId: ctx.session.user.id },
+        update: data,
+        create: {
+          userId: ctx.session.user.id,
+          ...data,
         },
       });
     }),
