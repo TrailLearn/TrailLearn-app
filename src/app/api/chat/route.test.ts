@@ -25,6 +25,9 @@ vi.mock('~/server/db', () => ({
     dvpRecord: {
       findFirst: vi.fn().mockResolvedValue(null),
     },
+    beingProfile: {
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
   },
 }));
 

@@ -97,7 +97,9 @@ model BeingProfile {
   psychologicalSafety Int?   // Métrique de Sécurité Psychologique (0-100)
 
   // Evolutionary Kinetics
-  vitalRenewalRate  Int?     // TRV in months
+  vitalRenewalRate  Int?     // TRV in months (legacy)
+  trvFrequency      Int?     // Frequency in months
+  trvLabel          String?  // e.g., "6 months", "1 year"
   growthArchetype   String?  // e.g., "Cyclic Explorer"
   kineticSignature  Json?    // Curves/Intentions
 

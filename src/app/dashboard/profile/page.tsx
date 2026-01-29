@@ -3,6 +3,7 @@ import { db } from "~/server/db";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
+import { BeingProfileSection } from "~/features/being-profile/components/being-profile-section";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -45,6 +46,8 @@ export default async function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        <BeingProfileSection />
 
         <Card>
           <CardHeader>

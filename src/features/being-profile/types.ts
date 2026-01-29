@@ -21,6 +21,8 @@ export const beingProfileSchema = z.object({
 
   // Evolutionary Kinetics
   vitalRenewalRate: z.number().int().positive().optional(),
+  trvFrequency: z.number().int().positive().optional(),
+  trvLabel: z.string().optional(),
   growthArchetype: z.string().optional(),
   kineticSignature: z.any().optional(), // Can be refined later
 

@@ -43,7 +43,7 @@ development_status:
   "4-8-stabilisation-ux-data": "done"
   "4-9-cockpit-synthesis-history-refinement": "done"
   "4-10-stabilisation-data-timezone": "done"
-  "4-11-dvp-administrative-model": "in-progress"
+  "4-11-dvp-administrative-model": "done"
 
   # Epic 5: Standard of Truth Admin
   "5-0-admin-business-rules": "done"
@@ -51,23 +51,46 @@ development_status:
   # Epic 6: Sharing & Export
   "6-0-sharing-export": "done"
 
-  # Epic 7: Socle Conversationnel & Miroir Lucide (NEW)
+  # Epic 7 (Legacy V2): Socle Conversationnel
   "7-1-initialisation-chat": "done"
   "7-2-miroir-lucide": "done"
   "7-3-indice-clarte": "done"
   "7-4-jauge-viabilite": "done"
 
-  # Epic 8: Finalisation & Sortie de Session (NEW)
+  # Epic 8 (Legacy V2): Finalisation
   "8-1-dvp-b-generation": "done"
   "8-2-persistance-session": "done"
 
-  # Epic 9: Exécution Assistée & Focus Mode (NEW)
+  # Epic 9 (Legacy V2): Exécution Assistée
   "9-1-focus-engine": "done"
   "9-2-focus-dashboard": "done"
   "9-3-preuve-facultative": "done"
   "9-4-feedback-narratif": "done"
   "9-5-secretaire-logistique": "done"
 
-  # Epic 10: Gouvernance & Pilotage (NEW)
+  # Epic 10 (Legacy V2): Gouvernance
   "10-1-regles-versioning": "review"
   "10-2-relance-intelligente": "review"
+
+  # Epic 11 (V3): Identity & Deep Profile
+  "11-1-configuration-trv": "review"
+  "11-2-capture-complexite": "ready-for-dev"
+  "11-3a-shadow-zone-model": "ready-for-dev"
+  "11-3b-chiffrement-aes": "ready-for-dev"
+  "11-4-saisie-ethique-shadow": "ready-for-dev"
+
+  # Epic 12 (V3): AI Mentor & Maïeutique
+  "12-1-infra-ia-streaming": "ready-for-dev"
+  "12-2-persona-maieutique": "ready-for-dev"
+  "12-3-detection-contradictions": "ready-for-dev"
+  "12-4-contexte-shadow-minimisation": "ready-for-dev"
+  "12-5-safety-guardrails": "ready-for-dev"
+
+  # Epic 13 (V3): IKIGAI Engine
+  "13-1-calculateur-viabilite-holistique": "ready-for-dev"
+  "13-2-portefeuille-activites": "ready-for-dev"
+  "13-3-shadow-guard": "ready-for-dev"
+
+  # Epic 14 (V3): Travel Lab
+  "14-1-hypotheses-voyage": "ready-for-dev"
+  "14-2-protocoles-action": "ready-for-dev"

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { BeingProfileData } from "../types";
-import { DvpData } from "../../dvp/types";
+import type { BeingProfileData } from "../types";
+import type { DvpData } from "../../dvp/types";
 
 export interface ActionableTension {
   id: string;

@@ -1,4 +1,5 @@
 import { AiCoachService } from '~/features/ai-coach/services/ai-service';
+import { ContextService } from '~/features/being-profile/services/context-service';
 import { auth } from '~/server/auth';
 import { db } from '~/server/db';
 
@@ -13,6 +14,7 @@ export async function POST(req: Request) {
   let projectContext = "";
   let isReturningFromInactivity = false;
   let overdueTaskCount = 0;
+  let beingProfile = null;
 
   if (session?.user?.id) {
     const userId = session.user.id;
@@ -57,7 +59,10 @@ export async function POST(req: Request) {
       select: { data: true },
     });
 
-    // 4. Build Unified Context string
+    // 4. Fetch Being Profile Context
+    beingProfile = await ContextService.getUserContext(userId);
+
+    // 5. Build Unified Context string
     const dvpData = (dvp?.data as any) || {};
     
     // Safely access nested DVP data or fallback to preferences
@@ -85,6 +90,7 @@ export async function POST(req: Request) {
     userName: session?.user?.name || 'Explorateur',
     projectContext,
     userId: session?.user?.id,
+    beingProfile,
     preferences: userPreferences,
     isReturningFromInactivity,
     overdueTaskCount,

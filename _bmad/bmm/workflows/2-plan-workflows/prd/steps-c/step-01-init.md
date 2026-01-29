@@ -5,7 +5,7 @@ description: 'Initialize the PRD workflow by detecting continuation state and se
 # File References
 nextStepFile: './step-02-discovery.md'
 continueStepFile: './step-01b-continue.md'
-outputFile: '{planning_artifacts}/prd.md'
+outputFile: '{planning_artifacts}/prd-v3.md'
 
 # Template Reference
 prdTemplate: '../templates/prd-template.md'

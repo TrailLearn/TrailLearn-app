@@ -4,6 +4,7 @@ import { dvpRouter } from "~/server/api/routers/dvp";
 import { adminRouter } from "~/server/api/routers/admin";
 import { aiRouter } from "~/server/api/routers/ai";
 import { executionRouter } from "~/server/api/routers/execution";
+import { beingProfileRouter } from "~/server/api/routers/being-profile";
 
 /**
  * This is the primary router for your server.
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   ai: aiRouter,
   execution: executionRouter,
+  beingProfile: beingProfileRouter,
 });
 
 // export type definition of API

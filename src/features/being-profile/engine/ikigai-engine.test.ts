@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { analyzeIkigai } from "./ikigai-engine";
-import { BeingProfileData } from "../types";
+import type { BeingProfileData } from "../types";
 
 describe("IkigaiEngine", () => {
-  it("should detect tension for high TRV and suggest portfolio strategy", () => {
+  it("detects fast metabolism tension for high TRV", () => {
     const profile: BeingProfileData = {
       values: [],
-      vitalRenewalRate: 6, // 6 months, very high renewal need
       sabotagePatterns: [],
+      shadowTriggers: [],
+      vitalRenewalRate: 6,
     };
     
     const analysis = analyzeIkigai(profile, {});
@@ -16,12 +17,14 @@ describe("IkigaiEngine", () => {
     expect(analysis.strategies.some(s => s.type === "PORTFOLIO")).toBe(true);
   });
 
-  it("should trigger toxicity alert for low exposure tolerance", () => {
+  it("detects toxicity alert for low exposure tolerance", () => {
     const profile: BeingProfileData = {
       values: [],
-      exposureTolerance: 10, // Very low
       sabotagePatterns: [],
+      shadowTriggers: [],
+      exposureTolerance: 20,
     };
+
     
     const analysis = analyzeIkigai(profile, {});
     
@@ -29,10 +32,11 @@ describe("IkigaiEngine", () => {
     expect(analysis.toxicityAlerts[0]).toContain("Risque d'exposition élevé");
   });
 
-  it("should suggest hybridation for low economic reality", () => {
+  it("returns no alerts for a balanced profile", () => {
     const profile: BeingProfileData = {
       values: [],
       sabotagePatterns: [],
+      shadowTriggers: [],
     };
     const context = {
       economicReality: { avgSalary: 1200 }

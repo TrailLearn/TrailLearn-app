@@ -21,6 +21,7 @@ export const AiCoachService = {
       userName?: string; 
       projectContext?: string; 
       userId?: string; 
+      beingProfile?: any;
       preferences?: any;
       isReturningFromInactivity?: boolean;
       overdueTaskCount?: number;

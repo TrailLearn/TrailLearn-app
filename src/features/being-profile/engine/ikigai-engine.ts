@@ -1,6 +1,6 @@
-import { BeingProfileData } from "../types";
-import { IkigaiAnalysis, IkigaiContext, ActionableTension, ViabilityStrategy } from "./types";
-import { DvpData } from "../../dvp/types";
+import type { BeingProfileData } from "../types";
+import type { IkigaiAnalysis, IkigaiContext, ActionableTension, ViabilityStrategy } from "./types";
+import type { DvpData } from "../../dvp/types";
 
 export function analyzeIkigai(
   profile: BeingProfileData,
