@@ -14,24 +14,16 @@ const TRV_OPTIONS = [
 interface TrvSelectorProps {
   currentValue?: number | null;
   onSelect: (option: { trvFrequency: number; trvLabel: string }) => void;
-  isSaving?: boolean;
 }
 
-export function TrvSelector({ currentValue, onSelect, isSaving }: TrvSelectorProps) {
+export function TrvSelector({ currentValue, onSelect }: TrvSelectorProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Votre rythme naturel (TRV)</h3>
-          <p className="text-sm text-muted-foreground">
-            À quelle fréquence ressentez-vous le besoin de renouveler votre environnement ou vos projets ?
-          </p>
-        </div>
-        {isSaving && (
-          <span className="text-xs text-muted-foreground animate-pulse">
-            Sauvegarde en cours...
-          </span>
-        )}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Votre rythme naturel (TRV)</h3>
+        <p className="text-sm text-muted-foreground">
+          À quelle fréquence ressentez-vous le besoin de renouveler votre environnement ou vos projets ?
+        </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {TRV_OPTIONS.map((option) => (
