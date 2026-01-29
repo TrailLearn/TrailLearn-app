@@ -16,11 +16,23 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   
   const { data: profile, refetch: refetchProfile } = api.beingProfile.get.useQuery();
+  
+  // Local state to track user selection immediately
+  const [localTrv, setLocalTrv] = useState<number | null>(null);
+
+  // Derived state: Use local selection if active, otherwise fallback to server data
+  const effectiveTrv = localTrv ?? profile?.trvFrequency;
+
   const updateTrv = api.beingProfile.updateTrv.useMutation({
     onSuccess: () => {
       void refetchProfile();
     },
   });
+
+  const handleTrvSelect = (option: { trvFrequency: number; trvLabel: string }) => {
+    setLocalTrv(option.trvFrequency);
+    updateTrv.mutate(option);
+  };
 
   const completeOnboarding = api.user.completeOnboarding.useMutation({
     onSuccess: async () => {
@@ -52,14 +64,14 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-6">
               <TrvSelector
-                currentValue={profile?.trvFrequency}
-                onSelect={(option) => updateTrv.mutate(option)}
+                currentValue={effectiveTrv}
+                onSelect={handleTrvSelect}
                 isSaving={updateTrv.isPending}
               />
               <div className="flex justify-end">
                 <Button 
                   onClick={() => setStep(2)} 
-                  disabled={!profile?.trvFrequency}
+                  disabled={!effectiveTrv}
                 >
                   Continuer
                 </Button>
