@@ -7,12 +7,14 @@ import { api } from "~/trpc/react";
 import { TrvSelector } from "~/features/being-profile/components/trv-selector";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
+import { useToast } from "~/components/ui/use-toast";
 
 const ONBOARDING_VERSION = 1;
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { update } = useSession();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   
   const { data: profile, refetch: refetchProfile } = api.beingProfile.get.useQuery();
@@ -27,6 +29,13 @@ export default function OnboardingPage() {
     onSuccess: () => {
       void refetchProfile();
     },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder votre choix : " + error.message,
+        variant: "destructive",
+      });
+    }
   });
 
   const handleTrvSelect = (option: { trvFrequency: number; trvLabel: string }) => {
@@ -36,14 +45,38 @@ export default function OnboardingPage() {
 
   const completeOnboarding = api.user.completeOnboarding.useMutation({
     onSuccess: async () => {
-      // Force session refresh to update middleware state
-      await update({ 
-        onboardingStatus: "COMPLETED", 
-        onboardingVersion: ONBOARDING_VERSION 
-      });
-      // Force hard redirect to ensure middleware sees the new session cookie immediately
-      window.location.href = "/dashboard";
+      console.log("Onboarding marked complete in DB. Refreshing session...");
+      try {
+        // Force session refresh to update middleware state
+        await update({ 
+          onboardingStatus: "COMPLETED", 
+          onboardingVersion: ONBOARDING_VERSION 
+        });
+        console.log("Session refreshed. Redirecting...");
+        // Force hard redirect to ensure middleware sees the new session cookie immediately
+        window.location.href = "/dashboard";
+      } catch (e) {
+        console.error("Session update failed:", e);
+        // Fallback: Try redirect anyway, maybe the cookie was updated by the mutation side-effect?
+        // Or show error
+        toast({
+          title: "Session Error",
+          description: "La session n'a pas pu être mise à jour. Redirection...",
+          variant: "default",
+        });
+        setTimeout(() => {
+           window.location.href = "/dashboard";
+        }, 1000);
+      }
     },
+    onError: (error) => {
+      console.error("Onboarding mutation error:", error);
+      toast({
+        title: "Erreur critique",
+        description: "Impossible de finaliser l'onboarding : " + error.message,
+        variant: "destructive",
+      });
+    }
   });
 
   const handleFinish = () => {
