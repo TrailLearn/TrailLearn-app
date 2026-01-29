@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { EncryptionService } from "~/lib/encryption";
 
 /**
  * Boundary Service for Shadow Profile Access.
@@ -19,22 +20,43 @@ export const ShadowBoundaryService = {
         vulnerabilities: true,
       },
     });
-    return shadow;
+
+    if (!shadow) return null;
+
+    // Decrypt data on read with error handling
+    try {
+      return {
+        fears: shadow.fears ? EncryptionService.decrypt(shadow.fears) : null,
+        vulnerabilities: shadow.vulnerabilities ? EncryptionService.decrypt(shadow.vulnerabilities) : null,
+      };
+    } catch (error) {
+      console.error("[ShadowBoundaryService] Decryption failed for user", userId, error);
+      // Fail secure: return nulls rather than crashing or returning garbage
+      return { fears: null, vulnerabilities: null };
+    }
   },
 
   /**
    * Updates or creates shadow data.
    */
   async updateShadow(userId: string, data: { fears?: string; vulnerabilities?: string }) {
+    if (!data.fears && !data.vulnerabilities) {
+      return null; // Nothing to update
+    }
+
+    // Encrypt data on write
+    const updateData: any = {};
+    if (data.fears) updateData.fears = EncryptionService.encrypt(data.fears);
+    if (data.vulnerabilities) updateData.vulnerabilities = EncryptionService.encrypt(data.vulnerabilities);
+
     return db.shadowProfile.upsert({
       where: { userId },
       create: {
         userId,
-        ...data,
+        fears: updateData.fears,
+        vulnerabilities: updateData.vulnerabilities,
       },
-      update: {
-        ...data,
-      },
+      update: updateData,
     });
   },
   

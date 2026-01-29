@@ -15,6 +15,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    SHADOW_KEY: z.string().min(32).optional(),
   },
 
   /**

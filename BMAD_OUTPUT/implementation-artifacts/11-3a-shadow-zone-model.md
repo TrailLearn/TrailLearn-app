@@ -1,6 +1,6 @@
 # Story 11.3a: Modèle et Frontière d'Accès Shadow Zone
 
-Status: review
+Status: done
 
 ## Story
 

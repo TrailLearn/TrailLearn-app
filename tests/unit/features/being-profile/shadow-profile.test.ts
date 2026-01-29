@@ -10,12 +10,9 @@ vi.mock("~/env", () => ({
 }));
 
 describe("ShadowProfile Data Model", () => {
-  it("should exist and not be directly queryable from public API (this test verifies DB existence)", async () => {
-    // This will fail if model is missing
-    const shadow = await db.shadowProfile.findFirst({
-      where: {},
-    });
-    // We just check it runs without crashing due to missing model
-    expect(true).toBe(true);
+  it("should exist on the Prisma client", () => {
+    // Verify model exists
+    expect(db).toHaveProperty("shadowProfile");
+    expect(db.shadowProfile).toBeDefined();
   });
 });
