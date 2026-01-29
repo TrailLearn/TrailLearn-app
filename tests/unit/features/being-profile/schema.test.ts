@@ -1,4 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Mock env before importing db to avoid client-side access error
+vi.mock("~/env", () => ({
+  env: {
+    NODE_ENV: "test",
+  },
+}));
+
 import { db } from "~/server/db";
 
 describe("BeingProfile Data Model", () => {

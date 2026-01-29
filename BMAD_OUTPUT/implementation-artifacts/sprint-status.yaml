@@ -73,7 +73,7 @@ development_status:
   "10-2-relance-intelligente": "review"
 
   # Epic 11 (V3): Identity & Deep Profile
-  "11-1-configuration-trv": "review"
+  "11-1-configuration-trv": "done"
   "11-2-capture-complexite": "ready-for-dev"
   "11-3a-shadow-zone-model": "ready-for-dev"
   "11-3b-chiffrement-aes": "ready-for-dev"

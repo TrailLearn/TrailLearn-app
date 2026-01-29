@@ -11,7 +11,7 @@ describe("TrvSelector", () => {
 
   it("calls onSelect when an option is selected", () => {
     const onSelect = vi.fn();
-    render(<TrvSelector onSelect={onSelect} />);
+    render(<TrvSelector onSelect={onSelect} isSaving={false} />);
     
     // Assuming we use cards or buttons for options
     const option = screen.getByText(/6 mois/i);
@@ -21,5 +21,10 @@ describe("TrvSelector", () => {
       trvFrequency: 6,
       trvLabel: "6 mois"
     }));
+  });
+
+  it("shows saving indicator when isSaving is true", () => {
+    render(<TrvSelector onSelect={vi.fn()} isSaving={true} />);
+    expect(screen.getByText(/Sauvegarde en cours/i)).toBeInTheDocument();
   });
 });

@@ -63,6 +63,11 @@ enum UserRole {
   ADMIN
 }
 
+enum OnboardingStatus {
+  PENDING
+  COMPLETED
+}
+
 model User {
   id            String      @id @default(cuid())
   name          String?
@@ -71,6 +76,8 @@ model User {
   image         String?
   password      String?
   role          UserRole    @default(USER)
+  onboardingStatus OnboardingStatus @default(PENDING)
+  onboardingVersion Int     @default(0)
   preferences   Json        @default("{}") // Stores conversational fragments (city, budget, etc.)
   lastActiveAt  DateTime    @default(now())
   accounts      Account[]

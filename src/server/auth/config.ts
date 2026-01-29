@@ -5,7 +5,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 
 import { db } from "~/server/db";
-import { type User, type UserRole } from "@prisma/client";
+import { type User, type UserRole, type OnboardingStatus } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -16,6 +16,8 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      onboardingStatus: OnboardingStatus;
+      onboardingVersion: number;
     } & DefaultSession["user"];
   }
 }
@@ -64,12 +66,21 @@ export const authConfig = {
   adapter: PrismaAdapter(db as any),
   session: { strategy: "jwt" }, // Required for Credentials provider
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: async ({ token, user, trigger, session }) => {
       if (user) {
         const prismaUser = user as User;
         token.id = user.id;
         token.role = prismaUser.role;
+        token.onboardingStatus = prismaUser.onboardingStatus;
+        token.onboardingVersion = prismaUser.onboardingVersion;
       }
+      
+      // Allow manual session update
+      if (trigger === "update" && session?.onboardingStatus) {
+        token.onboardingStatus = session.onboardingStatus;
+        token.onboardingVersion = session.onboardingVersion;
+      }
+
       return token;
     },
     session: ({ session, token }) => ({
@@ -78,6 +89,8 @@ export const authConfig = {
         ...session.user,
         id: token.id as string,
         role: token.role as UserRole,
+        onboardingStatus: token.onboardingStatus as OnboardingStatus,
+        onboardingVersion: token.onboardingVersion as number,
       },
     }),
   },

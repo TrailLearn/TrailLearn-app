@@ -44,7 +44,12 @@ import { db } from '~/server/db';
 // Mock Context Helper
 const createMockContext = (role: 'USER' | 'ADMIN', userId: string) => ({
   session: {
-    user: { id: userId, role: role },
+    user: { 
+      id: userId, 
+      role: role,
+      onboardingStatus: 'COMPLETED' as const,
+      onboardingVersion: 1
+    },
     expires: new Date().toISOString(),
   },
   db: db as any,
