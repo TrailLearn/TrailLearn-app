@@ -91,6 +91,7 @@ model User {
   actionPlan    ActionPlan?
   notifications Notification[]
   beingProfile  BeingProfile?
+  shadowProfile ShadowProfile?
 }
 
 model BeingProfile {
@@ -118,6 +119,23 @@ model BeingProfile {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ShadowProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  
+  // Encrypted Data
+  fears             String?  @db.Text // JSON encrypted
+  vulnerabilities   String?  @db.Text // JSON encrypted
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // No direct relation to User exposed to public API if possible, 
+  // but Prisma requires relation for integrity. 
+  // We will enforce access via Service only.
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

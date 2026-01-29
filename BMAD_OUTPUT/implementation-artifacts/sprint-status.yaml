@@ -75,7 +75,7 @@ development_status:
   # Epic 11 (V3): Identity & Deep Profile
   "11-1-configuration-trv": "done"
   "11-2-capture-complexite": "done"
-  "11-3a-shadow-zone-model": "ready-for-dev"
+  "11-3a-shadow-zone-model": "review"
   "11-3b-chiffrement-aes": "ready-for-dev"
   "11-4-saisie-ethique-shadow": "ready-for-dev"
 
