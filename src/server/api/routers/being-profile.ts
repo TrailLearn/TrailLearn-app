@@ -1,11 +1,32 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { ShadowBoundaryService } from "~/features/being-profile/services/shadow-boundary-service";
 
 export const beingProfileRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.beingProfile.findUnique({
       where: { userId: ctx.session.user.id },
     });
+  }),
+
+  // Shadow Profile Procedures
+  getShadow: protectedProcedure.query(async ({ ctx }) => {
+    return ShadowBoundaryService.getShadow(ctx.session.user.id);
+  }),
+
+  updateShadow: protectedProcedure
+    .input(
+      z.object({
+        fears: z.string().optional(),
+        vulnerabilities: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ShadowBoundaryService.updateShadow(ctx.session.user.id, input);
+    }),
+
+  deleteShadow: protectedProcedure.mutation(async ({ ctx }) => {
+    return ShadowBoundaryService.deleteShadow(ctx.session.user.id);
   }),
 
   // Legacy: kept for compatibility if needed, but updateProfile is preferred

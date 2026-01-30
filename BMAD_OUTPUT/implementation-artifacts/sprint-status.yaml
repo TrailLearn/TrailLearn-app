@@ -77,7 +77,7 @@ development_status:
   "11-2-capture-complexite": "done"
   "11-3a-shadow-zone-model": "done"
   "11-3b-chiffrement-aes": "done"
-  "11-4-saisie-ethique-shadow": "ready-for-dev"
+  "11-4-saisie-ethique-shadow": "done"
 
   # Epic 12 (V3): AI Mentor & Maïeutique
   "12-1-infra-ia-streaming": "ready-for-dev"
