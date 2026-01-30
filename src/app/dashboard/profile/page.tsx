@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { BeingProfileSection } from "~/features/being-profile/components/being-profile-section";
+import { ShadowZoneForm } from "~/features/being-profile/components/shadow-zone-form";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -48,6 +49,8 @@ export default async function ProfilePage() {
         </Card>
 
         <BeingProfileSection />
+        
+        <ShadowZoneForm />
 
         <Card>
           <CardHeader>

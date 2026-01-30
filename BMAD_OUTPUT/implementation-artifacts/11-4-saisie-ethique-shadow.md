@@ -50,7 +50,13 @@ Amelia (Senior Software Engineer)
 - Improved checkbox styling with custom Tailwind classes for better visual integration.
 - Updated unit tests to simulate `Dialog` interactions properly.
 
+### Additional Integration (User Request)
+- Added `ShadowZoneForm` to `/dashboard/profile` page for permanent access.
+- Integrated `ShadowZoneForm` as Step 2 in `/onboarding` flow to capture data early.
+
 ### File List
 - `src/features/being-profile/components/shadow-zone-form.tsx`
 - `src/server/api/routers/being-profile.ts`
 - `tests/unit/features/being-profile/ShadowZoneForm.test.tsx`
+- `src/app/dashboard/profile/page.tsx`
+- `src/app/onboarding/page.tsx`

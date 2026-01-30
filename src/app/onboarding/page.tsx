@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "~/trpc/react";
 import { TrvSelector } from "~/features/being-profile/components/trv-selector";
+import { ShadowZoneForm } from "~/features/being-profile/components/shadow-zone-form";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { useToast } from "~/components/ui/use-toast";
@@ -16,6 +17,7 @@ export default function OnboardingPage() {
   const { update } = useSession();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const totalSteps = 3;
   
   const { data: profile, refetch: refetchProfile } = api.beingProfile.get.useQuery();
   
@@ -98,7 +100,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
             Bienvenue sur TrailLearn
@@ -110,6 +112,7 @@ export default function OnboardingPage() {
         <CardContent className="py-6">
           {step === 1 && (
             <div className="space-y-6">
+              <h3 className="text-lg font-medium text-center">Rythme de Renouvellement Vital</h3>
               <TrvSelector
                 currentValue={effectiveTrv}
                 onSelect={handleTrvSelect}
@@ -126,13 +129,30 @@ export default function OnboardingPage() {
           )}
 
           {step === 2 && (
+            <div className="space-y-6">
+               {/* Wrapper pour limiter la largeur du formulaire dans le contexte large de l'onboarding */}
+               <div className="flex justify-center">
+                  <ShadowZoneForm 
+                    onSkip={() => setStep(3)}
+                    onSuccess={() => setStep(3)}
+                  />
+               </div>
+               <div className="flex justify-start">
+                  <Button variant="ghost" onClick={() => setStep(1)}>
+                    Retour
+                  </Button>
+               </div>
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="text-center space-y-4">
               <h3 className="text-xl font-semibold">C'est prêt !</h3>
               <p>
                 Vous avez configuré vos bases. Vous pouvez maintenant accéder à votre cockpit et commencer à discuter avec votre Coach.
               </p>
               <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => setStep(1)}>
+                <Button variant="outline" onClick={() => setStep(2)}>
                   Retour
                 </Button>
                 <Button 
@@ -147,11 +167,11 @@ export default function OnboardingPage() {
         </CardContent>
         <CardFooter className="justify-center border-t p-4">
           <div className="flex gap-2">
-            {[1, 2].map((s) => (
+            {Array.from({ length: totalSteps }).map((_, i) => (
               <div
-                key={s}
+                key={i + 1}
                 className={`h-2 w-8 rounded-full ${
-                  step === s ? "bg-primary" : "bg-muted"
+                  step === i + 1 ? "bg-primary" : "bg-muted"
                 }`}
               />
             ))}
