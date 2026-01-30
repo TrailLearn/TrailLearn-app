@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ShadowZoneForm } from "~/features/being-profile/components/shadow-zone-form";
 import { api } from "~/trpc/react";
 
