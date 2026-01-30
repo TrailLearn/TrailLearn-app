@@ -302,3 +302,16 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model SafetyLog {
+  id          String   @id @default(cuid())
+  userId      String?  // Optional: User might be anonymous or unauthenticated
+  riskType    String   // "Jailbreak", "Medical", "Violence", "Legal"
+  userInput   String?  @db.Text // Redacted/Minimized input if possible
+  aiResponse  String?  @db.Text
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([riskType])
+}

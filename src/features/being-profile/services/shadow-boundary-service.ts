@@ -68,5 +68,34 @@ export const ShadowBoundaryService = {
     return db.shadowProfile.delete({
       where: { userId },
     });
+  },
+
+  /**
+   * Retrieves a minimized summary of shadow data for LLM context injection.
+   * Aims to provide context without exposing full raw trauma dumps unnecessarily.
+   */
+  async getShadowContextSummary(userId: string) {
+    const shadow = await this.getShadow(userId);
+    if (!shadow) return null;
+
+    const summarize = (text: string | null) => {
+      if (!text) return null;
+      // Simple minimization: Truncate if too long to prevent context flooding
+      // In a V2, this could use a cheap LLM to extract keywords (e.g. "Social Anxiety")
+      const MAX_LENGTH = 300;
+      if (text.length <= MAX_LENGTH) return text;
+      return text.substring(0, MAX_LENGTH) + "... (tronqué)";
+    };
+
+    const hasFears = !!shadow.fears;
+    const hasVuln = !!shadow.vulnerabilities;
+
+    if (!hasFears && !hasVuln) return null;
+
+    return {
+      fears: summarize(shadow.fears),
+      vulnerabilities: summarize(shadow.vulnerabilities),
+      _isSensitive: true // Marker for log redaction
+    };
   }
 };

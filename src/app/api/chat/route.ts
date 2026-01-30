@@ -1,5 +1,6 @@
 import { AiCoachService } from '~/features/ai-coach/services/ai-service';
 import { ContextService } from '~/features/being-profile/services/context-service';
+import { ShadowBoundaryService } from '~/features/being-profile/services/shadow-boundary-service';
 import { auth } from '~/server/auth';
 import { db } from '~/server/db';
 
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
   let isReturningFromInactivity = false;
   let overdueTaskCount = 0;
   let beingProfile = null;
+  let shadowContext = null;
 
   if (session?.user?.id) {
     const userId = session.user.id;
@@ -62,7 +64,20 @@ export async function POST(req: Request) {
     // 4. Fetch Being Profile Context
     beingProfile = await ContextService.getUserContext(userId);
 
-    // 5. Build Unified Context string
+    // 5. Shadow Context Injection (Opt-in based on intent)
+    // Minimization: Only fetch/inject if conversation likely requires it.
+    const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || "";
+    // Unique list of triggers
+    const shadowTriggers = ["peur", "crainte", "angoisse", "bloqué", "frein", "honte", "doute", "confiance", "échec", "panique"];
+    
+    // Use regex for word boundary matching to avoid false positives (e.g. "vapeur" matching "peur")
+    const shouldInjectShadow = shadowTriggers.some(t => new RegExp(`\\b${t}\\b`, 'i').test(lastMessage));
+    
+    if (shouldInjectShadow) {
+       shadowContext = await ShadowBoundaryService.getShadowContextSummary(userId);
+    }
+
+    // 6. Build Unified Context string
     const dvpData = (dvp?.data as any) || {};
     
     // Safely access nested DVP data or fallback to preferences
@@ -91,6 +106,7 @@ export async function POST(req: Request) {
     projectContext,
     userId: session?.user?.id,
     beingProfile,
+    shadowContext, // Injected conditionally
     preferences: userPreferences,
     isReturningFromInactivity,
     overdueTaskCount,

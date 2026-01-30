@@ -10,6 +10,7 @@ import { cn } from '~/lib/utils';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import { useToast } from '~/components/ui/use-toast';
 
 interface ChatInterfaceProps {
   initialMessages?: any[];
@@ -17,9 +18,17 @@ interface ChatInterfaceProps {
 
 export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
   const router = useRouter();
+  const { toast } = useToast();
   // Retour aux helpers qui semblaient fonctionner au niveau compilation
   const { messages, sendMessage, status, error } = useChat({
     messages: initialMessages,
+    onError: (err) => {
+      toast({
+        title: "Connexion instable",
+        description: "Le Mentor a du mal à répondre. Vérifiez votre connexion et réessayez.",
+        variant: "destructive",
+      });
+    }
   });
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -178,11 +187,17 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
               </div>
             )}
 
-            {/* Gestion d'erreur */}
+            {/* Gestion d'erreur (Fallback sobre) */}
             {error && (
-              <div className="flex justify-center p-4">
-                <div className="bg-red-50 text-red-600 px-4 py-2 rounded-md text-sm border border-red-100">
-                  Une erreur est survenue. Merci de réessayer.
+              <div className="flex justify-center p-4 animate-in fade-in slide-in-from-bottom-2">
+                <div 
+                  role="alert"
+                  className="bg-amber-50 text-amber-800 px-4 py-2 rounded-full text-xs font-medium border border-amber-200 shadow-sm flex items-center gap-2"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                  Le Mentor a rencontré un obstacle. Veuillez reformuler ou réessayer.
                 </div>
               </div>
             )}

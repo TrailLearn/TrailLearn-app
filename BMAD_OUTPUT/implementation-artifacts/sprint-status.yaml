@@ -80,11 +80,11 @@ development_status:
   "11-4-saisie-ethique-shadow": "done"
 
   # Epic 12 (V3): AI Mentor & Maïeutique
-  "12-1-infra-ia-streaming": "ready-for-dev"
-  "12-2-persona-maieutique": "ready-for-dev"
-  "12-3-detection-contradictions": "ready-for-dev"
-  "12-4-contexte-shadow-minimisation": "ready-for-dev"
-  "12-5-safety-guardrails": "ready-for-dev"
+  "12-1-infra-ia-streaming": "done"
+  "12-2-persona-maieutique": "done"
+  "12-3-detection-contradictions": "done"
+  "12-4-contexte-shadow-minimisation": "done"
+  "12-5-safety-guardrails": "done"
 
   # Epic 13 (V3): IKIGAI Engine
   "13-1-calculateur-viabilite-holistique": "ready-for-dev"

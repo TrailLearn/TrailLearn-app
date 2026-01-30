@@ -22,6 +22,7 @@ export const AiCoachService = {
       projectContext?: string; 
       userId?: string; 
       beingProfile?: any;
+      shadowContext?: any; // New field
       preferences?: any;
       isReturningFromInactivity?: boolean;
       overdueTaskCount?: number;
@@ -50,12 +51,14 @@ export const AiCoachService = {
         };
       });
 
-      // --- DEBUG LOGS (Temporary) ---
+      // --- DEBUG LOGS (Redacted for Privacy) ---
+      const logContext = { ...context };
+      if (logContext.shadowContext) {
+          logContext.shadowContext = { _redacted: true, summary: "Shadow data present but hidden from logs" };
+      }
+      
       console.log("--- AI COACH DEBUG ---");
-      console.log("Context Data:", JSON.stringify(context, null, 2));
-      console.log("System Prompt Preview:", systemPrompt.substring(0, 500) + "...");
-      console.log("Message History Length:", coreMessages.length);
-      console.log("Full History Dump:", JSON.stringify(coreMessages, null, 2)); // Dump full history to be sure
+      console.log("Context Data:", JSON.stringify(logContext, null, 2));
       // -----------------------------
 
       // 1. Persistence: Save User Message (Last one in the array)
@@ -95,6 +98,30 @@ export const AiCoachService = {
             const check = LLMGuardrails.validateNonClosure(text);
             if (!check.isValid) {
                 console.warn(`[ETHICAL VIOLATION] AI generated forbidden terms: ${check.violations.join(', ')}`);
+            }
+
+            // SAFETY GUARDRAIL LOGGING
+            // Regex permissive : cherche "ne peux pas répondre" ET "sujet"
+            // Capture tout ce qui suit "Sujet" jusqu'à la fin de la parenthèse ou ligne
+            const refusalMatch = text.match(/Je ne peux pas répondre.*Sujet\s*[:]\s*(.*?)[).]/i);
+            
+            if (refusalMatch) {
+              const riskType = refusalMatch[1] || "Unknown";
+              console.warn(`[SAFETY EVENT] Refusal triggered for: ${riskType}`);
+              try {
+                if (context?.userId) {
+                    await db.safetyLog.create({
+                        data: {
+                            userId: context.userId,
+                            riskType: riskType,
+                            userInput: context.userId ? "Redacted (See Chat Logs)" : "Anonymous",
+                            aiResponse: text,
+                        }
+                    });
+                }
+              } catch (logErr) {
+                console.error("[SafetyLog] Failed to persist log:", logErr);
+              }
             }
           }
 
