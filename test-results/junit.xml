@@ -1,20 +1,659 @@
-<testsuites id="" name="" tests="6" failures="0" skipped="0" errors="0" time="66.975515">
-<testsuite name="security.spec.ts" timestamp="2026-01-16T23:36:47.288Z" hostname="chromium" tests="2" failures="0" skipped="0" time="10.569" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="5.146">
+<testsuites id="" name="" tests="12" failures="12" skipped="0" errors="0" time="161.19554399999998">
+<testsuite name="dashboard-refactor.spec.ts" timestamp="2026-02-16T15:20:54.906Z" hostname="chromium" tests="4" failures="4" skipped="0" time="79.717" errors="0">
+<testcase name="📊 Dashboard Refactor › should display personalized header and progress bar" classname="dashboard-refactor.spec.ts" time="22.12">
+<failure message="dashboard-refactor.spec.ts:11:3 should display personalized header and progress bar" type="FAILURE">
+<![CDATA[  [chromium] › dashboard-refactor.spec.ts:11:3 › 📊 Dashboard Refactor › should display personalized header and progress bar 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "Bonjour"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for locator('h1')
+
+
+      12 |   test('should display personalized header and progress bar', async ({ page }) => {
+      13 |     const header = page.locator('h1');
+    > 14 |     await expect(header).toContainText('Bonjour');
+         |                          ^
+      15 |     
+      16 |     const subtitle = page.locator('text=Votre espace de pilotage académique et professionnel.');
+      17 |     await expect(subtitle).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:14:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-chromium\trace.zip]]
+]]>
+</system-out>
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="5.423">
+<testcase name="📊 Dashboard Refactor › should display the 4 feature cards" classname="dashboard-refactor.spec.ts" time="22.081">
+<failure message="dashboard-refactor.spec.ts:22:3 should display the 4 feature cards" type="FAILURE">
+<![CDATA[  [chromium] › dashboard-refactor.spec.ts:22:3 › 📊 Dashboard Refactor › should display the 4 feature cards 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=Coach IA – Miroir Lucide')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('text=Coach IA – Miroir Lucide')
+
+
+      24 |   test('should display the 4 feature cards', async ({ page }) => {
+      25 |     const coachCard = page.locator('text=Coach IA – Miroir Lucide');
+    > 26 |     await expect(coachCard).toBeVisible();
+         |                             ^
+      27 |
+      28 |     const dvpCard = page.locator('text=DVP – Dossier de Viabilité');
+      29 |     await expect(dvpCard).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:26:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-chromium\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have working navigation links" classname="dashboard-refactor.spec.ts" time="17.777">
+<failure message="dashboard-refactor.spec.ts:34:3 should have working navigation links" type="FAILURE">
+<![CDATA[  [chromium] › dashboard-refactor.spec.ts:34:3 › 📊 Dashboard Refactor › should have working navigation links 
+
+    TimeoutError: page.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for locator('nav').locator('text=Opportunités')
+
+
+      38 |   test('should have working navigation links', async ({ page }) => {
+      39 |     // Check Opportunities
+    > 40 |     await page.click('nav >> text=Opportunités');
+         |                ^
+      41 |     await expect(page).toHaveURL(/\/dashboard\/opportunities/);
+      42 |     await expect(page.locator('h1')).toContainText('Opportunités');
+      43 |     await expect(page.locator('text=Bientôt disponible')).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:40:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-chromium\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have disabled links for preview features in navbar" classname="dashboard-refactor.spec.ts" time="17.739">
+<failure message="dashboard-refactor.spec.ts:49:3 should have disabled links for preview features in navbar" type="FAILURE">
+<![CDATA[  [chromium] › dashboard-refactor.spec.ts:49:3 › 📊 Dashboard Refactor › should have disabled links for preview features in navbar 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('nav').locator('text=Mon DVP')
+    Expected pattern: /cursor-not-allowed/
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" with timeout 15000ms
+      - waiting for locator('nav').locator('text=Mon DVP')
+
+
+      52 |   test('should have disabled links for preview features in navbar', async ({ page }) => {
+      53 |     const dvpLink = page.locator('nav >> text=Mon DVP');
+    > 54 |     await expect(dvpLink).toHaveClass(/cursor-not-allowed/);
+         |                           ^
+      55 |   });
+      56 | });
+      57 |
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:54:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-chromium\trace.zip]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T23:36:47.288Z" hostname="firefox" tests="2" failures="0" skipped="0" time="17.076" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="10.082">
+<testsuite name="dashboard-refactor.spec.ts" timestamp="2026-02-16T15:20:54.906Z" hostname="firefox" tests="4" failures="4" skipped="0" time="84.789" errors="0">
+<testcase name="📊 Dashboard Refactor › should display personalized header and progress bar" classname="dashboard-refactor.spec.ts" time="21.56">
+<failure message="dashboard-refactor.spec.ts:11:3 should display personalized header and progress bar" type="FAILURE">
+<![CDATA[  [firefox] › dashboard-refactor.spec.ts:11:3 › 📊 Dashboard Refactor › should display personalized header and progress bar 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "Bonjour"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for locator('h1')
+
+
+      12 |   test('should display personalized header and progress bar', async ({ page }) => {
+      13 |     const header = page.locator('h1');
+    > 14 |     await expect(header).toContainText('Bonjour');
+         |                          ^
+      15 |     
+      16 |     const subtitle = page.locator('text=Votre espace de pilotage académique et professionnel.');
+      17 |     await expect(subtitle).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:14:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-firefox\trace.zip]]
+]]>
+</system-out>
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="6.994">
+<testcase name="📊 Dashboard Refactor › should display the 4 feature cards" classname="dashboard-refactor.spec.ts" time="21.112">
+<failure message="dashboard-refactor.spec.ts:22:3 should display the 4 feature cards" type="FAILURE">
+<![CDATA[  [firefox] › dashboard-refactor.spec.ts:22:3 › 📊 Dashboard Refactor › should display the 4 feature cards 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=Coach IA – Miroir Lucide')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('text=Coach IA – Miroir Lucide')
+
+
+      24 |   test('should display the 4 feature cards', async ({ page }) => {
+      25 |     const coachCard = page.locator('text=Coach IA – Miroir Lucide');
+    > 26 |     await expect(coachCard).toBeVisible();
+         |                             ^
+      27 |
+      28 |     const dvpCard = page.locator('text=DVP – Dossier de Viabilité');
+      29 |     await expect(dvpCard).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:26:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-firefox\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have working navigation links" classname="dashboard-refactor.spec.ts" time="21.091">
+<failure message="dashboard-refactor.spec.ts:34:3 should have working navigation links" type="FAILURE">
+<![CDATA[  [firefox] › dashboard-refactor.spec.ts:34:3 › 📊 Dashboard Refactor › should have working navigation links 
+
+    TimeoutError: page.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for locator('nav').locator('text=Opportunités')
+
+
+      38 |   test('should have working navigation links', async ({ page }) => {
+      39 |     // Check Opportunities
+    > 40 |     await page.click('nav >> text=Opportunités');
+         |                ^
+      41 |     await expect(page).toHaveURL(/\/dashboard\/opportunities/);
+      42 |     await expect(page.locator('h1')).toContainText('Opportunités');
+      43 |     await expect(page.locator('text=Bientôt disponible')).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:40:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-firefox\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have disabled links for preview features in navbar" classname="dashboard-refactor.spec.ts" time="21.026">
+<failure message="dashboard-refactor.spec.ts:49:3 should have disabled links for preview features in navbar" type="FAILURE">
+<![CDATA[  [firefox] › dashboard-refactor.spec.ts:49:3 › 📊 Dashboard Refactor › should have disabled links for preview features in navbar 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('nav').locator('text=Mon DVP')
+    Expected pattern: /cursor-not-allowed/
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" with timeout 15000ms
+      - waiting for locator('nav').locator('text=Mon DVP')
+
+
+      52 |   test('should have disabled links for preview features in navbar', async ({ page }) => {
+      53 |     const dvpLink = page.locator('nav >> text=Mon DVP');
+    > 54 |     await expect(dvpLink).toHaveClass(/cursor-not-allowed/);
+         |                           ^
+      55 |   });
+      56 | });
+      57 |
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:54:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-firefox\trace.zip]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
-<testsuite name="security.spec.ts" timestamp="2026-01-16T23:36:47.288Z" hostname="webkit" tests="2" failures="0" skipped="0" time="5.719" errors="0">
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Dashboard to Signin" classname="security.spec.ts" time="3.111">
+<testsuite name="dashboard-refactor.spec.ts" timestamp="2026-02-16T15:20:54.906Z" hostname="webkit" tests="4" failures="4" skipped="0" time="73.084" errors="0">
+<testcase name="📊 Dashboard Refactor › should display personalized header and progress bar" classname="dashboard-refactor.spec.ts" time="18.495">
+<failure message="dashboard-refactor.spec.ts:11:3 should display personalized header and progress bar" type="FAILURE">
+<![CDATA[  [webkit] › dashboard-refactor.spec.ts:11:3 › 📊 Dashboard Refactor › should display personalized header and progress bar 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "Bonjour"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for locator('h1')
+
+
+      12 |   test('should display personalized header and progress bar', async ({ page }) => {
+      13 |     const header = page.locator('h1');
+    > 14 |     await expect(header).toContainText('Bonjour');
+         |                          ^
+      15 |     
+      16 |     const subtitle = page.locator('text=Votre espace de pilotage académique et professionnel.');
+      17 |     await expect(subtitle).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:14:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-d23e2-zed-header-and-progress-bar-webkit\trace.zip]]
+]]>
+</system-out>
 </testcase>
-<testcase name="🛡️ Safe Space &amp; Security › Unauthenticated user is redirected from Cockpit/DVP to Signin" classname="security.spec.ts" time="2.608">
+<testcase name="📊 Dashboard Refactor › should display the 4 feature cards" classname="dashboard-refactor.spec.ts" time="18.328">
+<failure message="dashboard-refactor.spec.ts:22:3 should display the 4 feature cards" type="FAILURE">
+<![CDATA[  [webkit] › dashboard-refactor.spec.ts:22:3 › 📊 Dashboard Refactor › should display the 4 feature cards 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=Coach IA – Miroir Lucide')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for locator('text=Coach IA – Miroir Lucide')
+
+
+      24 |   test('should display the 4 feature cards', async ({ page }) => {
+      25 |     const coachCard = page.locator('text=Coach IA – Miroir Lucide');
+    > 26 |     await expect(coachCard).toBeVisible();
+         |                             ^
+      27 |
+      28 |     const dvpCard = page.locator('text=DVP – Dossier de Viabilité');
+      29 |     await expect(dvpCard).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:26:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-ce2ac-display-the-4-feature-cards-webkit\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have working navigation links" classname="dashboard-refactor.spec.ts" time="18.27">
+<failure message="dashboard-refactor.spec.ts:34:3 should have working navigation links" type="FAILURE">
+<![CDATA[  [webkit] › dashboard-refactor.spec.ts:34:3 › 📊 Dashboard Refactor › should have working navigation links 
+
+    TimeoutError: page.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for locator('nav').locator('text=Opportunités')
+
+
+      38 |   test('should have working navigation links', async ({ page }) => {
+      39 |     // Check Opportunities
+    > 40 |     await page.click('nav >> text=Opportunités');
+         |                ^
+      41 |     await expect(page).toHaveURL(/\/dashboard\/opportunities/);
+      42 |     await expect(page.locator('h1')).toContainText('Opportunités');
+      43 |     await expect(page.locator('text=Bientôt disponible')).toBeVisible();
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:40:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-57c57-ve-working-navigation-links-webkit\trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Dashboard Refactor › should have disabled links for preview features in navbar" classname="dashboard-refactor.spec.ts" time="17.991">
+<failure message="dashboard-refactor.spec.ts:49:3 should have disabled links for preview features in navbar" type="FAILURE">
+<![CDATA[  [webkit] › dashboard-refactor.spec.ts:49:3 › 📊 Dashboard Refactor › should have disabled links for preview features in navbar 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('nav').locator('text=Mon DVP')
+    Expected pattern: /cursor-not-allowed/
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" with timeout 15000ms
+      - waiting for locator('nav').locator('text=Mon DVP')
+
+
+      52 |   test('should have disabled links for preview features in navbar', async ({ page }) => {
+      53 |     const dvpLink = page.locator('nav >> text=Mon DVP');
+    > 54 |     await expect(dvpLink).toHaveClass(/cursor-not-allowed/);
+         |                           ^
+      55 |   });
+      56 | });
+      57 |
+        at C:\TrailLearn\tests\e2e\dashboard-refactor.spec.ts:54:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\..\test-results\dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\test-failed-1.png]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\video.webm]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\error-context.md]]
+
+[[ATTACHMENT|dashboard-refactor-📊-Dash-274ac--preview-features-in-navbar-webkit\trace.zip]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

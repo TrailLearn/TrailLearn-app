@@ -19,19 +19,22 @@ export function AppNavbar({ user }: AppNavbarProps) {
             <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Dashboard
             </Link>
-            <Link href="/dvp/wizard" className="transition-colors hover:text-foreground/80 text-foreground/60">
-              Mon DVP
-            </Link>
-            <Link href="/dashboard/focus" className="transition-colors hover:text-foreground/80 text-foreground/60">
-              Focus
-            </Link>
-            <Link href="/dashboard/plan" className="transition-colors hover:text-foreground/80 text-foreground/60">
-              Plan
-            </Link>
             <Link href="/dashboard/chat" className="transition-colors hover:text-foreground/80 text-blue-600 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Coach IA
             </Link>
+            <Link href="/dashboard/opportunities" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Opportunités
+            </Link>
+            <Link href="/dashboard/scholarships" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Bourses
+            </Link>
+            <span className="text-foreground/30 cursor-not-allowed" title="Bientôt disponible">
+              Mon DVP
+            </span>
+            <span className="text-foreground/30 cursor-not-allowed" title="Bientôt disponible">
+              Cockpit
+            </span>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
