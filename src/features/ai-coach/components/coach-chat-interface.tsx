@@ -28,16 +28,26 @@ export function CoachChatInterface({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
   
-  // Use any to bypass version-specific type mismatches in this project environment
+  // Debug log to trace initialization
+  useEffect(() => {
+    console.log(`[CoachChat] Initializing with convId: ${conversationId}, endpoint: ${apiEndpoint}, messages count: ${initialMessages?.length}`);
+  }, [conversationId, apiEndpoint, initialMessages]);
+
   const chatHelpers = useChat({
     api: apiEndpoint,
     initialMessages,
     body: { conversationId },
-  } as any) as any;
+  }) as any;
 
-  const { messages, append, status } = chatHelpers;
+  // Extract helpers with fallbacks
+  const messages = chatHelpers.messages ?? [];
+  const append = chatHelpers.append;
+  const status = chatHelpers.status;
+  const error = chatHelpers.error;
+
   const isLoading = status === "submitted" || status === "streaming";
 
+  // Auto-scroll logic
   useEffect(() => {
     if (scrollRef.current) {
       const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -45,7 +55,7 @@ export function CoachChatInterface({
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +64,19 @@ export function CoachChatInterface({
     const text = inputValue;
     setInputValue("");
     
-    await append({
-      role: "user",
-      content: text,
-    });
+    try {
+      await append({
+        role: "user",
+        content: text,
+      });
+    } catch (err) {
+      console.error("[CoachChat] Failed to send message:", err);
+    }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-4xl mx-auto w-full border rounded-2xl bg-white shadow-2xl overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-16rem)] max-w-4xl mx-auto w-full border rounded-2xl bg-white shadow-xl overflow-hidden">
+      {/* Header */}
       <div className="p-4 border-b bg-slate-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg text-primary">
@@ -69,62 +84,105 @@ export function CoachChatInterface({
           </div>
           <div>
             <h3 className="font-bold text-sm leading-none">{title}</h3>
-            <p className="text-xs text-muted-foreground mt-1">Assistant TrailLearn Actif</p>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-medium">Assistant TrailLearn Actif</p>
           </div>
         </div>
         {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
       </div>
 
-      <ScrollArea className="flex-grow p-6" ref={scrollRef}>
+      {/* Chat Area */}
+      <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollRef}>
         <div className="space-y-6">
+          {messages.length === 0 && !isLoading && (
+            <div className="text-center py-12 space-y-4">
+              <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto border-2 border-dashed">
+                <Bot className="w-8 h-8 text-slate-300" />
+              </div>
+              <div className="space-y-2">
+                <p className="font-bold text-slate-800">Discussion vide</p>
+                <p className="text-muted-foreground text-xs max-w-[200px] mx-auto">
+                  Posez votre première question pour lancer l'analyse de votre projet.
+                </p>
+              </div>
+            </div>
+          )}
+          
           {messages.map((m: any) => (
             <div key={m.id} className={cn(
-              "flex gap-4",
+              "flex gap-3 animate-in slide-in-from-bottom-2 duration-300",
               m.role === "user" ? "flex-row-reverse" : "flex-row"
             )}>
-              <Avatar className="w-8 h-8">
+              <Avatar className="w-8 h-8 flex-shrink-0 border">
                 {m.role === "user" ? (
-                  <AvatarFallback className="bg-slate-100"><User className="w-4 h-4 text-slate-600" /></AvatarFallback>
+                  <AvatarFallback className="bg-slate-100 text-slate-600 text-xs font-bold">MOI</AvatarFallback>
                 ) : (
-                  <AvatarFallback className="bg-primary/10 text-primary font-bold"><Bot className="w-4 h-4" /></AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">IA</AvatarFallback>
                 )}
               </Avatar>
               
               <div className={cn(
-                "flex flex-col max-w-[80%] space-y-2",
+                "flex flex-col max-w-[85%] md:max-w-[75%] space-y-2",
                 m.role === "user" ? "items-end" : "items-start"
               )}>
                 <div className={cn(
-                  "px-4 py-3 rounded-2xl text-sm leading-relaxed prose prose-sm max-w-none break-words",
+                  "px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm",
                   m.role === "user" 
-                    ? "bg-primary text-primary-foreground rounded-tr-none shadow-md prose-invert" 
-                    : "bg-slate-100 text-slate-800 rounded-tl-none border prose-neutral"
+                    ? "bg-primary text-primary-foreground rounded-tr-none" 
+                    : "bg-slate-100 text-slate-800 rounded-tl-none border border-slate-200"
                 )}>
-                  <ReactMarkdown>
-                    {m.content}
-                  </ReactMarkdown>
+                  <div className="prose prose-sm max-w-none break-words dark:prose-invert">
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
                 </div>
                 
+                {/* Structured Data rendering */}
                 {m.structuredData && (
-                  <UIBlockRenderer block={m.structuredData as UIBlock} />
+                  <div className="w-full max-w-full overflow-hidden">
+                    <UIBlockRenderer block={m.structuredData as UIBlock} />
+                  </div>
                 )}
               </div>
             </div>
           ))}
+          
+          {/* Thinking indicator */}
+          {isLoading && messages[messages.length - 1]?.role === "user" && (
+            <div className="flex gap-3 animate-pulse">
+              <Avatar className="w-8 h-8 flex-shrink-0 border">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">IA</AvatarFallback>
+              </Avatar>
+              <div className="bg-slate-50 text-slate-500 rounded-2xl rounded-tl-none border px-4 py-2 text-sm flex items-center gap-2 italic">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Analyse en cours...
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 bg-destructive/10 text-destructive text-xs rounded-lg border border-destructive/20 text-center">
+              Désolé, une erreur est survenue. Veuillez réessayer d'envoyer votre message.
+            </div>
+          )}
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t bg-white">
-        <form onSubmit={onFormSubmit} className="flex gap-3">
+      {/* Input Area */}
+      <div className="p-4 border-t bg-white shadow-inner">
+        <form onSubmit={onFormSubmit} className="flex gap-2">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Posez votre question..."
-            className="flex-grow h-12 rounded-xl"
+            placeholder="Échangez avec votre coach..."
+            className="flex-grow h-11 rounded-xl bg-slate-50 border-slate-200 focus-visible:ring-primary shadow-none"
             disabled={isLoading}
           />
-          <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()} className="h-12 w-12 rounded-xl">
-            <Send className="w-5 h-5" />
+          <Button 
+            type="submit" 
+            size="icon" 
+            disabled={isLoading || !inputValue.trim()}
+            className="h-11 w-11 rounded-xl shadow-md transition-all active:scale-90"
+          >
+            <Send className="w-4 h-4" />
           </Button>
         </form>
       </div>

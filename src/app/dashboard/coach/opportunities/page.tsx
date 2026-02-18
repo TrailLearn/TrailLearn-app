@@ -1,26 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { api } from "~/trpc/react";
 import { CoachChatInterface } from "~/features/ai-coach/components/coach-chat-interface";
 import { Button } from "~/components/ui/button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function OpportunitiesChatPage() {
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const creatingRef = useRef(false);
   
   const createConv = api.aiCoach.createConversation.useMutation({
-    onSuccess: (data) => setConversationId(data.id)
+    onSuccess: (data) => {
+      setConversationId(data.id);
+      creatingRef.current = false;
+    },
+    onError: () => {
+      creatingRef.current = false;
+    }
   });
 
-  const getConvs = api.aiCoach.getConversations.useQuery({ type: "OPPORTUNITY" });
+  const getConvs = api.aiCoach.getConversations.useQuery(
+    { type: "OPPORTUNITY" },
+    { 
+      refetchOnWindowFocus: false,
+      retry: 1 
+    }
+  );
 
   useEffect(() => {
-    if (getConvs.isSuccess && !conversationId) {
+    if (getConvs.isSuccess && !conversationId && !creatingRef.current) {
       if (getConvs.data && getConvs.data.length > 0) {
-        setConversationId(getConvs.data[0]?.id ?? null);
+        setConversationId(getConvs.data[0].id);
       } else {
+        creatingRef.current = true;
         createConv.mutate({ type: "OPPORTUNITY" });
       }
     }
@@ -28,13 +42,30 @@ export default function OpportunitiesChatPage() {
 
   const messagesQuery = api.aiCoach.getMessages.useQuery(
     { conversationId: conversationId! },
-    { enabled: !!conversationId }
+    { 
+      enabled: !!conversationId,
+      refetchOnWindowFocus: false
+    }
   );
 
-  if (getConvs.isLoading || createConv.isPending || (conversationId && messagesQuery.isLoading)) {
+  const isLoading = getConvs.isLoading || (creatingRef.current && createConv.isPending) || (!!conversationId && messagesQuery.isLoading);
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center h-[80vh] space-y-4">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-muted-foreground animate-pulse text-sm">Initialisation de votre Coach d'Opportunités...</p>
+      </div>
+    );
+  }
+
+  if (getConvs.isError || createConv.isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh] space-y-4 text-center px-4">
+        <AlertCircle className="w-12 h-12 text-destructive" />
+        <h2 className="text-xl font-bold">Erreur de connexion</h2>
+        <p className="text-muted-foreground max-w-md">Nous n'avons pas pu charger vos opportunités. Veuillez rafraîchir la page.</p>
+        <Button onClick={() => window.location.reload()}>Réessayer</Button>
       </div>
     );
   }
@@ -48,24 +79,30 @@ export default function OpportunitiesChatPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Opportunités & Profil Builder</h1>
-          <p className="text-sm text-muted-foreground">Construisez votre chemin vers le succès</p>
+          <h1 className="text-2xl font-bold tracking-tight">Opportunités & Profil Builder</h1>
+          <p className="text-sm text-muted-foreground italic">Powered by TrailLearn Intelligence</p>
         </div>
       </div>
       
-      {conversationId && (
-        <CoachChatInterface 
-          conversationId={conversationId} 
-          apiEndpoint="/api/coach/opportunities"
-          title="Assistant Opportunités"
-          initialMessages={messagesQuery.data?.map(m => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-            structuredData: m.structuredData
-          }))}
-        />
-      )}
+      <div className="flex-grow">
+        {conversationId ? (
+          <CoachChatInterface 
+            conversationId={conversationId} 
+            apiEndpoint="/api/coach/opportunities"
+            title="Assistant Opportunités"
+            initialMessages={messagesQuery.data?.map(m => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              structuredData: m.structuredData
+            }))}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            Préparation de la session...
+          </div>
+        )}
+      </div>
     </div>
   );
 }
