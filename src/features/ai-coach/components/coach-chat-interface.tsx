@@ -28,12 +28,14 @@ export function CoachChatInterface({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
   
-  const { messages, append, status, error } = useChat({
+  // Aligning with project-specific SDK patterns (v4 preview)
+  const chatHelpers = useChat({
     api: apiEndpoint,
-    initialMessages,
+    messages: initialMessages, // In this version, 'messages' is used for initial state
     body: { conversationId },
   } as any) as any;
 
+  const { messages, sendMessage, status, error } = chatHelpers;
   const isLoading = status === "submitted" || status === "streaming";
 
   useEffect(() => {
@@ -53,18 +55,18 @@ export function CoachChatInterface({
     setInputValue("");
     
     try {
-      console.log("[CoachChat] Appending message:", text);
-      await append({
+      // Format required by this specific SDK version: sendMessage with 'parts'
+      await sendMessage({
         role: "user",
-        content: text,
-      });
+        parts: [{ type: "text", text: text }]
+      } as any);
     } catch (err) {
-      console.error("[CoachChat] Append failed:", err);
+      console.error("[CoachChat] Failed to send message:", err);
     }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-16rem)] max-w-4xl mx-auto w-full border rounded-2xl bg-white shadow-xl overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-16rem)] max-w-4xl mx-auto w-full border rounded-2xl bg-white shadow-xl overflow-hidden animate-in fade-in duration-500">
       {/* Header */}
       <div className="p-4 border-b bg-slate-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -73,7 +75,7 @@ export function CoachChatInterface({
           </div>
           <div>
             <h3 className="font-bold text-sm leading-none">{title}</h3>
-            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">TrailLearn Coach v2</p>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">TrailLearn Intelligence v2</p>
           </div>
         </div>
         {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
@@ -86,48 +88,57 @@ export function CoachChatInterface({
             <div className="text-center py-12 space-y-4">
               <Bot className="w-12 h-12 text-slate-200 mx-auto" />
               <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Posez votre première question pour lancer l'analyse.
+                Bonjour ! Posez votre première question pour lancer l'analyse de votre projet.
               </p>
             </div>
           )}
           
-          {messages.map((m: any) => (
-            <div key={m.id} className={cn(
-              "flex gap-3",
-              m.role === "user" ? "flex-row-reverse" : "flex-row"
-            )}>
-              <Avatar className="w-8 h-8 flex-shrink-0 border">
-                {m.role === "user" ? (
-                  <AvatarFallback className="bg-slate-100 text-slate-600 text-[10px] font-bold">MOI</AvatarFallback>
-                ) : (
-                  <AvatarFallback className="bg-primary text-primary-foreground text-[10px] font-bold">IA</AvatarFallback>
-                )}
-              </Avatar>
-              
-              <div className={cn(
-                "flex flex-col max-w-[85%] md:max-w-[75%] space-y-2",
-                m.role === "user" ? "items-end" : "items-start"
+          {messages.map((m: any) => {
+            // Support both standard content and 'parts' format for display
+            const content = Array.isArray(m.parts) 
+              ? m.parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('')
+              : m.content;
+
+            return (
+              <div key={m.id} className={cn(
+                "flex gap-3 animate-in slide-in-from-bottom-2 duration-300",
+                m.role === "user" ? "flex-row-reverse" : "flex-row"
               )}>
-                <div className={cn(
-                  "px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm",
-                  m.role === "user" 
-                    ? "bg-primary text-primary-foreground rounded-tr-none" 
-                    : "bg-slate-100 text-slate-800 rounded-tl-none border border-slate-200"
-                )}>
-                  <div className="prose prose-sm max-w-none break-words dark:prose-invert">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
-                  </div>
-                </div>
+                <Avatar className="w-8 h-8 flex-shrink-0 border">
+                  {m.role === "user" ? (
+                    <AvatarFallback className="bg-slate-100 text-slate-600 text-[10px] font-bold">MOI</AvatarFallback>
+                  ) : (
+                    <AvatarFallback className="bg-primary text-primary-foreground text-[10px] font-bold">IA</AvatarFallback>
+                  )}
+                </Avatar>
                 
-                {m.structuredData && (
-                  <div className="w-full">
-                    <UIBlockRenderer block={m.structuredData as UIBlock} />
+                <div className={cn(
+                  "flex flex-col max-w-[85%] md:max-w-[75%] space-y-2",
+                  m.role === "user" ? "items-end" : "items-start"
+                )}>
+                  <div className={cn(
+                    "px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm",
+                    m.role === "user" 
+                      ? "bg-primary text-primary-foreground rounded-tr-none" 
+                      : "bg-slate-100 text-slate-800 rounded-tl-none border border-slate-200"
+                  )}>
+                    <div className="prose prose-sm max-w-none break-words dark:prose-invert">
+                      <ReactMarkdown>{content}</ReactMarkdown>
+                    </div>
                   </div>
-                )}
+                  
+                  {/* Structured Data rendering */}
+                  {m.structuredData && (
+                    <div className="w-full">
+                      <UIBlockRenderer block={m.structuredData as UIBlock} />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           
+          {/* Thinking indicator */}
           {isLoading && messages[messages.length - 1]?.role === "user" && (
             <div className="flex gap-3">
               <Avatar className="w-8 h-8 flex-shrink-0 border">
@@ -137,6 +148,12 @@ export function CoachChatInterface({
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Réflexion en cours...
               </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 bg-destructive/10 text-destructive text-xs rounded-lg border border-destructive/20 text-center">
+              Erreur : {error.message || "Impossible de joindre le coach. Veuillez réessayer."}
             </div>
           )}
         </div>
@@ -149,14 +166,14 @@ export function CoachChatInterface({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Échangez avec votre coach..."
-            className="flex-grow h-11 rounded-xl"
+            className="flex-grow h-11 rounded-xl bg-slate-50 border-slate-200 focus-visible:ring-primary shadow-none"
             disabled={isLoading}
           />
           <Button 
             type="submit" 
             size="icon" 
             disabled={isLoading || !inputValue.trim()}
-            className="h-11 w-11 rounded-xl shadow-md"
+            className="h-11 w-11 rounded-xl shadow-md transition-all active:scale-90"
           >
             <Send className="w-4 h-4" />
           </Button>
