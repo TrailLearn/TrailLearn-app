@@ -84,3 +84,19 @@ export const OpportunityOutputSchema = z.object({
 });
 
 export type OpportunityOutput = z.infer<typeof OpportunityOutputSchema>;
+
+// --- UI Blocks for Chat ---
+
+export type UIBlockType = 
+  | "JOB_RECOMMENDATION" 
+  | "ENVIRONMENT_COMPARISON" 
+  | "SKILLS_GAP" 
+  | "ACTION_PLAN"
+  | "OPPORTUNITY_LIST"
+  | "WEEKLY_PLAN";
+
+export interface UIBlock {
+  type: UIBlockType;
+  data: any; // Strictly typed in components
+}
+

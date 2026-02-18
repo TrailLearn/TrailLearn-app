@@ -1,57 +1,65 @@
-import { generateObject } from "ai";
+import { streamText, CoreMessage, tool } from "ai";
 import { getLLMModel } from "~/lib/llm-config";
 import { OrientationOutputSchema } from "../types";
-import type { OrientationInputs, OrientationOutput } from "../types";
+import { z } from "zod";
 
 export class OrientationService {
   /**
-   * Generates a structured career and academic orientation plan.
-   * Handles bidirectional reasoning: Job -> Environment OR Profile -> Best Fit.
+   * Main conversational interface for orientation with tool support.
    */
-  static async generatePlan(inputs: OrientationInputs): Promise<OrientationOutput> {
+  static async chat(messages: CoreMessage[]) {
     const model = getLLMModel();
 
     const systemPrompt = `
-      Tu es l'IA d'Orientation Académique & Carrière de TrailLearn, une institution digitale d'orientation responsable.
-      Ton objectif est de produire des recommandations structurées, actionnables et basées sur des données réelles du marché.
+      Tu es l'IA d'Orientation Académique & Carrière de TrailLearn.
+      Ton rôle est d'aider l'utilisateur à définir sa trajectoire professionnelle.
 
-      CONSIGNES DE RAISONNEMENT :
-      1. Analyse le profil académique et les compétences actuelles.
-      2. Si l'utilisateur vise un métier spécifique (targetJob), évalue sa pertinence par rapport à son profil et suggère les meilleurs environnements (villes/pays).
-      3. Si l'utilisateur vise un environnement (targetEnvironment), suggère les métiers les plus adaptés à son profil dans cette zone.
-      4. Si l'utilisateur est indécis, propose le Top 3 à 5 des métiers les plus cohérents avec son domaine d'étude et ses compétences.
-      5. Sois réaliste sur les salaires et la demande du marché.
-      6. Identifie clairement les "Skills Gaps" (ce qui manque pour atteindre la cible).
-      7. Construis un plan d'action concret sur 12 mois.
+      CONSIGNES :
+      1. EXPLORE : Pose des questions sur le domaine, le niveau, les langues, le budget et la mobilité.
+      2. PROPOSE : Dès que tu as assez d'infos, utilise l'outil 'showJobRecommendations' pour afficher les métiers suggérés.
+      3. PLANIFIE : Utilise 'showActionPlan' pour donner une roadmap concrète.
+      4. ANALYSE : Utilise 'showSkillsGap' pour identifier ce qu'il faut apprendre.
 
-      IMPORTANT : Tu dois impérativement répondre au format JSON structuré correspondant au schéma demandé.
+      IMPORTANT : Ne te contente pas de lister les métiers en texte, utilise TOUJOURS les outils dédiés pour un affichage visuel optimal.
     `;
 
-    const userPrompt = `
-      Voici les données de l'utilisateur :
-      - Domaine d'étude : ${inputs.studyDomain}
-      - Niveau académique : ${inputs.academicLevel}
-      - Compétences actuelles : ${inputs.currentSkills.join(", ")}
-      - Langues parlées : ${inputs.languages.join(", ")}
-      - Budget approximatif : ${inputs.approximateBudget}
-      - Salaire visé : ${inputs.targetSalary}
-      - Mobilité souhaitée : ${inputs.mobility}
-      ${inputs.targetEnvironment ? `- Environnement cible : ${inputs.targetEnvironment}` : ""}
-      ${inputs.targetJob ? `- Métier visé : ${inputs.targetJob}` : ""}
-    `;
-
-    try {
-      const { object } = await generateObject({
-        model,
-        schema: OrientationOutputSchema,
-        system: systemPrompt,
-        prompt: userPrompt,
-      });
-
-      return object;
-    } catch (error) {
-      console.error("OrientationService.generatePlan failed:", error);
-      throw new Error("Échec de la génération du plan d'orientation. Veuillez réessayer.");
-    }
+    return streamText({
+      model,
+      system: systemPrompt,
+      messages,
+      tools: {
+        showJobRecommendations: tool({
+          description: "Affiche une liste de métiers recommandés sous forme de cartes.",
+          parameters: z.object({
+            jobs: z.array(z.object({
+              title: z.string(),
+              relevance: z.string(),
+              estimatedSalary: z.string(),
+              marketDemand: z.enum(["high", "medium", "low"]),
+            })),
+          }),
+          execute: async ({ jobs }) => ({ type: "JOB_RECOMMENDATION", data: jobs }),
+        }),
+        showSkillsGap: tool({
+          description: "Affiche les compétences manquantes sous forme de badges.",
+          parameters: z.object({
+            gaps: z.array(z.object({
+              skill: z.string(),
+              priority: z.enum(["critical", "important", "optional"]),
+            })),
+          }),
+          execute: async ({ gaps }) => ({ type: "SKILLS_GAP", data: gaps }),
+        }),
+        showActionPlan: tool({
+          description: "Affiche un plan d'action par étapes (court, moyen, long terme).",
+          parameters: z.object({
+            shortTerm: z.array(z.string()),
+            mediumTerm: z.array(z.string()),
+            longTerm: z.array(z.string()),
+          }),
+          execute: async (plan) => ({ type: "ACTION_PLAN", data: plan }),
+        }),
+      },
+    });
   }
 }
