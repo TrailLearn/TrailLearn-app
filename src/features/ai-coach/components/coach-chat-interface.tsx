@@ -6,37 +6,54 @@ import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Input } from "~/components/ui/input";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Loader2, Send, Bot, User, Sparkles } from "lucide-react";
+import { Loader2, Send, Bot, User, Sparkles, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { UIBlockRenderer } from "./ui-block-renderer";
 import { type UIBlock } from "~/features/ai-engine/types";
 import ReactMarkdown from "react-markdown";
+import { useToast } from "~/components/ui/use-toast";
 
 interface CoachChatInterfaceProps {
   conversationId: string;
   apiEndpoint: string;
   initialMessages?: any[];
   title: string;
+  onReset?: () => void;
 }
 
 export function CoachChatInterface({ 
   conversationId, 
   apiEndpoint, 
   initialMessages = [],
-  title 
+  title,
+  onReset
 }: CoachChatInterfaceProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState("");
+  const { toast } = useToast();
   
-  // Aligning with project-specific SDK patterns (v4 preview)
+  const deleteMutation = api.aiCoach.deleteConversation.useMutation({
+    onSuccess: () => {
+      toast({ title: "Discussion réinitialisée" });
+      if (onReset) onReset();
+    }
+  });
+
+  // Aligning with project-specific SDK patterns
   const chatHelpers = useChat({
     api: apiEndpoint,
-    messages: initialMessages, // In this version, 'messages' is used for initial state
+    messages: initialMessages, 
     body: { conversationId },
   } as any) as any;
 
   const { messages, sendMessage, status, error } = chatHelpers;
   const isLoading = status === "submitted" || status === "streaming";
+
+  const handleReset = () => {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette discussion et en recommencer une nouvelle ?")) {
+      deleteMutation.mutate({ conversationId });
+    }
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -78,7 +95,19 @@ export function CoachChatInterface({
             <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">TrailLearn Intelligence v2</p>
           </div>
         </div>
-        {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleReset}
+            disabled={deleteMutation.isPending || isLoading}
+            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 gap-2 text-xs"
+          >
+            {deleteMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+            Réinitialiser
+          </Button>
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+        </div>
       </div>
 
       {/* Chat Area */}

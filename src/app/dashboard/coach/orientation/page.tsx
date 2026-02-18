@@ -92,6 +92,10 @@ export default function OrientationChatPage() {
             conversationId={conversationId} 
             apiEndpoint="/api/coach/orientation"
             title="Assistant Orientation"
+            onReset={() => {
+              setConversationId(null);
+              void getConvs.refetch();
+            }}
             initialMessages={messagesQuery.data?.map(m => ({
               id: m.id,
               role: m.role,

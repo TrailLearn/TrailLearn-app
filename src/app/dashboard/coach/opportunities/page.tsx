@@ -91,6 +91,10 @@ export default function OpportunitiesChatPage() {
             conversationId={conversationId} 
             apiEndpoint="/api/coach/opportunities"
             title="Assistant Opportunités"
+            onReset={() => {
+              setConversationId(null);
+              void getConvs.refetch();
+            }}
             initialMessages={messagesQuery.data?.map(m => ({
               id: m.id,
               role: m.role,

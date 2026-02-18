@@ -98,4 +98,25 @@ export const aiCoachRouter = createTRPCRouter({
 
       return message;
     }),
+
+  /**
+   * Deletes a conversation and its messages.
+   */
+  deleteConversation: protectedProcedure
+    .input(z.object({
+      conversationId: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const conv = await ctx.db.aiConversation.findUnique({
+        where: { id: input.conversationId },
+      });
+
+      if (!conv || conv.userId !== ctx.session.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Accès refusé." });
+      }
+
+      return ctx.db.aiConversation.delete({
+        where: { id: input.conversationId },
+      });
+    }),
 });
