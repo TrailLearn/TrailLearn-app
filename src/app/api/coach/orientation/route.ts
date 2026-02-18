@@ -33,11 +33,11 @@ export async function POST(req: Request) {
 
     const result = await OrientationService.chat(messages);
 
-    return result.toDataStreamResponse({
-      onFinish: async (completion) => {
+    return (result as any).toDataStreamResponse({
+      onFinish: async (completion: any) => {
         let structuredData = null;
-        if ((completion as any).toolResults && (completion as any).toolResults.length > 0) {
-          structuredData = (completion as any).toolResults[0].result;
+        if (completion.toolResults && completion.toolResults.length > 0) {
+          structuredData = completion.toolResults[0].result;
         }
 
         await db.aiMessage.create({

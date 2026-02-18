@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       return new Response("Forbidden", { status: 403 });
     }
 
-    // Save latest User Message
+    // Save User Message
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage && lastUserMessage.role === "user") {
       await db.aiMessage.create({
@@ -33,11 +33,12 @@ export async function POST(req: Request) {
 
     const result = await OpportunityService.chat(messages);
 
-    return result.toDataStreamResponse({
-      onFinish: async (completion) => {
+    // Cast to any because the SDK result type varies by tool presence
+    return (result as any).toDataStreamResponse({
+      onFinish: async (completion: any) => {
         let structuredData = null;
-        if ((completion as any).toolResults && (completion as any).toolResults.length > 0) {
-          structuredData = (completion as any).toolResults[0].result;
+        if (completion.toolResults && completion.toolResults.length > 0) {
+          structuredData = completion.toolResults[0].result;
         }
 
         await db.aiMessage.create({

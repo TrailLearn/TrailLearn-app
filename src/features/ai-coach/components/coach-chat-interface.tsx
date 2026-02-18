@@ -32,7 +32,7 @@ export function CoachChatInterface({
     api: apiEndpoint,
     initialMessages,
     body: { conversationId },
-  }) as any;
+  } as any) as any;
 
   const isLoading = status === "submitted" || status === "streaming";
 
