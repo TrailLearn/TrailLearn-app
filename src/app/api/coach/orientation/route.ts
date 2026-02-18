@@ -1,4 +1,3 @@
-import { streamText } from "ai";
 import { OrientationService } from "~/features/ai-engine/services/orientation.service";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -17,45 +16,20 @@ export async function POST(req: Request) {
     return new Response("Forbidden", { status: 403 });
   }
 
-  // Save latest User Message
+  // Save latest User Message to DB
   const lastUserMessage = messages[messages.length - 1];
   if (lastUserMessage && lastUserMessage.role === "user") {
     await db.aiMessage.create({
       data: {
         conversationId,
         role: "user",
-        content: lastUserMessage.content,
+        content: typeof lastUserMessage.content === 'string' ? lastUserMessage.content : "Message complexe",
       },
     });
   }
 
   const result = await OrientationService.chat(messages);
 
-  return result.toDataStreamResponse({
-    getFinishReason: () => "stop",
-    onFinish: async (completion) => {
-      // Find the first tool result if any
-      const toolResult = completion.toolCalls?.[0];
-      let structuredData = null;
-      
-      // If we have tool results, we use them as structured data
-      if (completion.toolResults && completion.toolResults.length > 0) {
-        structuredData = completion.toolResults[0].result;
-      }
-
-      await db.aiMessage.create({
-        data: {
-          conversationId,
-          role: "assistant",
-          content: completion.text || (structuredData ? "Voici les résultats de mon analyse :" : ""),
-          structuredData: structuredData as any,
-        },
-      });
-      
-      await db.aiConversation.update({
-        where: { id: conversationId },
-        data: { updatedAt: new Date() },
-      });
-    }
-  });
+  // Return standard data stream response
+  return (result as any).toDataStreamResponse();
 }

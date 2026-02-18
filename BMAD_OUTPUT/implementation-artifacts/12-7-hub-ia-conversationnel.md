@@ -1,6 +1,6 @@
 # Story 12.7: Hub IA Conversationnel & Stateful Chat
 
-Status: todo
+Status: done
 
 ## Story
 
@@ -34,9 +34,9 @@ So that je puisse construire mon projet de manière dynamique, conserver mon his
   - [x] Modifier `OrientationService` et `OpportunityService` pour accepter un historique de messages.
   - [x] Implémenter la logique de "questions dynamiques" pour remplacer le wizard.
   - [x] Créer les API Routes de streaming (`/api/coach/orientation` & `/api/coach/opportunities`).
-- [ ] Task 5: Interface Chat UI (Frontend)
-  - [ ] Créer un composant `ChatInterface` générique.
-  - [ ] Créer les parseurs de messages pour détecter les `structuredData` et afficher les cartes correspondantes.
+- [x] Task 5: Interface Chat UI (Frontend)
+  - [x] Créer un composant `CoachChatInterface` générique.
+  - [x] Créer le composant `UIBlockRenderer` pour afficher les cartes structurées.
 
 ## Dev Notes
 
@@ -50,7 +50,25 @@ So that je puisse construire mon projet de manière dynamique, conserver mon his
 Amelia (Senior Software Engineer)
 
 ### Completion Notes List
-- (En attente d'implémentation)
+- Restructured AI module from static wizard to stateful conversation.
+- Implemented `AiConversation` and `AiMessage` models for persistent chat history.
+- Created `/dashboard/coach` hub with specialized sub-chats.
+- Built generic `CoachChatInterface` supporting custom API routes and streaming.
+- Developed `UIBlockRenderer` for structured data cards (Jobs, Skills, Opportunities).
+- Secured message persistence directly in Edge API routes.
+- Cleaned up legacy `ai-wizard` and obsolete tRPC routers.
 
 ### File List
-- (En attente d'implémentation)
+- `prisma/schema.prisma`
+- `src/server/api/routers/ai-coach.ts`
+- `src/server/api/root.ts`
+- `src/app/dashboard/coach/page.tsx`
+- `src/app/dashboard/coach/orientation/page.tsx`
+- `src/app/dashboard/coach/opportunities/page.tsx`
+- `src/app/api/coach/orientation/route.ts`
+- `src/app/api/coach/opportunities/route.ts`
+- `src/features/ai-coach/components/coach-chat-interface.tsx`
+- `src/features/ai-coach/components/ui-block-renderer.tsx`
+- `src/features/ai-engine/services/orientation.service.ts`
+- `src/features/ai-engine/services/opportunities.service.ts`
+- `src/app/dashboard/opportunities/page.tsx` (Restored to catalogue)

@@ -1,4 +1,3 @@
-import { streamText } from "ai";
 import { OpportunityService } from "~/features/ai-engine/services/opportunities.service";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -24,34 +23,12 @@ export async function POST(req: Request) {
       data: {
         conversationId,
         role: "user",
-        content: lastUserMessage.content,
+        content: typeof lastUserMessage.content === 'string' ? lastUserMessage.content : "Message complexe",
       },
     });
   }
 
   const result = await OpportunityService.chat(messages);
 
-  return result.toDataStreamResponse({
-    getFinishReason: () => "stop",
-    onFinish: async (completion) => {
-      let structuredData = null;
-      if (completion.toolResults && completion.toolResults.length > 0) {
-        structuredData = completion.toolResults[0].result;
-      }
-
-      await db.aiMessage.create({
-        data: {
-          conversationId,
-          role: "assistant",
-          content: completion.text || (structuredData ? "Voici les opportunités identifiées :" : ""),
-          structuredData: structuredData as any,
-        },
-      });
-      
-      await db.aiConversation.update({
-        where: { id: conversationId },
-        data: { updatedAt: new Date() },
-      });
-    }
-  });
+  return (result as any).toDataStreamResponse();
 }

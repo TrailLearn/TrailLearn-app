@@ -19,8 +19,8 @@ export default function OrientationChatPage() {
   useEffect(() => {
     // If no recent conversation, create one
     if (getConvs.isSuccess && !conversationId) {
-      if (getConvs.data.length > 0) {
-        setConversationId(getConvs.data[0].id);
+      if (getConvs.data && getConvs.data.length > 0) {
+        setConversationId(getConvs.data[0]?.id ?? null);
       } else {
         createConv.mutate({ type: "ORIENTATION" });
       }
