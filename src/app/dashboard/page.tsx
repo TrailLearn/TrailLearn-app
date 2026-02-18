@@ -39,8 +39,7 @@ export default async function DashboardPage() {
           <FeatureCard
             title="Coach IA – Miroir Lucide"
             description="Clarifiez vos intentions et affinez votre projet avec notre IA maïeutique."
-            href="/dashboard/chat"
-            status="active"
+                          href="/dashboard/coach"            status="active"
             icon={<MessageSquare className="w-5 h-5" />}
           />
           <FeatureCard

@@ -19,7 +19,7 @@ export function AppNavbar({ user }: AppNavbarProps) {
             <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Dashboard
             </Link>
-            <Link href="/dashboard/chat" className="transition-colors hover:text-foreground/80 text-blue-600 flex items-center gap-2">
+            <Link href="/dashboard/coach" className="transition-colors hover:text-foreground/80 text-blue-600 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Coach IA
             </Link>
