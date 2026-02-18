@@ -3,6 +3,8 @@ import { authRouter } from "~/server/api/routers/auth";
 import { dvpRouter } from "~/server/api/routers/dvp";
 import { adminRouter } from "~/server/api/routers/admin";
 import { aiRouter } from "~/server/api/routers/ai";
+import { aiOrientationRouter } from "~/server/api/routers/ai-orientation";
+import { aiOpportunitiesRouter } from "~/server/api/routers/ai-opportunities";
 import { executionRouter } from "~/server/api/routers/execution";
 import { beingProfileRouter } from "~/server/api/routers/being-profile";
 import { userRouter } from "~/server/api/routers/user";
@@ -18,6 +20,8 @@ export const appRouter = createTRPCRouter({
   dvp: dvpRouter,
   admin: adminRouter,
   ai: aiRouter,
+  aiOrientation: aiOrientationRouter,
+  aiOpportunities: aiOpportunitiesRouter,
   execution: executionRouter,
   beingProfile: beingProfileRouter,
   user: userRouter,
