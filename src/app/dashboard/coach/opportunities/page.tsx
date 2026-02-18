@@ -55,12 +55,12 @@ export default function OpportunitiesChatPage() {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] space-y-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        <p className="text-muted-foreground animate-pulse text-sm">Initialisation de votre Coach d'Opportunités...</p>
+        <p className="text-muted-foreground animate-pulse text-sm">Chargement de votre historique...</p>
       </div>
     );
   }
 
-  if (getConvs.isError || createConv.isError) {
+  if (getConvs.isError || createConv.isError || (conversationId && messagesQuery.isError)) {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] space-y-4 text-center px-4">
         <AlertCircle className="w-12 h-12 text-destructive" />
@@ -86,7 +86,7 @@ export default function OpportunitiesChatPage() {
       </div>
       
       <div className="flex-grow">
-        {conversationId ? (
+        {conversationId && messagesQuery.data ? (
           <CoachChatInterface 
             conversationId={conversationId} 
             apiEndpoint="/api/coach/opportunities"
@@ -95,16 +95,16 @@ export default function OpportunitiesChatPage() {
               setConversationId(null);
               void getConvs.refetch();
             }}
-            initialMessages={messagesQuery.data?.map(m => ({
+            initialMessages={messagesQuery.data.map(m => ({
               id: m.id,
-              role: m.role,
+              role: m.role as any,
               content: m.content,
               structuredData: m.structuredData
             }))}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
-            Préparation de la session...
+            {conversationId ? "Chargement des messages..." : "Préparation de la session..."}
           </div>
         )}
       </div>

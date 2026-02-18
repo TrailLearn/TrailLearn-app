@@ -22,6 +22,7 @@ export async function POST(req: Request) {
     // Save User Message
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage && lastUserMessage.role === "user") {
+      console.log(`[OrientationRoute] Saving User Message for conv ${conversationId}`);
       await db.aiMessage.create({
         data: {
           conversationId,
@@ -35,6 +36,7 @@ export async function POST(req: Request) {
 
     return (result as any).toDataStreamResponse({
       onFinish: async (completion: any) => {
+        console.log(`[OrientationRoute] Stream finished for conv ${conversationId}. Saving Assistant Message.`);
         let structuredData = null;
         if (completion.toolResults && completion.toolResults.length > 0) {
           structuredData = completion.toolResults[0].result;
