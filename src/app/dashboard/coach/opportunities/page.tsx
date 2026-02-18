@@ -32,7 +32,8 @@ export default function OpportunitiesChatPage() {
   useEffect(() => {
     if (getConvs.isSuccess && !conversationId && !creatingRef.current) {
       if (getConvs.data && getConvs.data.length > 0) {
-        setConversationId(getConvs.data[0].id);
+        const firstId = getConvs.data[0]?.id;
+        if (firstId) setConversationId(firstId);
       } else {
         creatingRef.current = true;
         createConv.mutate({ type: "OPPORTUNITY" });

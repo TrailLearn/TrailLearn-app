@@ -37,7 +37,7 @@ export function CoachChatInterface({
     api: apiEndpoint,
     initialMessages,
     body: { conversationId },
-  }) as any;
+  } as any) as any;
 
   // Extract helpers with fallbacks
   const messages = chatHelpers.messages ?? [];
