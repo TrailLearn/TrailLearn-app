@@ -29,7 +29,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
         variant: "destructive",
       });
     }
-  });
+  } as any) as any;
   const [inputValue, setInputValue] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastUpdateRef = useRef<number>(0);
