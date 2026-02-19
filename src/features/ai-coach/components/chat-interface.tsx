@@ -75,7 +75,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
     if (messages.length < 2) return;
     
     // Extraction sécurisée du texte pour la finalisation
-    const mappedMessages = messages.map(m => {
+    const mappedMessages = messages.map((m: any) => {
       let text = (m as any).content || '';
       if (!text && Array.isArray((m as any).parts)) {
         text = (m as any).parts
@@ -140,7 +140,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
           </div>
         ) : (
           <div className="space-y-6">
-            {messages.map((m) => {
+            {messages.map((m: any) => {
               const content = Array.isArray((m as any).parts) 
                 ? (m as any).parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('')
                 : (m as any).content;
