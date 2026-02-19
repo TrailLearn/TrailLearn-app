@@ -22,7 +22,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
   // Retour aux helpers qui semblaient fonctionner au niveau compilation
   const { messages, sendMessage, status, error } = useChat({
     initialMessages: initialMessages,
-    onError: (err) => {
+    onError: (err: any) => {
       toast({
         title: "Connexion instable",
         description: "Le Mentor a du mal à répondre. Vérifiez votre connexion et réessayez.",
