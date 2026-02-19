@@ -21,7 +21,7 @@ export function ChatInterface({ initialMessages = [] }: ChatInterfaceProps) {
   const { toast } = useToast();
   // Retour aux helpers qui semblaient fonctionner au niveau compilation
   const { messages, sendMessage, status, error } = useChat({
-    messages: initialMessages,
+    initialMessages: initialMessages,
     onError: (err) => {
       toast({
         title: "Connexion instable",

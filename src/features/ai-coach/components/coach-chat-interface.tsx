@@ -43,7 +43,7 @@ export function CoachChatInterface({
   // Aligning with project-specific SDK patterns
   const chatHelpers = useChat({
     api: apiEndpoint,
-    messages: initialMessages, 
+    initialMessages: initialMessages, 
     body: { conversationId },
   } as any) as any;
 

@@ -23,11 +23,20 @@ export async function POST(req: Request) {
     const lastUserMessage = messages[messages.length - 1];
     if (lastUserMessage && lastUserMessage.role === "user") {
       console.log(`[OpportunitiesRoute] Saving User Message for conv ${conversationId}`);
+      
+      let content = typeof lastUserMessage.content === 'string' ? lastUserMessage.content : "";
+      if (!content && Array.isArray(lastUserMessage.parts)) {
+        content = lastUserMessage.parts
+          .filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('');
+      }
+
       await db.aiMessage.create({
         data: {
           conversationId,
           role: "user",
-          content: typeof lastUserMessage.content === 'string' ? lastUserMessage.content : "Message",
+          content: content || "Message",
         },
       });
     }
